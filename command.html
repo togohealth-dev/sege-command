@@ -310,6 +310,7 @@ async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast
 
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600);}
 setConn();loadAll();
+setInterval(loadAll, 120000); // auto-refresh every 2 minutes so the board stays live
 </script>
 </body>
 </html>
