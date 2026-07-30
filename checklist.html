@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEGE Checklists</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:1140px;margin:0 auto;padding:18px 16px 60px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
+  @media(max-width:720px){.hero{grid-template-columns:1fr}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:5px;transition:.12s}
+  .tile:hover{border-color:var(--accent);transform:translateY(-2px)}.tile[aria-selected=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft),var(--shadow)}
+  .tile .tl{font-size:13.5px;font-weight:700;display:flex;gap:8px;align-items:center}.tile .tn{font-size:30px;font-weight:780}.tile .ts{font-size:12px;color:var(--muted)}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+  .fg{display:flex;flex-direction:column;gap:3px}.fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .fg select,.fg input{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:150px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}.card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
+  .row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border)}.row:last-child{border-bottom:0}.row .main{flex:1;min-width:0}
+  .row.clk{cursor:pointer}.row.clk:hover{background:var(--surface-2)}.row .name{font-weight:600}.row .sub{color:var(--muted);font-size:12px;margin-top:1px}
+  .pill{font-size:11px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .p-idle{background:var(--idle-bg);color:var(--faint)}.p-ok{background:var(--ok-bg);color:var(--ok)}.p-warn{background:var(--warn-bg);color:var(--warn)}
+  .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;min-width:70px;max-width:150px;flex:1}.bar span{display:block;height:100%;background:var(--accent)}.bar.hi span{background:var(--ok)}.bar.lo span{background:var(--warn)}.bar.zero span{background:var(--bad)}
+  .pct{font-weight:750;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  .na{color:var(--accent-ink);font-weight:600}
+  .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}.crumb h2{font-size:18px;font-weight:750}.back{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .phase{border-bottom:1px solid var(--border)}.phase:last-child{border-bottom:0}.phhead{display:flex;gap:10px;align-items:center;padding:10px 16px;background:var(--surface-2);font-size:12.5px;font-weight:700}
+  .it{display:flex;align-items:center;gap:10px;padding:9px 16px;border-top:1px solid var(--border);font-size:13px}.it:first-child{border-top:0}
+  .chip{border:1px solid var(--border);border-radius:7px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
+  .s-not_started .chip{background:var(--idle-bg);color:var(--faint)}.s-in_progress .chip{background:var(--warn-bg);color:var(--warn)}.s-complete .chip{background:var(--ok);color:#fff;border-color:var(--ok)}.s-na .chip{background:transparent;color:var(--faint);border-style:dashed}.s-blocked .chip{background:var(--bad-bg);color:var(--bad)}
+  .it .lb{flex:1;min-width:0}.it .role{font-size:11px;color:var(--muted)}
+  .msg{padding:40px;text-align:center;color:var(--muted)}
+  .gate{max-width:400px;margin:12vh auto;text-align:center}.gate .card{padding:26px}.gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:10px 0}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}#toast.show{opacity:1}
+  .nextpill{background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- login gate -->
+  <div id="gate" class="gate" style="display:none">
+    <div class="card">
+      <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+      <h1 style="font-size:19px;font-weight:750">SEGE Checklists</h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:4px">Staff sign-in. Enter your work email and we'll send a magic link.</p>
+      <input id="email" type="email" placeholder="you@togohealth.com" autocomplete="email">
+      <button class="btn pri" style="width:100%" onclick="sendLink()">Send magic link</button>
+      <p id="gatemsg" style="color:var(--muted);font-size:12px;margin-top:10px"></p>
+    </div>
+  </div>
+
+  <!-- app -->
+  <div id="app" style="display:none">
+    <header class="top">
+      <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+      <div class="title"><h1>SEGE Checklists</h1><p>Everything we have to do — never miss the next step</p></div>
+      <div class="right">
+        <button class="btn" onclick="loadAll()">↻ Refresh</button>
+        <button class="btn pri" onclick="openAdd()">+ Add</button>
+        <a class="btn" href="./command.html">Command Center</a>
+        <span id="who" style="font-size:12px;color:var(--muted)"></span>
+        <button class="btn" onclick="signOut()">Sign out</button>
+      </div>
+    </header>
+    <div id="view"><div class="msg">Loading…</div></div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SUPABASE_URL='https://sdbkvklthqvwbepyebnp.supabase.co';
+const SUPABASE_ANON='sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz';
+const sb=createClient(SUPABASE_URL,SUPABASE_ANON);
+const $=s=>document.querySelector(s);
+const TYPES={business:{label:'Business Setup',icon:'🔵'},facility:{label:'Facility Onboarding',icon:'🟢'},provider:{label:'Provider Onboarding & Maintenance',icon:'🟣'}};
+const NEXT={not_started:'in_progress',in_progress:'complete',complete:'na',na:'blocked',blocked:'not_started'};
+const LABELS={not_started:'To do',in_progress:'In progress',complete:'✓ Done',na:'N/A',blocked:'⚠ Blocked'};
+let accounts=[], items=[], tasks=[], route={v:'home',type:'facility'}, filters={};
+
+// ── auth ──
+window.sendLink=async()=>{const email=$('#email').value.trim();if(!email)return;
+  const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});
+  $('#gatemsg').textContent=error?('Error: '+error.message+' (ask an admin to invite you first)'):'Check your email for the sign-in link.';};
+window.signOut=async()=>{await sb.auth.signOut();location.reload();};
+
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){ $('#gate').style.display='block'; $('#app').style.display='none'; return; }
+  $('#gate').style.display='none'; $('#app').style.display='block';
+  $('#who').textContent=session.user.email;
+  loadAll();
+}
+sb.auth.onAuthStateChange((_e,s)=>{ if(s){ $('#gate').style.display='none'; $('#app').style.display='block'; $('#who').textContent=s.user.email; if(!accounts.length) loadAll(); }});
+
+// ── data ──
+window.loadAll=async()=>{
+  $('#view').innerHTML='<div class="msg">Loading…</div>';
+  const [a,i,t]=await Promise.all([
+    sb.from('account').select('*').order('name'),
+    sb.from('checklist_item').select('*').order('ord'),
+    sb.from('task').select('*')]);
+  if(a.error){$('#view').innerHTML='<div class="msg">Error: '+a.error.message+'</div>';return;}
+  accounts=a.data||[]; items=i.data||[]; tasks=t.data||[]; render();
+};
+const itemsFor=type=>items.filter(x=>x.applies_to===type);
+const tasksFor=id=>tasks.filter(t=>t.account_id===id);
+function progress(acc){const ts=tasksFor(acc.id);let c=0,n=0;ts.forEach(t=>{if(t.state==='na')return;n++;if(t.state==='complete')c++;});
+  const total=itemsFor(acc.type).length; return {pct: n?Math.round(100*c/n):0, done:c, total};}
+function nextAction(acc){const map={};tasksFor(acc.id).forEach(t=>map[t.item_id]=t.state);
+  for(const it of itemsFor(acc.type)){const s=map[it.id]||'not_started';if(s!=='complete'&&s!=='na')return it;}return null;}
+const barCls=p=>p>=80?'hi':p===0?'zero':p<40?'lo':'';
+const bar=p=>`<div class="bar ${barCls(p)}"><span style="width:${p}%"></span></div><span class="pct">${p}%</span>`;
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ── ensure tasks exist for an account (instantiate template on first open) ──
+async function ensureTasks(acc){
+  const have=new Set(tasksFor(acc.id).map(t=>t.item_id));
+  const missing=itemsFor(acc.type).filter(it=>!have.has(it.id)).map(it=>({account_id:acc.id,item_id:it.id,state:'not_started',assignee:it.role}));
+  if(missing.length){const {data}=await sb.from('task').insert(missing).select();if(data)tasks.push(...data);}
+}
+
+// ── views ──
+function render(){
+  const v=$('#view');v.innerHTML='';
+  if(route.v==='account') return renderAccount();
+  // home: 3 tiles + filtered account list for the selected type
+  const hero=document.createElement('div');hero.className='hero';
+  ['business','facility','provider'].forEach(type=>{
+    const list=accounts.filter(a=>a.type===type);
+    const avg=list.length?Math.round(list.reduce((s,a)=>s+progress(a).pct,0)/list.length):0;
+    const b=document.createElement('button');b.className='tile';b.setAttribute('aria-selected',route.type===type);
+    b.onclick=()=>{route={v:'home',type};filters={};render();};
+    b.innerHTML=`<div class="tl">${TYPES[type].icon} ${TYPES[type].label}</div><div class="tn">${list.length}</div><div class="ts">${avg}% complete on average</div>`;
+    hero.appendChild(b);
+  });
+  v.appendChild(hero);
+  // filters (state / company / facility) for the selected type
+  let list=accounts.filter(a=>a.type===route.type);
+  const dims=route.type==='business'?['state']:['state','company','facility'];
+  const fb=document.createElement('div');fb.className='filters';
+  dims.forEach(d=>{const vals=[...new Set(accounts.filter(a=>a.type===route.type).map(a=>a[d]).filter(Boolean))].sort();
+    const fg=document.createElement('div');fg.className='fg';fg.innerHTML=`<label>${d}</label>`;
+    const sel=document.createElement('select');sel.innerHTML=`<option value="">All</option>`+vals.map(x=>`<option${filters[d]===x?' selected':''}>${esc(x)}</option>`).join('');
+    sel.onchange=()=>{filters[d]=sel.value;render();};fg.appendChild(sel);fb.appendChild(fg);});
+  v.appendChild(fb);
+  dims.forEach(d=>{if(filters[d])list=list.filter(a=>a[d]===filters[d]);});
+  // sort: least complete first (so the ones needing attention are on top)
+  list.sort((a,b)=>progress(a).pct-progress(b).pct);
+  const card=document.createElement('div');card.className='card';
+  card.innerHTML=`<h3>${TYPES[route.type].icon} ${TYPES[route.type].label} <span class="count">${list.length}</span></h3>`;
+  if(!list.length)card.insertAdjacentHTML('beforeend','<div class="msg">No accounts yet — click “+ Add”.</div>');
+  list.forEach(a=>{const p=progress(a);const na=nextAction(a);
+    const row=document.createElement('div');row.className='row clk';row.onclick=()=>openAccount(a.id);
+    row.innerHTML=`<div class="main"><div class="name">${esc(a.name)} ${a.state?`<span class="pill p-idle">${esc(a.state)}</span>`:''}</div>
+      <div class="sub">${[a.company,a.facility].filter(Boolean).map(esc).join(' · ')}${na?` · <span class="nextpill">NEXT: ${esc(na.label)}${na.role?' — '+esc(na.role):''}</span>`:' · <span class="na">✓ all done</span>'}</div></div>
+      ${bar(p.pct)}`;
+    card.appendChild(row);});
+  v.appendChild(card);
+}
+
+async function openAccount(id){route={v:'account',id};await ensureTasks(accounts.find(a=>a.id===id));render();}
+window.openAccount=openAccount;
+function renderAccount(){
+  const v=$('#view');const acc=accounts.find(a=>a.id===route.id);if(!acc){route={v:'home',type:'facility'};return render();}
+  const p=progress(acc);
+  const crumb=document.createElement('div');crumb.className='crumb';
+  const bk=document.createElement('button');bk.className='back';bk.textContent='← All '+route.id;bk.textContent='← Back';bk.onclick=()=>{route={v:'home',type:acc.type};render();};
+  crumb.appendChild(bk);
+  crumb.insertAdjacentHTML('beforeend',`<h2>${TYPES[acc.type].icon} ${esc(acc.name)}</h2><span style="color:var(--muted);font-weight:600">${[acc.company,acc.facility,acc.state].filter(Boolean).map(esc).join(' · ')}</span>`);
+  const b=document.createElement('div');b.style.cssText='display:flex;align-items:center;gap:10px;margin-left:auto;min-width:200px';b.innerHTML=bar(p.pct);crumb.appendChild(b);
+  v.appendChild(crumb);
+  const map={};tasksFor(acc.id).forEach(t=>map[t.item_id]=t);
+  const phases=[...new Set(itemsFor(acc.type).map(i=>i.phase))];
+  const card=document.createElement('div');card.className='card';
+  phases.forEach(ph=>{
+    const its=itemsFor(acc.type).filter(i=>i.phase===ph);
+    const done=its.filter(i=>(map[i.id]||{}).state==='complete').length;
+    const wrap=document.createElement('div');wrap.className='phase';
+    wrap.insertAdjacentHTML('beforeend',`<div class="phhead">${esc(ph)} <span style="margin-left:auto;color:var(--muted);font-weight:600">${done}/${its.length}</span></div>`);
+    its.forEach(it=>{const t=map[it.id]||{state:'not_started'};
+      const el=document.createElement('div');el.className='it s-'+t.state;
+      el.innerHTML=`<span class="lb">${esc(it.label)}</span><span class="role">${esc(it.assignee||it.role||'')}</span><span class="chip">${LABELS[t.state]}</span>`;
+      el.querySelector('.chip').onclick=()=>toggle(acc,it,t);
+      wrap.appendChild(el);});
+    card.appendChild(wrap);
+  });
+  v.appendChild(card);
+}
+async function toggle(acc,it,t){
+  const ns=NEXT[t.state||'not_started'];
+  if(t.id){await sb.from('task').update({state:ns,updated_at:new Date().toISOString()}).eq('id',t.id);t.state=ns;}
+  else{const {data}=await sb.from('task').insert({account_id:acc.id,item_id:it.id,state:ns,assignee:it.role}).select();if(data){tasks.push(data[0]);}}
+  render();toast('Saved');
+}
+
+// ── add account ──
+window.openAdd=()=>{
+  const type=prompt('Type: business / facility / provider','facility');if(!type||!TYPES[type])return;
+  const name=prompt('Name:');if(!name)return;
+  const state=type==='business'?'':prompt('State (2-letter):','')||'';
+  const company=type==='business'?'':prompt('Company / portfolio:','')||'';
+  const facility=type==='provider'?(prompt('Facility:','')||''):'';
+  addAccount({type,name,state,company,facility});
+};
+async function addAccount(a){
+  const {data,error}=await sb.from('account').insert(a).select();
+  if(error){toast('Error: '+error.message);return;}
+  const acc=data[0];accounts.push(acc);
+  await ensureTasks(acc);toast('Added '+acc.name);openAccount(acc.id);
+}
+
+let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2000);}
+window.toast=toast;
+boot();
+</script>
+</body>
+</html>
