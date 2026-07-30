@@ -170,7 +170,8 @@
 
 <script>
 const REPO='togohealth-dev/sege-tracker', API='https://api.github.com';
-const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json';
+const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json', FACONB_PATH='facility_onboarding.json';
+const BIZ_REPO='togohealth-dev/sege-business';  // read-only mirror (Business lane owns this)
 const TEAM={
   gregbaird11:{name:'Greg Baird',role:'Owner · Togo Health',c:'#c0603a'},
   riley870:{name:'Riley Moore',role:'COO · SEGE',c:'#c07708'},
@@ -229,6 +230,20 @@ const Staff={
     this.snapSha=r.content.sha;
   }
 };
+/* facility-level onboarding checklist (separate file, same facility ids) */
+const FacOnb={
+  doc:null, sha:null,
+  async load(){ try{const r=await gh(`/repos/${STAFF_REPO}/contents/${FACONB_PATH}`);this.sha=r.sha;this.doc=JSON.parse(b64d(r.content));}catch(e){this.doc=null;} return this.doc; },
+  async save(msg){ const body={message:msg||'Update facility onboarding',content:b64e(JSON.stringify(this.doc,null,1)),sha:this.sha,branch:'main'};
+    const r=await gh(`/repos/${STAFF_REPO}/contents/${FACONB_PATH}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});this.sha=r.content.sha; }
+};
+/* business-setup mirror — READ-ONLY from the Business lane's private repo */
+const Biz={ entities:null, states:null,
+  async load(){
+    try{const r=await gh(`/repos/${BIZ_REPO}/contents/mso/entities.json`);this.entities=JSON.parse(b64d(r.content)).entities;}catch(e){this.entities=null;}
+    try{const r=await gh(`/repos/${BIZ_REPO}/contents/reference/state-compliance.json`);this.states=JSON.parse(b64d(r.content)).states;}catch(e){this.states=null;}
+  }
+};
 
 /* ── onboarding compute helpers (pure; percentages never stored) ── */
 const PH=()=>Staff.doc?Staff.doc.phases:[];
@@ -244,8 +259,14 @@ function currentPhase(pr){for(const ph of PH()){if(phasePct(pr,ph).pct<100)retur
 function bottlenecks(list){const m={};list.forEach(pr=>PH().forEach(ph=>ph.items.forEach(it=>{const s=pr.items[it.key];if(s==='not_started'||s==='in_progress'){const k=ph.label+'||'+it.label;(m[k]=m[k]||{phase:ph.label,item:it.label,n:0,prog:0}).n++;if(s==='in_progress')m[k].prog++;}})));return Object.values(m).sort((a,b)=>b.n-a.n);}
 const barClass=p=>p>=80?'hi':p===0?'zero':p<40?'lo':'';
 const bar=p=>`<div class="bar ${barClass(p)}"><span style="width:${p}%"></span></div><span class="pctlab">${p}%</span>`;
+/* facility checklist helpers */
+const FCL=()=>FacOnb.doc?FacOnb.doc.checklist:[];
+const facOnb=fid=>FacOnb.doc&&FacOnb.doc.facilities?FacOnb.doc.facilities[fid]:null;
+function facChkPct(fid){const f=facOnb(fid);if(!f)return null;let c=0,t=0;FCL().forEach(it=>{const s=f.items[it.key];if(s==='na')return;t++;if(s==='complete')c++;});return t?Math.round(100*c/t):0;}
+const bizForState=st=>Biz.entities?Biz.entities.filter(e=>e.state===st):[];
+const compForState=st=>Biz.states?Biz.states.find(s=>s.abbr===st):null;
 
-async function loadStaff(){ if(pat()){ await Staff.load(); await Staff.loadSnaps(); } else { Staff.doc=null; Staff.err='no-token'; } }
+async function loadStaff(){ if(pat()){ await Staff.load(); await Staff.loadSnaps(); await FacOnb.load(); await Biz.load(); } else { Staff.doc=null; Staff.err='no-token'; } }
 
 async function loadAll(){
   if(!loaded) $('#view').innerHTML='<div class="msg">Loading live data…</div>';
@@ -361,26 +382,51 @@ function accountsView(){
   fac.sort((a,b)=>(rank[a.status]-rank[b.status])||facPct(b)-facPct(a));
   const c=el('div','card');c.appendChild(el('h3',null,`Facilities <span class="count">${fac.length}</span>`));
   if(!fac.length)c.appendChild(el('div','msg','No facilities match.'));
-  fac.forEach(x=>{const pct=facPct(x);const st=FSTATUS[x.status];
+  fac.forEach(x=>{const pct=facPct(x);const st=FSTATUS[x.status];const fchk=facChkPct(x.id);
     const stuck=bottlenecks(x.providers).slice(0,1).map(b=>`${b.item} (${b.n})`).join('');
     const row=el('div','row clk');row.onclick=()=>go({v:'facility',id:x.id});
     row.innerHTML=`<div class="main"><div class="name">${esc(x.label)} <span class="pill p-idle">${esc(x.state||'')}</span></div>
-      <div class="sub">${esc(x.portfolio)} · ${x.staffing.filled}/${x.staffing.target} staffed${stuck?` · ⛔ ${esc(stuck)}`:''}</div></div>
-      <span class="pill ${st[0]}">${st[1]}</span><div class="barrow" style="width:220px">${bar(pct)}</div>`;
+      <div class="sub">${esc(x.portfolio)} · ${x.staffing.filled}/${x.staffing.target} staffed${fchk!=null?` · facility setup ${fchk}%`:''}${stuck?` · ⛔ ${esc(stuck)}`:''}</div></div>
+      <span class="pill ${st[0]}">${st[1]}</span><div class="barrow" style="width:200px" title="provider onboarding">${bar(pct)}</div>`;
     c.appendChild(row);});
   v.appendChild(c);
   return v;
 }
 function facilityView(id){
   const fac=allFac().find(f=>f.id===id); if(!fac)return backCrumb('','Not found');
+  const fo=facOnb(id); const fchk=facChkPct(id);
   const v=el('div');const bk=el('button','back','← Accounts');bk.onclick=()=>go({v:'accounts'});
   const c=el('div','crumb');c.appendChild(bk);c.appendChild(el('h2',null,esc(fac.label)));
   c.appendChild(el('span','count',`${FSTATUS[fac.status][1]} · ${fac.staffing.filled}/${fac.staffing.target} staffed`));v.appendChild(c);
   const st=el('div','stat');
-  st.innerHTML=`<div class="kv"><b class="tnum">${facPct(fac)}%</b><span>onboarded</span></div>
+  st.innerHTML=`<div class="kv"><b class="tnum">${fchk!=null?fchk+'%':'—'}</b><span>facility setup</span></div>
+    <div class="kv"><b class="tnum">${facPct(fac)}%</b><span>providers onboarded</span></div>
     <div class="kv"><b class="tnum">${fac.providers.filter(p=>provPct(p)>=100).length}/${fac.providers.length}</b><span>providers live</span></div>
-    <div class="kv"><b>${esc(fac.state||'—')}</b><span>state</span></div>`;
+    <div class="kv"><b>${esc(fo&&fo.info.md_monthly_rate||'—')}</b><span>MD monthly rate</span></div>`;
   v.appendChild(st);
+  // facility onboarding checklist (editable)
+  if(fo){ const fc=el('div','card'); const wrap=el('div','phase');
+    const head=el('div','phhead');head.innerHTML=`<b>🏢 Facility Onboarding</b><span class="count">${FCL().filter(it=>fo.items[it.key]==='complete').length}/${FCL().length}</span>
+      <div class="barrow" style="margin-left:auto;width:200px">${bar(fchk||0)}</div>
+      <button class="mini g" onclick="completeFacChecklist('${esc(id)}')" title="Mark all complete">✓ all</button>`;
+    wrap.appendChild(head);
+    const items=el('div','items');
+    FCL().forEach(it=>{const s=fo.items[it.key]||'not_started';const d=el('div','it s-'+s);
+      d.onclick=()=>cycleFacItem(id,it.key);d.innerHTML=`<span class="ic">${ST_ICON[s]}</span><span class="lb">${esc(it.label)}</span>`;items.appendChild(d);});
+    wrap.appendChild(items);fc.appendChild(wrap);v.appendChild(fc);
+  }
+  // business-setup mirror (read-only from Business lane)
+  const ents=bizForState(fac.state), comp=compForState(fac.state);
+  if((ents&&ents.length)||comp){ const bc=el('div','card');
+    bc.appendChild(el('h3',null,`🔵 Business setup — ${esc(fac.state||'')} <span class="count">read-only · mirror</span>`));
+    if(comp)bc.insertAdjacentHTML('beforeend',`<div class="row"><div class="main"><div class="name">State compliance</div>
+      <div class="sub">CPOM: ${esc(comp.cpom_status||'—')} · Required entity: ${esc(comp.required_entity||'—')} · IMLC: ${esc(comp.imlc||'—')}</div></div></div>`);
+    (ents||[]).slice(0,8).forEach(e=>bc.insertAdjacentHTML('beforeend',`<div class="row"><div class="main"><div class="name">${esc(e.legal_name||e.use_label||e.id)}</div>
+      <div class="sub">${esc(e.entity_type||'')}${e.role?' · '+esc(e.role):''}${e.next_step?' · next: '+esc(e.next_step):''}</div></div>
+      <span class="pill p-idle">${esc(e.lifecycle_status||'—')}</span></div>`));
+    bc.insertAdjacentHTML('beforeend',`<a class="row clk" href="./business.html" style="color:var(--accent);font-weight:600">Manage in Business workspace →</a>`);
+    v.appendChild(bc);
+  }
   const card=el('div','card');card.appendChild(el('h3',null,`Providers <span class="count">${fac.providers.length}</span>`));
   fac.providers.slice().sort((a,b)=>provPct(b)-provPct(a)).forEach(pr=>card.insertAdjacentHTML('beforeend',provRow(pr)));
   bindProvRows(card);v.appendChild(card);
@@ -540,6 +586,16 @@ function completePhase(provId,phaseKey){ if(!requireAuth()||!Staff.doc)return;
   const anyOpen=ph.items.some(it=>fp.pr.items[it.key]!=='complete'&&fp.pr.items[it.key]!=='na');
   ph.items.forEach(it=>{ if(fp.pr.items[it.key]!=='na') fp.pr.items[it.key]=anyOpen?'complete':'not_started'; });
   render(); queueSave((anyOpen?'Complete':'Reset')+' phase '+ph.label+' — '+fp.pr.name); }
+let facSaveTimer=null, facSaving=false;
+function queueFacSave(msg){ if(facSaveTimer)clearTimeout(facSaveTimer);
+  facSaveTimer=setTimeout(async()=>{ if(facSaving)return;facSaving=true;
+    try{await FacOnb.save(msg);toast('Saved ✓');}catch(e){toast('Save failed: '+e.message);await FacOnb.load();render();}facSaving=false;},600); }
+function cycleFacItem(fid,itemKey){ if(!requireAuth()||!FacOnb.doc)return;const f=facOnb(fid);if(!f)return;
+  f.items[itemKey]=ST_NEXT[f.items[itemKey]||'not_started']; render(); queueFacSave('Facility onboarding — '+fid); }
+function completeFacChecklist(fid){ if(!requireAuth()||!FacOnb.doc)return;const f=facOnb(fid);if(!f)return;
+  const anyOpen=FCL().some(it=>f.items[it.key]!=='complete'&&f.items[it.key]!=='na');
+  FCL().forEach(it=>{ if(f.items[it.key]!=='na') f.items[it.key]=anyOpen?'complete':'not_started'; });
+  render(); queueFacSave('Facility onboarding — '+fid); }
 
 /* ── issue writes ── */
 async function addLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({labels:[l]})});}
