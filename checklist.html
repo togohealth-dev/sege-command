@@ -73,6 +73,7 @@
       <div class="title"><h1>SEGE Checklists</h1><p>Everything we have to do — never miss the next step</p></div>
       <div class="right">
         <button class="btn" onclick="loadAll()">↻ Refresh</button>
+        <button class="btn" onclick="showSummary()">📊 Summary</button>
         <button class="btn pri" onclick="openAdd()">+ Add</button>
         <a class="btn" href="./command.html">Command Center</a>
         <span id="who" style="font-size:12px;color:var(--muted)"></span>
@@ -158,8 +159,36 @@ async function ensureTasks(acc){
 }
 
 // ── views ──
+window.showSummary=()=>{route={v:'summary'};render();};
+function renderSummary(){
+  const v=$('#view');
+  const crumb=document.createElement('div');crumb.className='crumb';
+  const bk=document.createElement('button');bk.className='back';bk.textContent='← Back';bk.onclick=()=>{route={v:'home',type:'provider'};render();};
+  crumb.appendChild(bk);crumb.insertAdjacentHTML('beforeend','<h2>📊 Provider Onboarding — Summary</h2>');
+  const provs=accounts.filter(a=>a.type==='provider');
+  const overall=provs.length?Math.round(provs.reduce((s,a)=>s+progress(a).pct,0)/provs.length):0;
+  const b=document.createElement('div');b.style.cssText='display:flex;align-items:center;gap:10px;margin-left:auto;min-width:220px';b.innerHTML=`<span style="font-size:12px;color:var(--muted)">${provs.length} providers</span>`+bar(overall);crumb.appendChild(b);
+  v.appendChild(crumb);
+  const byCo={};provs.forEach(a=>{const co=a.company||'—',fa=a.facility||'—';byCo[co]=byCo[co]||{};(byCo[co][fa]=byCo[co][fa]||[]).push(a);});
+  Object.keys(byCo).sort().forEach(co=>{
+    const facs=byCo[co];const allco=Object.values(facs).flat();
+    const copct=Math.round(allco.reduce((s,a)=>s+progress(a).pct,0)/allco.length);
+    const card=document.createElement('div');card.className='card';
+    card.insertAdjacentHTML('beforeend',`<h3>◆ ${esc(co)} — ${allco.length} providers <span class="count" style="display:flex;align-items:center;gap:8px;min-width:190px">${bar(copct)}</span></h3>`);
+    Object.keys(facs).sort().forEach(fa=>{
+      const list=facs[fa];const fpct=Math.round(list.reduce((s,a)=>s+progress(a).pct,0)/list.length);
+      card.insertAdjacentHTML('beforeend',`<div class="row" style="background:var(--surface-2)"><div class="main"><div class="name">🏥 ${esc(fa)}</div><div class="sub">${list.length} providers</div></div><div style="display:flex;align-items:center;gap:8px;min-width:170px">${bar(fpct)}</div></div>`);
+      list.sort((a,b)=>progress(b).pct-progress(a).pct).forEach(a=>{const p=progress(a);const na=nextAction(a);
+        const row=document.createElement('div');row.className='row clk';row.onclick=()=>openAccount(a.id);
+        row.innerHTML=`<div class="main" style="padding-left:14px"><div class="name">${esc(a.name)} <span class="pill p-idle">${esc(a.state||'')}</span></div><div class="sub">${na?'Next: '+esc(na.label):'✓ complete'}</div></div><div style="display:flex;align-items:center;gap:8px;min-width:150px">${bar(p.pct)}</div>`;
+        card.appendChild(row);});
+    });
+    v.appendChild(card);
+  });
+}
 function render(){
   const v=$('#view');v.innerHTML='';
+  if(route.v==='summary') return renderSummary();
   if(route.v==='account') return renderAccount();
   // home: 3 tiles + filtered account list for the selected type
   const hero=document.createElement('div');hero.className='hero';
