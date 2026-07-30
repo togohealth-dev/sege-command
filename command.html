@@ -43,7 +43,6 @@
   .me{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 13px 4px 4px;cursor:pointer;font:inherit;font-weight:650;font-size:12.5px;color:inherit}
   .me:hover{border-color:var(--accent)}
   .me .avatar{width:26px;height:26px;font-size:11px;border-radius:50%}
-  /* hero tiles */
   .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
   @media(max-width:720px){.hero{grid-template-columns:1fr}}
   .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 18px 15px;box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:5px;transition:transform .12s,border-color .12s}
@@ -51,38 +50,37 @@
   .tile .tl{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
   .tile .arrow{margin-left:auto;color:var(--faint);font-weight:700}
   .tile .tn{font-size:34px;font-weight:780;letter-spacing:-.02em;line-height:1.1}
-  .tile .ts{font-size:12px;color:var(--muted);display:flex;gap:14px}
-  /* people tiles */
+  .tile .ts{font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
   .ppl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
   .ptile{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:border-color .12s}
   .ptile:hover{border-color:var(--accent)}
   .avatar{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
   .who{font-weight:700} .role{font-size:11.5px;color:var(--muted)}
   .pstat{margin-left:auto;text-align:right} .pstat b{font-size:19px;font-weight:750;display:block} .pstat span{font-size:10px;color:var(--muted)}
-  /* filters + crumb */
   .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}
   .crumb h2{font-size:18px;font-weight:750;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
   .crumb .count{color:var(--muted);font-size:13px;font-weight:600}
+  .crumb .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
   .back{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
   .back:hover{border-color:var(--accent)}
-  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
   .fg{display:flex;flex-direction:column;gap:3px}
   .fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
-  .fg select{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:160px;cursor:pointer}
-  .fg select:hover{border-color:var(--accent)}
-  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px}
+  .fg select,.fg input{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:150px;cursor:pointer}
+  .fg input{cursor:text;font-weight:500}
+  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px;display:flex;align-items:center;gap:8px}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
   .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
   .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
   .row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border)}
   .row:last-child{border-bottom:0} .row .main{flex:1;min-width:0}
+  .row.clk{cursor:pointer} .row.clk:hover{background:var(--surface-2)}
   .row .name{font-weight:600} .row .sub{color:var(--muted);font-size:12px;margin-top:1px}
   a.name{color:inherit;text-decoration:none} a.name:hover{color:var(--accent)}
   .pill{font-size:11px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
   .p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)}
   .p-bad{background:var(--bad-bg);color:var(--bad)} .p-idle{background:var(--idle-bg);color:var(--faint)}
   .p-prog{background:var(--accent-soft);color:var(--accent-ink)}
-  .p-tag{background:var(--surface-2);color:var(--muted);font-weight:600}
   .dots{display:flex;gap:3px} .d{width:7px;height:7px;border-radius:50%;background:var(--border)} .d.on{background:var(--warn)}
   .acts{display:flex;gap:6px;flex-wrap:wrap}
   .mini{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;cursor:pointer}
@@ -90,16 +88,36 @@
   .mini:disabled{opacity:.5;cursor:default}
   .note{background:var(--warn-bg);color:var(--warn);padding:9px 13px;border-radius:9px;font-size:12px;margin-bottom:14px}
   .msg{padding:44px;text-align:center;color:var(--muted)}
+  /* progress bar */
+  .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;min-width:80px;flex:1;max-width:180px}
+  .bar span{display:block;height:100%;border-radius:999px;background:var(--accent)}
+  .bar.hi span{background:var(--ok)} .bar.lo span{background:var(--warn)} .bar.zero span{background:var(--bad)}
+  .pctlab{font-weight:750;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  /* onboarding checklist */
+  .phase{border-bottom:1px solid var(--border)} .phase:last-child{border-bottom:0}
+  .phhead{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface-2);cursor:pointer}
+  .phhead b{font-size:12.5px} .phhead .count{color:var(--muted);font-size:11.5px}
+  .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;padding:10px 16px}
+  .it{display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;user-select:none}
+  .it:hover{border-color:var(--accent)}
+  .it .ic{width:16px;height:16px;border-radius:5px;display:grid;place-items:center;font-size:11px;flex:none;color:#fff}
+  .it.s-complete .ic{background:var(--ok)} .it.s-in_progress .ic{background:var(--warn)}
+  .it.s-not_started .ic{background:var(--idle);color:var(--surface)} .it.s-na .ic{background:transparent;border:1px dashed var(--faint);color:var(--faint)}
+  .it.s-complete{background:var(--ok-bg)} .it.s-in_progress{background:var(--warn-bg)}
+  .it .lb{flex:1;min-width:0}
+  .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+  .kv{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+  .kv b{font-size:20px;font-weight:750;display:block} .kv span{font-size:11px;color:var(--muted)}
+  .barrow{display:flex;align-items:center;gap:10px}
   .modal{position:fixed;inset:0;background:rgba(10,15,25,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
   .modal.on{display:flex}
-  .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:460px;max-width:100%}
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:520px;max-width:100%;max-height:88vh;overflow:auto}
   .box h2{font-size:17px;margin-bottom:6px} .box p{color:var(--muted);font-size:13px;margin-bottom:14px}
   .box input,.box select,.box textarea{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:7px;padding:9px 11px;font:inherit;margin-bottom:10px}
   .box label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:4px}
   #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}
   #toast.show{opacity:1}
   .foot{margin-top:24px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
-  .foot a{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -117,16 +135,16 @@
     </div>
   </header>
 
-  <div id="view"><div class="msg">Loading live projects…</div></div>
+  <div id="view"><div class="msg">Loading live data…</div></div>
 
-  <div class="foot">Live data from <b>togohealth-dev/sege-tracker</b> GitHub Issues · shared with everyone ·
-    edits require a GitHub token (Issues scope). Marking done here updates the classic board too.</div>
+  <div class="foot">Projects from <b>togohealth-dev/sege-tracker</b> (public) · staffing from <b>sege-staffing</b> (private, token required) ·
+    percentages computed live from onboarding items.</div>
 </div>
 
 <!-- Connect modal -->
 <div class="modal" id="connect"><div class="box">
   <h2>Connect to edit</h2>
-  <p>Paste a GitHub personal access token. Fine-grained (repo <b>sege-tracker</b>, permission <b>Issues: read &amp; write</b>) is recommended; a classic <b>repo</b>-scope token also works. Stored only in this browser. Without it you can still view everything.</p>
+  <p>Paste a GitHub personal access token. To also see staffing/onboarding, the token needs access to the private <b>sege-staffing</b> repo (Issues + Contents: read &amp; write). Fine-grained recommended. Stored only in this browser.</p>
   <input id="pat" type="password" placeholder="github_pat_… or ghp_…">
   <div class="acts" style="justify-content:flex-end">
     <button class="btn" onclick="closeConnect()">Cancel</button>
@@ -138,7 +156,7 @@
 <div class="modal" id="add"><div class="box">
   <h2>Add project / task</h2>
   <label>Title</label><input id="a_title" placeholder="Short name">
-  <label>Category</label><select id="a_cat"><option value="facility">🟢 Accounts</option><option value="provider">🟣 Providers</option><option value="business">🔵 Business</option></select>
+  <label>Category</label><select id="a_cat"><option value="business">🔵 Business</option><option value="facility">🟢 Accounts</option><option value="provider">🟣 Providers</option></select>
   <label>Owner</label><select id="a_who"></select>
   <label>Priority</label><select id="a_prio"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3" selected>★★★</option><option value="2">★★</option><option value="1">★</option></select>
   <label>Notes</label><textarea id="a_notes" rows="3" placeholder="Optional context"></textarea>
@@ -152,7 +170,7 @@
 
 <script>
 const REPO='togohealth-dev/sege-tracker', API='https://api.github.com';
-// GitHub-assignable team (issue assignees must be GitHub users)
+const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json';
 const TEAM={
   gregbaird11:{name:'Greg Baird',role:'Owner · Togo Health',c:'#c0603a'},
   riley870:{name:'Riley Moore',role:'COO · SEGE',c:'#c07708'},
@@ -160,21 +178,16 @@ const TEAM={
   'Jordan-togoclaude':{name:'Jordan Anderson',role:'COO · Togo Health',c:'#7a5cc0'},
   msdrigg:{name:'Scott',role:'Engineering',c:'#3f6fb0'},
 };
-// category tiles + the filter dimensions each one drills down by (from prefixed labels)
-const CATS={
-  facility:{label:'Accounts', mark:'🟢', dims:['company','facility']},
-  provider:{label:'Providers',mark:'🟣', dims:['company','facility','provider']},
-  business:{label:'Business', mark:'🔵', dims:['state','mso','manager']},
-};
-const DIM={company:'Company',facility:'Facility',provider:'Provider',state:'State',mso:'MSO',manager:'Manager'};
-const ORDER=['facility','provider','business'];
+const FSTATUS={live:['p-ok','✅ Live'],go_live_soon:['p-warn','🟡 Go-Live Soon'],scheduled:['p-prog','🔵 Scheduled'],unknown:['p-idle','— TBD']};
+const ST_NEXT={not_started:'in_progress',in_progress:'complete',complete:'na',na:'not_started'};
+const ST_ICON={complete:'✓',in_progress:'⋯',not_started:'',na:'–'};
 
 let issues=[], me=null, loaded=false;
-let route={v:'home'};        // {v:'home'} | {v:'cat',cat} | {v:'person',login} | {v:'done'}
-let filters={};              // filters[cat][dim] = selected value
+let route={v:'home'};
+let filters={};
 const $=(s,r=document)=>r.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
 const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
 
@@ -186,21 +199,56 @@ async function gh(path,opts={}){
   return res.status===204?null:res.json();
 }
 function requireAuth(){ if(!pat()){ openConnect(); toast('Connect a token to make changes'); return false;} return true; }
+const b64d=b64=>decodeURIComponent(escape(atob(String(b64).replace(/\s/g,''))));
+const b64e=str=>btoa(unescape(encodeURIComponent(str)));
 
-function normalize(i){
-  const labels=(i.labels||[]).map(l=>l.name);
-  const cat=['business','facility','provider'].find(c=>labels.includes(c))||'facility';
-  const prio=+((labels.find(l=>l.startsWith('priority-'))||'priority-3').slice(9));
-  const done=i.state==='closed'||labels.includes('status:done');
-  const status=done?'done':labels.includes('status:blocked')?'blocked':labels.includes('status:in-progress')?'in-progress':'not-started';
-  const tag=p=>{const l=labels.find(x=>x.startsWith(p+':'));return l?l.slice(p.length+1):'';};
-  return {n:i.number,title:i.title,url:i.html_url,labels,cat,prio,done,status,
-    who:(i.assignees||[]).map(a=>a.login),comm:labels.includes('communication'),
-    company:tag('company'),facility:tag('facility'),provider:tag('provider'),
-    state:tag('state'),mso:tag('mso'),manager:tag('manager')};
-}
+/* ── Store adapter (PORTABILITY SEAM — swap this object to point at the portal API later) ── */
+const Staff={
+  doc:null, sha:null, err:null, snaps:null, snapSha:null,
+  async load(){
+    try{
+      const r=await gh(`/repos/${STAFF_REPO}/contents/${STAFF_PATH}`);
+      this.sha=r.sha; this.doc=JSON.parse(b64d(r.content)); this.err=null;
+    }catch(e){ this.doc=null; this.err=e.message; }
+    return this.doc;
+  },
+  async save(msg){
+    const body={message:msg||'Update onboarding',content:b64e(JSON.stringify(this.doc,null,1)),sha:this.sha,branch:'main'};
+    const r=await gh(`/repos/${STAFF_REPO}/contents/${STAFF_PATH}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    this.sha=r.content.sha;
+  },
+  async loadSnaps(){
+    try{const r=await gh(`/repos/${STAFF_REPO}/contents/${SNAP_PATH}`);this.snapSha=r.sha;this.snaps=JSON.parse(b64d(r.content));}
+    catch(e){this.snaps=[];this.snapSha=null;}
+    return this.snaps;
+  },
+  async saveSnaps(msg){
+    const body={message:msg||'Snapshot',content:b64e(JSON.stringify(this.snaps,null,1)),branch:'main'};
+    if(this.snapSha)body.sha=this.snapSha;
+    const r=await gh(`/repos/${STAFF_REPO}/contents/${SNAP_PATH}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    this.snapSha=r.content.sha;
+  }
+};
+
+/* ── onboarding compute helpers (pure; percentages never stored) ── */
+const PH=()=>Staff.doc?Staff.doc.phases:[];
+const allFac=()=>Staff.doc?Staff.doc.portfolios.flatMap(p=>p.facilities.map(f=>({...f,portfolio:p.label,portId:p.id}))):[];
+const allProv=()=>Staff.doc?Staff.doc.portfolios.flatMap(p=>p.facilities.flatMap(f=>f.providers.map(pr=>({...pr,portfolio:p.label,portId:p.id,facLabel:f.label,facId:f.id,facStatus:f.status})))):[];
+function findProv(id){for(const p of Staff.doc.portfolios)for(const f of p.facilities)for(const pr of f.providers)if(pr.id===id)return{pr,f,p};return null;}
+function phasePct(pr,ph){let c=0,t=0;ph.items.forEach(it=>{const s=pr.items[it.key];if(s==='na')return;t++;if(s==='complete')c++;});return{c,t,pct:t?Math.round(100*c/t):100};}
+function provPct(pr){let c=0,t=0;PH().forEach(ph=>{const r=phasePct(pr,ph);c+=r.c;t+=r.t;});return t?Math.round(100*c/t):0;}
+function facPct(f){let c=0,t=0;f.providers.forEach(pr=>PH().forEach(ph=>{const r=phasePct(pr,ph);c+=r.c;t+=r.t;}));return t?Math.round(100*c/t):0;}
+function portPct(p){let c=0,t=0;p.facilities.forEach(f=>f.providers.forEach(pr=>PH().forEach(ph=>{const r=phasePct(pr,ph);c+=r.c;t+=r.t;})));return t?Math.round(100*c/t):0;}
+function nextAction(pr){for(const ph of PH())for(const it of ph.items){const s=pr.items[it.key];if(s!=='complete'&&s!=='na')return{phase:ph.label,item:it.label,state:s};}return null;}
+function currentPhase(pr){for(const ph of PH()){if(phasePct(pr,ph).pct<100)return ph.label;}return 'Live';}
+function bottlenecks(list){const m={};list.forEach(pr=>PH().forEach(ph=>ph.items.forEach(it=>{const s=pr.items[it.key];if(s==='not_started'||s==='in_progress'){const k=ph.label+'||'+it.label;(m[k]=m[k]||{phase:ph.label,item:it.label,n:0,prog:0}).n++;if(s==='in_progress')m[k].prog++;}})));return Object.values(m).sort((a,b)=>b.n-a.n);}
+const barClass=p=>p>=80?'hi':p===0?'zero':p<40?'lo':'';
+const bar=p=>`<div class="bar ${barClass(p)}"><span style="width:${p}%"></span></div><span class="pctlab">${p}%</span>`;
+
+async function loadStaff(){ if(pat()){ await Staff.load(); await Staff.loadSnaps(); } else { Staff.doc=null; Staff.err='no-token'; } }
+
 async function loadAll(){
-  if(!loaded) $('#view').innerHTML='<div class="msg">Loading live projects…</div>';
+  if(!loaded) $('#view').innerHTML='<div class="msg">Loading live data…</div>';
   try{
     if(pat()&&!me){ try{me=await gh('/user');}catch(e){} }
     const [op,cl]=await Promise.all([
@@ -208,8 +256,18 @@ async function loadAll(){
       gh(`/repos/${REPO}/issues?state=closed&per_page=100`)]);
     const seen=new Map(); for(const i of [...op,...cl]) if(!seen.has(i.number)) seen.set(i.number,i);
     issues=[...seen.values()].map(normalize).sort((a,b)=>b.prio-a.prio||a.n-b.n);
+    await loadStaff();
     loaded=true; setConn(); render();
-  }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load issues ('+e.message+'). If the repo is rate-limited, connect a token.</div>'; }
+  }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load ('+e.message+'). If rate-limited, connect a token.</div>'; }
+}
+function normalize(i){
+  const labels=(i.labels||[]).map(l=>l.name);
+  const cat=['business','facility','provider'].find(c=>labels.includes(c))||'business';
+  const prio=+((labels.find(l=>l.startsWith('priority-'))||'priority-3').slice(9));
+  const done=i.state==='closed'||labels.includes('status:done');
+  const status=done?'done':labels.includes('status:blocked')?'blocked':labels.includes('status:in-progress')?'in-progress':'not-started';
+  return {n:i.number,title:i.title,url:i.html_url,labels,cat,prio,done,status,
+    who:(i.assignees||[]).map(a=>a.login),comm:labels.includes('communication')};
 }
 function setConn(){
   const c=$('#conn'), b=$('#connectBtn'), chip=$('#meChip');
@@ -221,142 +279,268 @@ function setConn(){
     } else chip.innerHTML='';
   } else { c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; chip.innerHTML=''; }
 }
-function disconnect(){ localStorage.removeItem('sege-tracker-pat'); me=null; setConn(); toast('Disconnected'); }
+function disconnect(){ localStorage.removeItem('sege-tracker-pat'); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
 
 const active=()=>issues.filter(i=>!i.done);
 const statusPill=s=>({'not-started':['p-idle','Not started'],'in-progress':['p-prog','● In progress'],'blocked':['p-bad','⚠ Blocked'],'done':['p-ok','✓ Done']}[s]);
 const dots=p=>`<div class="dots">${[1,2,3,4,5].map(n=>`<span class="d${n<=p?' on':''}"></span>`).join('')}</div>`;
 const nm=l=>TEAM[l]?TEAM[l].name:l;
 
-// distinct values present for a filter dimension within a category (active items only)
-function distinct(cat,dim){const s=new Set();issues.filter(i=>i.cat===cat&&!i.done).forEach(i=>{if(i[dim])s.add(i[dim]);});return[...s].sort();}
-
 function issueRow(i){
   const [pc,pl]=statusPill(i.status);
   const who=i.who.length?i.who.map(w=>`<span class="pill p-idle">${esc(nm(w))}</span>`).join(' '):'<span class="sub">—</span>';
-  const acts=i.done
-    ? `<button class="mini" onclick="reopen(${i.n})">↩ Reopen</button>`
-    : `${i.who.length?'':`<button class="mini" onclick="claim(${i.n})">Claim</button>`}
-       ${i.status==='blocked'?'':`<button class="mini a" onclick="block(${i.n})">⚠</button>`}
-       <button class="mini g" onclick="done(${i.n})">✓ Done</button>`;
-  return `<div class="row" id="r${i.n}">
-    <div class="main"><a class="name" href="${i.url}" target="_blank">${esc(i.title)}</a>${i.comm?' <span class="pill p-warn">📧</span>':''}
-      <div class="sub">#${i.n} · ${who}</div></div>
-    <span class="pill ${pc}">${pl}</span>${dots(i.prio)}
-    <div class="acts">${acts}</div></div>`;
+  const acts=i.done?`<button class="mini" onclick="reopen(${i.n})">↩ Reopen</button>`
+    :`${i.who.length?'':`<button class="mini" onclick="claim(${i.n})">Claim</button>`}
+      ${i.status==='blocked'?'':`<button class="mini a" onclick="block(${i.n})">⚠</button>`}
+      <button class="mini g" onclick="done(${i.n})">✓ Done</button>`;
+  return `<div class="row" id="r${i.n}"><div class="main"><a class="name" href="${i.url}" target="_blank">${esc(i.title)}</a>${i.comm?' <span class="pill p-warn">📧</span>':''}
+    <div class="sub">#${i.n} · ${who}</div></div><span class="pill ${pc}">${pl}</span>${dots(i.prio)}<div class="acts">${acts}</div></div>`;
 }
 
-// ── views ──
+/* ═════════ HOME ═════════ */
+function tileLocked(mark,label){const b=el('button','tile');b.onclick=openConnect;
+  b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">token needed for staffing</div>`;return b;}
 function homeView(){
-  const v=el('div'); const a=active();
-  // hero: 3 category tiles
-  const hero=el('div','hero');
-  ORDER.forEach(cat=>{
-    const c=CATS[cat], list=a.filter(i=>i.cat===cat);
-    const prog=list.filter(i=>i.status==='in-progress').length;
-    const blk=list.filter(i=>i.status==='blocked').length;
-    const b=el('button','tile');
-    b.onclick=()=>go({v:'cat',cat});
-    b.innerHTML=`<div class="tl">${c.mark} ${c.label}<span class="arrow">→</span></div>
-      <div class="tn tnum">${list.length}</div>
-      <div class="ts"><span>${prog} in progress</span>${blk?`<span style="color:var(--bad)">${blk} blocked</span>`:''}</div>`;
-    hero.appendChild(b);
-  });
+  const v=el('div'); const hero=el('div','hero');
+  // Accounts (facilities / onboarding)
+  if(Staff.doc){
+    const fac=allFac(), live=fac.filter(f=>f.status==='live').length;
+    const a=el('button','tile');a.onclick=()=>go({v:'accounts'});
+    a.innerHTML=`<div class="tl">🟢 Accounts<span class="arrow">→</span></div><div class="tn tnum">${fac.length}</div>
+      <div class="ts"><span>${live} live</span><span>${Math.round(fac.reduce((s,f)=>s+facPct(f),0)/(fac.length||1))}% onboarded</span></div>`;
+    hero.appendChild(a);
+    const prov=allProv();
+    const p=el('button','tile');p.onclick=()=>go({v:'providers'});
+    p.innerHTML=`<div class="tl">🟣 Providers<span class="arrow">→</span></div><div class="tn tnum">${prov.length}</div>
+      <div class="ts"><span>${Math.round(prov.reduce((s,pr)=>s+provPct(pr),0)/(prov.length||1))}% onboarded</span><span>${prov.filter(pr=>provPct(pr)>=100).length} live</span></div>`;
+    hero.appendChild(p);
+  } else { hero.appendChild(tileLocked('🟢','Accounts')); hero.appendChild(tileLocked('🟣','Providers')); }
+  // Business (issues)
+  const biz=active().filter(i=>i.cat==='business');
+  const b=el('button','tile');b.onclick=()=>go({v:'business'});
+  b.innerHTML=`<div class="tl">🔵 Business<span class="arrow">→</span></div><div class="tn tnum">${biz.length}</div>
+    <div class="ts"><span>${biz.filter(i=>i.status==='in-progress').length} in progress</span>${biz.filter(i=>i.status==='blocked').length?`<span style="color:var(--bad)">${biz.filter(i=>i.status==='blocked').length} blocked</span>`:''}</div>`;
+  hero.appendChild(b);
   v.appendChild(hero);
-  // people
-  v.appendChild(el('div','sect','People — tap a person for their list'));
+  if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
+    v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
+  // People (issues)
+  v.appendChild(el('div','sect','People — tap for their project list'));
   const grid=el('div','ppl');
-  const people=Object.keys(TEAM).map(l=>({l,items:a.filter(i=>i.who.includes(l))}));
-  people.push({l:null,items:a.filter(i=>!i.who.length)});
-  people.forEach(p=>{
-    const t=p.l?TEAM[p.l]:{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
-    const b=el('button','ptile'); b.onclick=()=>go({v:'person',login:p.l});
-    b.innerHTML=`<div class="avatar" style="background:${t.c}">${initials(t.name)}</div>
+  const people=Object.keys(TEAM).map(l=>({l,items:active().filter(i=>i.who.includes(l))}));
+  people.push({l:null,items:active().filter(i=>!i.who.length)});
+  people.forEach(p=>{const t=p.l?TEAM[p.l]:{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
+    const bt=el('button','ptile');bt.onclick=()=>go({v:'person',login:p.l});
+    bt.innerHTML=`<div class="avatar" style="background:${t.c}">${initials(t.name)}</div>
       <div style="min-width:0"><div class="who">${esc(t.name)}</div><div class="role">${esc(t.role)}</div></div>
       <div class="pstat"><b class="tnum">${p.items.length}</b><span>active</span></div>`;
-    grid.appendChild(b);
-  });
+    grid.appendChild(bt);});
   v.appendChild(grid);
-  // needs-attention (blocked + top-priority not-started), secondary
-  const attn=a.filter(i=>i.status==='blocked').concat(a.filter(i=>i.status!=='blocked'&&i.prio>=5&&i.status==='not-started'));
-  if(attn.length){ v.appendChild(el('div','sect','Needs attention'));
-    const c=el('div','card'); attn.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i))); v.appendChild(c); }
   return v;
 }
 
-function catView(cat){
-  const c=CATS[cat], v=el('div'), f=filters[cat]||{};
-  const list=issues.filter(i=>i.cat===cat&&!i.done).filter(i=>c.dims.every(d=>!f[d]||i[d]===f[d]));
-  const crumb=el('div','crumb');
-  const back=el('button','back','← Home'); back.onclick=()=>go({v:'home'}); crumb.appendChild(back);
-  crumb.appendChild(el('h2',null,`${c.mark} ${c.label}`));
-  crumb.appendChild(el('span','count',`${list.length} active`));
-  v.appendChild(crumb);
+/* ═════════ ACCOUNTS (facility go-live readiness) ═════════ */
+function backCrumb(v,title,right){const c=el('div','crumb');const b=el('button','back','← Home');b.onclick=()=>go({v:'home'});c.appendChild(b);
+  c.appendChild(el('h2',null,title));if(right){const s=el('div','sp');s.innerHTML=right;c.appendChild(s);}return c;}
+function distinctFac(dim){return [...new Set(allFac().map(f=>f[dim]).filter(Boolean))].sort();}
+function accountsView(){
+  const v=el('div'); const f=filters.accounts||(filters.accounts={});
+  v.appendChild(backCrumb('accounts','🟢 Accounts — Go-Live Readiness',
+    `<button class="back" onclick="captureSnapshot()">📸 Snapshot</button><button class="back" onclick="openEmail()">✉️ Email report</button>`));
+  // filters
   const fb=el('div','filters');
-  c.dims.forEach(d=>{
-    const vals=distinct(cat,d), fg=el('div','fg');
-    fg.innerHTML=`<label>${DIM[d]}</label>`;
-    const sel=el('select');
-    sel.innerHTML=`<option value="">All ${DIM[d].toLowerCase()}${vals.length?'':' — none tagged'}</option>`
-      +vals.map(x=>`<option value="${esc(x)}"${f[d]===x?' selected':''}>${esc(x)}</option>`).join('');
-    sel.onchange=()=>setFilter(cat,d,sel.value);
-    fg.appendChild(sel); fb.appendChild(fg);
-  });
+  [['portfolio','Portfolio'],['state','State'],['status','Status']].forEach(([dim,lab])=>{
+    const vals=dim==='status'?['live','go_live_soon','scheduled','unknown']:distinctFac(dim);
+    const fg=el('div','fg');fg.innerHTML=`<label>${lab}</label>`;const sel=el('select');
+    sel.innerHTML=`<option value="">All</option>`+vals.map(x=>`<option value="${esc(x)}"${f[dim]===x?' selected':''}>${dim==='status'?FSTATUS[x][1]:esc(x)}</option>`).join('');
+    sel.onchange=()=>{f[dim]=sel.value;render();};fg.appendChild(sel);fb.appendChild(fg);});
   v.appendChild(fb);
+  let fac=allFac().filter(x=>(!f.portfolio||x.portfolio===f.portfolio)&&(!f.state||x.state===f.state)&&(!f.status||x.status===f.status));
+  // readiness order: closest to live but not done first (scheduled/go-live with high %), then live
+  const rank={go_live_soon:0,scheduled:1,unknown:2,live:3};
+  fac.sort((a,b)=>(rank[a.status]-rank[b.status])||facPct(b)-facPct(a));
+  const c=el('div','card');c.appendChild(el('h3',null,`Facilities <span class="count">${fac.length}</span>`));
+  if(!fac.length)c.appendChild(el('div','msg','No facilities match.'));
+  fac.forEach(x=>{const pct=facPct(x);const st=FSTATUS[x.status];
+    const stuck=bottlenecks(x.providers).slice(0,1).map(b=>`${b.item} (${b.n})`).join('');
+    const row=el('div','row clk');row.onclick=()=>go({v:'facility',id:x.id});
+    row.innerHTML=`<div class="main"><div class="name">${esc(x.label)} <span class="pill p-idle">${esc(x.state||'')}</span></div>
+      <div class="sub">${esc(x.portfolio)} · ${x.staffing.filled}/${x.staffing.target} staffed${stuck?` · ⛔ ${esc(stuck)}`:''}</div></div>
+      <span class="pill ${st[0]}">${st[1]}</span><div class="barrow" style="width:220px">${bar(pct)}</div>`;
+    c.appendChild(row);});
+  v.appendChild(c);
+  return v;
+}
+function facilityView(id){
+  const fac=allFac().find(f=>f.id===id); if(!fac)return backCrumb('','Not found');
+  const v=el('div');const bk=el('button','back','← Accounts');bk.onclick=()=>go({v:'accounts'});
+  const c=el('div','crumb');c.appendChild(bk);c.appendChild(el('h2',null,esc(fac.label)));
+  c.appendChild(el('span','count',`${FSTATUS[fac.status][1]} · ${fac.staffing.filled}/${fac.staffing.target} staffed`));v.appendChild(c);
+  const st=el('div','stat');
+  st.innerHTML=`<div class="kv"><b class="tnum">${facPct(fac)}%</b><span>onboarded</span></div>
+    <div class="kv"><b class="tnum">${fac.providers.filter(p=>provPct(p)>=100).length}/${fac.providers.length}</b><span>providers live</span></div>
+    <div class="kv"><b>${esc(fac.state||'—')}</b><span>state</span></div>`;
+  v.appendChild(st);
+  const card=el('div','card');card.appendChild(el('h3',null,`Providers <span class="count">${fac.providers.length}</span>`));
+  fac.providers.slice().sort((a,b)=>provPct(b)-provPct(a)).forEach(pr=>card.insertAdjacentHTML('beforeend',provRow(pr)));
+  bindProvRows(card);v.appendChild(card);
+  return v;
+}
+
+/* ═════════ PROVIDERS (onboarding pipeline) ═════════ */
+function provRow(pr){const pct=provPct(pr);const na=nextAction(pr);
+  return `<div class="row clk" data-prov="${esc(pr.id)}"><div class="main"><div class="name">${esc(pr.name)} <span class="pill p-idle">${esc(pr.cred)}</span></div>
+    <div class="sub">${esc(pr.facLabel||pr.building||'')} · ${na?('Next: '+esc(na.item)+' — '+esc(na.phase)):'✅ fully onboarded'}</div></div>
+    <div class="barrow" style="width:210px">${bar(pct)}</div></div>`;}
+function bindProvRows(root){root.querySelectorAll('[data-prov]').forEach(r=>r.onclick=()=>go({v:'provider',id:r.dataset.prov}));}
+function distinctProv(dim){return [...new Set(allProv().map(p=>p[dim]).filter(Boolean))].sort();}
+function providersView(){
+  const v=el('div');const f=filters.providers||(filters.providers={});
+  v.appendChild(backCrumb('providers','🟣 Providers — Onboarding',
+    `<button class="back" onclick="go({v:'bottleneck'})">🚧 Bottlenecks</button>`));
+  const fb=el('div','filters');
+  [['portfolio','Portfolio'],['facLabel','Facility'],['state','State']].forEach(([dim,lab])=>{
+    const fg=el('div','fg');fg.innerHTML=`<label>${lab}</label>`;const sel=el('select');
+    sel.innerHTML=`<option value="">All</option>`+distinctProv(dim).map(x=>`<option value="${esc(x)}"${f[dim]===x?' selected':''}>${esc(x)}</option>`).join('');
+    sel.onchange=()=>{f[dim]=sel.value;render();};fg.appendChild(sel);fb.appendChild(fg);});
+  const sfg=el('div','fg');sfg.innerHTML=`<label>Search</label>`;const si=el('input');si.placeholder='name…';si.value=f.q||'';
+  si.oninput=()=>{f.q=si.value;const c=$('#provlist');if(c){c.innerHTML=provListHTML(f);bindProvRows(c);}};sfg.appendChild(si);fb.appendChild(sfg);
+  v.appendChild(fb);
+  const c=el('div','card');c.id='provlist';c.innerHTML=provListHTML(f);v.appendChild(c);bindProvRows(c);
+  setTimeout(()=>{const c2=$('#provlist');if(c2)bindProvRows(c2);},0);
+  return v;
+}
+function provListHTML(f){
+  let list=allProv().filter(p=>(!f.portfolio||p.portfolio===f.portfolio)&&(!f.facLabel||p.facLabel===f.facLabel)&&(!f.state||p.state===f.state)&&(!f.q||p.name.toLowerCase().includes(f.q.toLowerCase())));
+  list.sort((a,b)=>provPct(a)-provPct(b));
+  const h=`<h3>Providers <span class="count">${list.length}</span></h3>`;
+  return h+(list.length?list.map(provRow).join(''):'<div class="msg">No providers match.</div>');
+}
+function providerView(id){
+  const fp=findProv(id); if(!fp)return backCrumb('','Provider not found');
+  const pr=fp.pr; const v=el('div');
+  const bk=el('button','back','← Back');bk.onclick=()=>history.back?go({v:'providers'}):go({v:'providers'});
+  const c=el('div','crumb');c.appendChild(bk);c.appendChild(el('h2',null,esc(pr.name)+' '));
+  c.appendChild(el('span','count',`${esc(pr.cred)} · ${esc(pr.group||'')} · ${esc(fp.f.label)}`));v.appendChild(c);
+  const na=nextAction(pr);
+  const stt=el('div','stat');
+  stt.innerHTML=`<div class="kv"><b class="tnum">${provPct(pr)}%</b><span>overall</span></div>
+    <div class="kv"><b>${esc(currentPhase(pr))}</b><span>current phase</span></div>
+    <div class="kv"><b style="font-size:13px">${na?esc(na.item):'✅ Done'}</b><span>next action</span></div>
+    <div class="kv"><b style="font-size:13px">${esc(pr.employment||'—')}</b><span>${esc(pr.contact?pr.contact.split('\n')[0]:'')||'employment'}</span></div>`;
+  v.appendChild(stt);
   const card=el('div','card');
-  if(list.length) list.forEach(i=>card.insertAdjacentHTML('beforeend',issueRow(i)));
-  else card.appendChild(el('div','msg','No matching items.'));
+  PH().forEach(ph=>{const r=phasePct(pr,ph);
+    const wrap=el('div','phase');
+    const head=el('div','phhead');
+    head.innerHTML=`<b>${esc(ph.label)}</b><span class="count">${r.c}/${r.t}</span><div class="barrow" style="margin-left:auto;width:200px">${bar(r.pct)}</div>
+      <button class="mini g" onclick="event.stopPropagation();completePhase('${esc(pr.id)}','${ph.key}')" title="Mark all in phase complete (umbrella)">✓ all</button>`;
+    wrap.appendChild(head);
+    const items=el('div','items');
+    ph.items.forEach(it=>{const s=pr.items[it.key]||'not_started';
+      const d=el('div','it s-'+s);d.onclick=()=>cycleItem(pr.id,it.key);
+      d.innerHTML=`<span class="ic">${ST_ICON[s]}</span><span class="lb">${esc(it.label)}</span>`;
+      items.appendChild(d);});
+    wrap.appendChild(items);card.appendChild(wrap);
+  });
   v.appendChild(card);
   return v;
 }
 
-function personView(login){
-  const t=login?(TEAM[login]||{name:login,role:'',c:'#8a97a6'}):{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
-  const v=el('div');
-  const crumb=el('div','crumb');
-  const back=el('button','back','← Home'); back.onclick=()=>go({v:'home'}); crumb.appendChild(back);
-  crumb.insertAdjacentHTML('beforeend',`<span class="avatar" style="background:${t.c};width:30px;height:30px;border-radius:8px">${initials(t.name)}</span>`);
+/* ═════════ BOTTLENECKS ═════════ */
+function bottleneckView(){
+  const v=el('div');v.appendChild(backCrumb('','🚧 Onboarding Bottlenecks'));
+  v.appendChild(el('div','note','Across all providers — the items blocking the most people. Attack the top of the list first.'));
+  const bn=bottlenecks(allProv());const max=bn.length?bn[0].n:1;
+  const c=el('div','card');c.appendChild(el('h3',null,`Stuck items <span class="count">${bn.length}</span>`));
+  bn.slice(0,40).forEach(b=>{const row=el('div','row');
+    row.innerHTML=`<div class="main"><div class="name">${esc(b.item)}</div><div class="sub">${esc(b.phase)} · ${b.prog} in progress</div></div>
+      <div class="barrow" style="width:240px"><div class="bar lo"><span style="width:${Math.round(100*b.n/max)}%"></span></div><span class="pctlab">${b.n}</span></div>`;
+    c.appendChild(row);});
+  v.appendChild(c);return v;
+}
+
+/* ═════════ WEEKLY SNAPSHOT ═════════ */
+async function captureSnapshot(){
+  if(!requireAuth()||!Staff.doc)return;
+  const d=new Date().toISOString().slice(0,10);
+  const snap={date:d,portfolios:Staff.doc.portfolios.map(p=>({id:p.id,label:p.label,pct:portPct(p),providers:p.facilities.reduce((s,f)=>s+f.providers.length,0)}))};
+  Staff.snaps=Staff.snaps||[]; Staff.snaps=Staff.snaps.filter(s=>s.date!==d); Staff.snaps.push(snap); Staff.snaps.sort((a,b)=>a.date<b.date?1:-1);
+  try{await Staff.saveSnaps('Snapshot '+d);toast('Snapshot saved '+d);render();}catch(e){toast('Error: '+e.message);}
+}
+function snapDelta(portId){
+  if(!Staff.snaps||Staff.snaps.length<2)return '';
+  const prev=Staff.snaps[1].portfolios.find(p=>p.id===portId);const cur=Staff.snaps[0].portfolios.find(p=>p.id===portId);
+  if(!prev||!cur)return '';const d=cur.pct-prev.pct;return d?` <span class="pill ${d>0?'p-ok':'p-bad'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:'';
+}
+
+/* ═════════ EMAIL REPORT ═════════ */
+function buildReport(){
+  let lines=['SEGE Staffing / Onboarding — '+new Date().toLocaleDateString(),''];
+  Staff.doc.portfolios.forEach(p=>{lines.push(`◆ ${p.label} — ${portPct(p)}% onboarded`);
+    p.facilities.forEach(f=>{lines.push(`   • ${f.label} [${FSTATUS[f.status][1].replace(/[^\x20-\x7e]/g,'').trim()}] ${f.staffing.filled}/${f.staffing.target} — ${facPct(f)}%`);});
+    lines.push('');});
+  return lines.join('\n');
+}
+function openEmail(){
+  if(!Staff.doc){toast('Connect first');return;}
+  const rep=buildReport();
+  navigator.clipboard&&navigator.clipboard.writeText(rep).then(()=>toast('Report copied to clipboard')).catch(()=>{});
+  location.href='mailto:?subject='+encodeURIComponent('SEGE Onboarding Report')+'&body='+encodeURIComponent(rep.slice(0,1800));
+}
+
+/* ═════════ issue views (Business / People / Done) ═════════ */
+function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business projects'));
+  const list=active().filter(i=>i.cat==='business');const c=el('div','card');
+  c.appendChild(el('h3',null,`Active <span class="count">${list.length}</span>`));
+  if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing active.'));
+  v.appendChild(c);
+  const dn=issues.filter(i=>i.done&&i.cat==='business');if(dn.length){v.appendChild(el('div','sect','Done'));const d=el('div','card');dn.forEach(i=>d.insertAdjacentHTML('beforeend',issueRow(i)));v.appendChild(d);}
+  return v;}
+function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8a97a6'}):{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
+  const v=el('div');v.appendChild(backCrumb('',esc(t.name)));
   const list=active().filter(i=>login?i.who.includes(login):!i.who.length);
-  crumb.appendChild(el('h2',null,esc(t.name)));
-  crumb.appendChild(el('span','count',`${list.length} active${t.role?' · '+esc(t.role):''}`));
-  v.appendChild(crumb);
-  const card=el('div','card');
-  if(list.length) list.forEach(i=>card.insertAdjacentHTML('beforeend',issueRow(i)));
-  else card.appendChild(el('div','msg','No active items.'));
-  v.appendChild(card);
-  const dn=issues.filter(i=>i.done&&(login?i.who.includes(login):!i.who.length));
-  if(dn.length){ v.appendChild(el('div','sect',`Completed (${dn.length})`));
-    const dc=el('div','card'); dn.forEach(i=>dc.insertAdjacentHTML('beforeend',issueRow(i))); v.appendChild(dc); }
-  return v;
-}
+  const c=el('div','card');c.appendChild(el('h3',null,`Active projects <span class="count">${list.length}</span>`));
+  if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','No active items.'));
+  v.appendChild(c);return v;}
 
-function doneView(){
-  const v=el('div');
-  const crumb=el('div','crumb');
-  const back=el('button','back','← Home'); back.onclick=()=>go({v:'home'}); crumb.appendChild(back);
-  crumb.appendChild(el('h2',null,'✓ Done'));
-  const d=issues.filter(i=>i.done); crumb.appendChild(el('span','count',`${d.length}`));
-  v.appendChild(crumb);
-  const card=el('div','card');
-  if(d.length) d.forEach(i=>card.insertAdjacentHTML('beforeend',issueRow(i)));
-  else card.appendChild(el('div','msg','Nothing completed yet.'));
-  v.appendChild(card);
-  return v;
-}
-
+/* ═════════ router ═════════ */
 function go(r){route=r;window.scrollTo(0,0);render();}
-function setFilter(cat,dim,val){filters[cat]=filters[cat]||{};filters[cat][dim]=val;render();}
 function render(){
-  const view=$('#view'); view.innerHTML='';
-  let node;
-  if(route.v==='cat') node=catView(route.cat);
-  else if(route.v==='person') node=personView(route.login);
-  else if(route.v==='done') node=doneView();
+  const view=$('#view'); view.innerHTML=''; let node;
+  const needStaff=['accounts','providers','facility','provider','bottleneck'].includes(route.v);
+  if(needStaff&&!Staff.doc){ node=el('div');node.appendChild(backCrumb('','Staffing'));
+    node.appendChild(el('div','msg',pat()?'This token can\'t read the private sege-staffing repo. Give it Contents access.':'🔒 Connect a token with sege-staffing access to view staffing & onboarding.'));
+    view.appendChild(node);return; }
+  if(route.v==='accounts')node=accountsView();
+  else if(route.v==='facility')node=facilityView(route.id);
+  else if(route.v==='providers')node=providersView();
+  else if(route.v==='provider')node=providerView(route.id);
+  else if(route.v==='bottleneck')node=bottleneckView();
+  else if(route.v==='business')node=bizView();
+  else if(route.v==='person')node=personView(route.login);
   else node=homeView();
   view.appendChild(node);
 }
 
-// ── write actions (need token) ──
+/* ═════════ onboarding writes ═════════ */
+let saveTimer=null, saving=false;
+function queueSave(msg){ if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{ if(saving)return;saving=true;
+    try{await Staff.save(msg);toast('Saved ✓');}catch(e){toast('Save failed: '+e.message+' — reloading');await loadStaff();render();}
+    saving=false;
+  },600);
+}
+function cycleItem(provId,itemKey){ if(!requireAuth()||!Staff.doc)return;
+  const fp=findProv(provId);if(!fp)return;const cur=fp.pr.items[itemKey]||'not_started';
+  fp.pr.items[itemKey]=ST_NEXT[cur]; render(); queueSave('Update '+fp.pr.name); }
+function completePhase(provId,phaseKey){ if(!requireAuth()||!Staff.doc)return;
+  const fp=findProv(provId);if(!fp)return;const ph=PH().find(p=>p.key===phaseKey);
+  const anyOpen=ph.items.some(it=>fp.pr.items[it.key]!=='complete'&&fp.pr.items[it.key]!=='na');
+  ph.items.forEach(it=>{ if(fp.pr.items[it.key]!=='na') fp.pr.items[it.key]=anyOpen?'complete':'not_started'; });
+  render(); queueSave((anyOpen?'Complete':'Reset')+' phase '+ph.label+' — '+fp.pr.name); }
+
+/* ── issue writes ── */
 async function addLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({labels:[l]})});}
 async function rmLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels/${encodeURIComponent(l)}`,{method:'DELETE'}).catch(()=>{});}
 async function busy(n,fn){const btns=document.querySelectorAll('#r'+n+' button');btns.forEach(b=>b.disabled=true);
@@ -366,7 +550,7 @@ function block(n){if(!requireAuth())return;busy(n,async()=>{await addLabel(n,'st
 function done(n){if(!requireAuth())return;if(!confirm('Mark #'+n+' done?'))return;busy(n,async()=>{await addLabel(n,'status:done');await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'closed'})});toast('#'+n+' done ✓');});}
 function reopen(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'open'})});await rmLabel(n,'status:done');await addLabel(n,'status:in-progress');toast('#'+n+' reopened');});}
 
-// modals
+/* ── modals ── */
 function openConnect(){$('#connect').classList.add('on');$('#pat').focus();}
 function closeConnect(){$('#connect').classList.remove('on');}
 async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem('sege-tracker-pat',v);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
@@ -382,8 +566,7 @@ async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600);}
 
 setConn();loadAll();
-// auto-refresh every 5 min, but only when the tab is visible (avoids burning the 60/hr unauthenticated rate limit)
-setInterval(()=>{if(document.visibilityState==='visible')loadAll();},300000);
+setInterval(()=>{if(document.visibilityState==='visible'&&!saving&&route.v!=='provider')loadAll();},300000);
 </script>
 </body>
 </html>
