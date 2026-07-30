@@ -44,6 +44,12 @@
   .gate{max-width:400px;margin:12vh auto;text-align:center}.gate .card{padding:26px}.gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:10px 0}
   #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}#toast.show{opacity:1}
   .nextpill{background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px}
+  .vchk{width:19px;height:19px;border-radius:6px;display:grid;place-items:center;font-size:12px;color:#fff;flex:none}
+  .v-green{background:var(--ok)}.v-yellow{background:var(--warn)}.v-red{background:var(--bad)}.v-grey{background:var(--idle);color:var(--surface)}
+  .abadge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .ab-ok{background:var(--ok-bg);color:var(--ok)}.ab-exp,.ab-miss{background:var(--bad-bg);color:var(--bad)}.ab-pend{background:var(--idle-bg);color:var(--faint)}
+  .legend{font-size:11.5px;color:var(--muted);margin:0 2px 12px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  .legend b{font-weight:700}
 </style>
 </head>
 <body>
@@ -87,7 +93,27 @@ const $=s=>document.querySelector(s);
 const TYPES={business:{label:'Business Setup',icon:'🔵'},facility:{label:'Facility Onboarding',icon:'🟢'},provider:{label:'Provider Onboarding & Maintenance',icon:'🟣'}};
 const NEXT={not_started:'in_progress',in_progress:'complete',complete:'na',na:'blocked',blocked:'not_started'};
 const LABELS={not_started:'To do',in_progress:'In progress',complete:'✓ Done',na:'N/A',blocked:'⚠ Blocked'};
-let accounts=[], items=[], tasks=[], route={v:'home',type:'facility'}, filters={};
+let accounts=[], items=[], tasks=[], route={v:'home',type:'facility'}, filters={}, me=null;
+const today=()=>new Date().toISOString().slice(0,10);
+// two-tier verification: 🟡 human-attested, 🟢 AI-verified present & current, 🔴 expired/missing
+function verify(it,t){
+  const st=t.state||'not_started', doc=it.doc_type;
+  const present=t.verify_status==='present', expired=t.verify_status==='expired'||(t.expires_on&&t.expires_on<=today());
+  const missing=t.verify_status==='missing';
+  if(doc){
+    if(expired) return {cls:'v-red',icon:'!',badge:['ab-exp','⚠ Expired'+(t.expires_on?' '+t.expires_on:'')]};
+    if(missing) return {cls:'v-red',icon:'✗',badge:['ab-miss','✗ Not in file']};
+    if(present&&t.agent_verified_at) return {cls:'v-green',icon:'✓',badge:['ab-ok','🟢 AI-verified'+(t.expires_on?' · exp '+t.expires_on:'')]};
+    if(st==='complete') return {cls:'v-yellow',icon:'✓',badge:['ab-pend','🟡 human · AI pending']};
+    if(st==='na') return {cls:'v-grey',icon:'–',badge:null};
+    return {cls:'v-grey',icon:'',badge:['ab-pend','AI: not checked']};
+  }
+  if(st==='complete') return {cls:'v-green',icon:'✓',badge:null};
+  if(st==='in_progress') return {cls:'v-yellow',icon:'⋯',badge:null};
+  if(st==='na') return {cls:'v-grey',icon:'–',badge:null};
+  if(st==='blocked') return {cls:'v-red',icon:'!',badge:null};
+  return {cls:'v-grey',icon:'',badge:null};
+}
 
 // ── auth ──
 window.sendLink=async()=>{const email=$('#email').value.trim();if(!email)return;
@@ -99,10 +125,10 @@ async function boot(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session){ $('#gate').style.display='block'; $('#app').style.display='none'; return; }
   $('#gate').style.display='none'; $('#app').style.display='block';
-  $('#who').textContent=session.user.email;
+  me=session.user.email; $('#who').textContent=me;
   loadAll();
 }
-sb.auth.onAuthStateChange((_e,s)=>{ if(s){ $('#gate').style.display='none'; $('#app').style.display='block'; $('#who').textContent=s.user.email; if(!accounts.length) loadAll(); }});
+sb.auth.onAuthStateChange((_e,s)=>{ if(s){ $('#gate').style.display='none'; $('#app').style.display='block'; me=s.user.email; $('#who').textContent=me; if(!accounts.length) loadAll(); }});
 
 // ── data ──
 window.loadAll=async()=>{
@@ -183,15 +209,19 @@ function renderAccount(){
   v.appendChild(crumb);
   const map={};tasksFor(acc.id).forEach(t=>map[t.item_id]=t);
   const phases=[...new Set(itemsFor(acc.type).map(i=>i.phase))];
+  v.insertAdjacentHTML('beforeend','<div class="legend"><span><span class="vchk v-yellow" style="display:inline-grid;vertical-align:middle">✓</span> <b>Yellow</b> = a person marked it done</span><span><span class="vchk v-green" style="display:inline-grid;vertical-align:middle">✓</span> <b>Green</b> = AI opened the file & confirmed it’s there and current</span><span><span class="vchk v-red" style="display:inline-grid;vertical-align:middle">!</span> <b>Red</b> = expired or missing</span></div>');
   const card=document.createElement('div');card.className='card';
   phases.forEach(ph=>{
     const its=itemsFor(acc.type).filter(i=>i.phase===ph);
     const done=its.filter(i=>(map[i.id]||{}).state==='complete').length;
     const wrap=document.createElement('div');wrap.className='phase';
     wrap.insertAdjacentHTML('beforeend',`<div class="phhead">${esc(ph)} <span style="margin-left:auto;color:var(--muted);font-weight:600">${done}/${its.length}</span></div>`);
-    its.forEach(it=>{const t=map[it.id]||{state:'not_started'};
+    its.forEach(it=>{const t=map[it.id]||{state:'not_started'};const vv=verify(it,t);
       const el=document.createElement('div');el.className='it s-'+t.state;
-      el.innerHTML=`<span class="lb">${esc(it.label)}</span><span class="role">${esc(it.assignee||it.role||'')}</span><span class="chip">${LABELS[t.state]}</span>`;
+      el.innerHTML=`<span class="vchk ${vv.cls}">${vv.icon}</span>
+        <span class="lb">${esc(it.label)}${vv.badge?` <span class="abadge ${vv.badge[0]}">${esc(vv.badge[1])}</span>`:''}${t.doc_url?` <a href="${esc(t.doc_url)}" target="_blank" style="font-size:11px;color:var(--accent)">file ↗</a>`:''}</span>
+        <span class="role">${esc(it.assignee||it.role||'')}</span>
+        <span class="chip">${LABELS[t.state]}</span>`;
       el.querySelector('.chip').onclick=()=>toggle(acc,it,t);
       wrap.appendChild(el);});
     card.appendChild(wrap);
@@ -200,9 +230,10 @@ function renderAccount(){
 }
 async function toggle(acc,it,t){
   const ns=NEXT[t.state||'not_started'];
-  if(t.id){await sb.from('task').update({state:ns,updated_at:new Date().toISOString()}).eq('id',t.id);t.state=ns;}
-  else{const {data}=await sb.from('task').insert({account_id:acc.id,item_id:it.id,state:ns,assignee:it.role}).select();if(data){tasks.push(data[0]);}}
-  render();toast('Saved');
+  const hd = ns==='complete' ? {human_done_at:new Date().toISOString(),human_done_by:me} : {human_done_at:null,human_done_by:null};
+  if(t.id){await sb.from('task').update({state:ns,updated_at:new Date().toISOString(),...hd}).eq('id',t.id);Object.assign(t,{state:ns,...hd});}
+  else{const {data}=await sb.from('task').insert({account_id:acc.id,item_id:it.id,state:ns,assignee:it.role,...hd}).select();if(data){tasks.push(data[0]);}}
+  render();toast(ns==='complete'?'Marked done (🟡 human — AI will verify the file)':'Saved');
 }
 
 // ── add account ──
