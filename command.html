@@ -491,6 +491,7 @@ function openEmail(){
 
 /* ═════════ issue views (Business / People / Done) ═════════ */
 function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business projects'));
+  v.insertAdjacentHTML('beforeend','<a class="btn pri" href="./business.html" style="display:inline-flex;margin-bottom:14px">Open Business workspace — entities, contracts, compliance &amp; marketing →</a>');
   const list=active().filter(i=>i.cat==='business');const c=el('div','card');
   c.appendChild(el('h3',null,`Active <span class="count">${list.length}</span>`));
   if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing active.'));
