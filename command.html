@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SEGE Command Center</title>
-<link rel="icon" href="https://portal.togohealth.com/TogoHealthLogo.png">
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <style>
   :root{
     --ground:#f6f8fa; --surface:#fff; --surface-2:#eef2f7; --border:#e2e7ee;
@@ -29,7 +30,8 @@
   .tnum{font-variant-numeric:tabular-nums}
   .wrap{max-width:1140px;margin:0 auto;padding:18px 16px 60px}
   header.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px}
-  .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-ink));display:grid;place-items:center;color:#fff;font-size:19px}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;flex:none;box-shadow:var(--shadow)}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
   .title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}
   .title p{color:var(--muted);font-size:12px}
   .top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -103,7 +105,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="logo">🧭</div>
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
     <div class="title"><h1>SEGE Command Center</h1><p>Who's doing what — live over your GitHub project tracker</p></div>
     <div class="right">
       <button class="btn" onclick="loadAll()">↻ Refresh</button>
