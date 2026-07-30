@@ -10,11 +10,14 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
   .wrap{max-width:1140px;margin:0 auto;padding:18px 16px 60px}
-  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:18px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:18px;position:sticky;top:0;background:var(--ground);padding:10px 0;z-index:20;border-bottom:1px solid var(--border)}
   .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}
   .logo img{width:100%;height:100%;object-fit:cover;display:block}
-  .title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
-  .top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .title{margin-right:auto;min-width:150px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .top .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .userchip{display:inline-flex;align-items:center;gap:6px;padding:3px 4px 3px 12px;border:1px solid var(--border);border-radius:999px}
+  #who{font-size:12px;color:var(--muted);font-weight:600;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .userchip .btn{padding:4px 10px}
   .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
   .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
   .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
@@ -34,7 +37,7 @@
   .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;min-width:70px;max-width:150px;flex:1}.bar span{display:block;height:100%;background:var(--accent)}.bar.hi span{background:var(--ok)}.bar.lo span{background:var(--warn)}.bar.zero span{background:var(--bad)}
   .pct{font-weight:750;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
   .na{color:var(--accent-ink);font-weight:600}
-  .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}.crumb h2{font-size:18px;font-weight:750}.back{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .crumb{display:flex;align-items:center;gap:11px;margin-bottom:16px;flex-wrap:wrap}.crumb h2{font-size:18px;font-weight:750;min-width:0;overflow-wrap:anywhere}.back{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;flex:none}.back:hover{border-color:var(--accent)}
   .phase{border-bottom:1px solid var(--border)}.phase:last-child{border-bottom:0}.phhead{display:flex;gap:10px;align-items:center;padding:10px 16px;background:var(--surface-2);font-size:12.5px;font-weight:700}
   .it{display:flex;align-items:center;gap:10px;padding:9px 16px;border-top:1px solid var(--border);font-size:13px}.it:first-child{border-top:0}
   .chip{border:1px solid var(--border);border-radius:7px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
@@ -72,12 +75,12 @@
       <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
       <div class="title"><h1>SEGE Checklists</h1><p>Everything we have to do — never miss the next step</p></div>
       <div class="right">
-        <button class="btn" onclick="loadAll()">↻ Refresh</button>
+        <button class="btn" onclick="goHome()">🏠 Home</button>
         <button class="btn" onclick="showSummary()">📊 Summary</button>
+        <button class="btn" onclick="loadAll()">↻ Refresh</button>
         <button class="btn pri" onclick="openAdd()">+ Add</button>
-        <a class="btn" href="./command.html">Command Center</a>
-        <span id="who" style="font-size:12px;color:var(--muted)"></span>
-        <button class="btn" onclick="signOut()">Sign out</button>
+        <a class="btn" href="./command.html">Command Center&nbsp;↗</a>
+        <span class="userchip"><span id="who"></span><button class="btn" onclick="signOut()">Sign out</button></span>
       </div>
     </header>
     <div id="view"><div class="msg">Loading…</div></div>
@@ -160,6 +163,7 @@ async function ensureTasks(acc){
 
 // ── views ──
 window.showSummary=()=>{route={v:'summary'};render();};
+window.goHome=()=>{route={v:'home',type:route.type||'facility'};render();window.scrollTo(0,0);};
 function renderSummary(){
   const v=$('#view');
   const crumb=document.createElement('div');crumb.className='crumb';
