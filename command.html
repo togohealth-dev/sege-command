@@ -28,7 +28,7 @@
   body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
   .tnum{font-variant-numeric:tabular-nums}
   .wrap{max-width:1140px;margin:0 auto;padding:18px 16px 60px}
-  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:16px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px}
   .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-ink));display:grid;place-items:center;color:#fff;font-size:19px}
   .title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}
   .title p{color:var(--muted);font-size:12px}
@@ -38,19 +38,40 @@
   .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
   .conn{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px}
   .conn.on{background:var(--ok-bg);color:var(--ok)} .conn.off{background:var(--warn-bg);color:var(--warn)}
-  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
-  @media(max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}}
-  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
-  .kpi .n{font-size:25px;font-weight:750} .kpi .l{font-size:11.5px;color:var(--muted)}
-  .kpi.bad .n{color:var(--bad)} .kpi.ok .n{color:var(--ok)} .kpi.warn .n{color:var(--warn)}
-  nav.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:11px;margin-bottom:16px;overflow-x:auto;border:1px solid var(--border)}
-  nav.tabs button{flex:1;min-width:max-content;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:13px;padding:8px 13px;border-radius:8px;cursor:pointer}
-  nav.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
-  .panel{display:none} .panel.on{display:block}
+  .me{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 13px 4px 4px;cursor:pointer;font:inherit;font-weight:650;font-size:12.5px;color:inherit}
+  .me:hover{border-color:var(--accent)}
+  .me .avatar{width:26px;height:26px;font-size:11px;border-radius:50%}
+  /* hero tiles */
+  .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+  @media(max-width:720px){.hero{grid-template-columns:1fr}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 18px 15px;box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:5px;transition:transform .12s,border-color .12s}
+  .tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .tile .tl{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .tile .arrow{margin-left:auto;color:var(--faint);font-weight:700}
+  .tile .tn{font-size:34px;font-weight:780;letter-spacing:-.02em;line-height:1.1}
+  .tile .ts{font-size:12px;color:var(--muted);display:flex;gap:14px}
+  /* people tiles */
+  .ppl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .ptile{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:border-color .12s}
+  .ptile:hover{border-color:var(--accent)}
+  .avatar{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
+  .who{font-weight:700} .role{font-size:11.5px;color:var(--muted)}
+  .pstat{margin-left:auto;text-align:right} .pstat b{font-size:19px;font-weight:750;display:block} .pstat span{font-size:10px;color:var(--muted)}
+  /* filters + crumb */
+  .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}
+  .crumb h2{font-size:18px;font-weight:750;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  .crumb .count{color:var(--muted);font-size:13px;font-weight:600}
+  .back{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .back:hover{border-color:var(--accent)}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .fg{display:flex;flex-direction:column;gap:3px}
+  .fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .fg select{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:160px;cursor:pointer}
+  .fg select:hover{border-color:var(--accent)}
+  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
   .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
   .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
-  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:20px 2px 8px}
   .row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border)}
   .row:last-child{border-bottom:0} .row .main{flex:1;min-width:0}
   .row .name{font-weight:600} .row .sub{color:var(--muted);font-size:12px;margin-top:1px}
@@ -59,21 +80,14 @@
   .p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)}
   .p-bad{background:var(--bad-bg);color:var(--bad)} .p-idle{background:var(--idle-bg);color:var(--faint)}
   .p-prog{background:var(--accent-soft);color:var(--accent-ink)}
+  .p-tag{background:var(--surface-2);color:var(--muted);font-weight:600}
   .dots{display:flex;gap:3px} .d{width:7px;height:7px;border-radius:50%;background:var(--border)} .d.on{background:var(--warn)}
   .acts{display:flex;gap:6px;flex-wrap:wrap}
   .mini{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;cursor:pointer}
   .mini:hover{border-color:var(--accent)} .mini.g{background:var(--ok);color:#fff;border-color:var(--ok)} .mini.a{background:var(--warn);color:#fff;border-color:var(--warn)}
   .mini:disabled{opacity:.5;cursor:default}
-  .people{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-  .pcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
-  .phead{display:flex;align-items:center;gap:11px;padding:12px 15px}
-  .avatar{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700}
-  .who{font-weight:700} .role{font-size:12px;color:var(--muted)}
-  .pstat{margin-left:auto;text-align:right} .pstat b{font-size:19px;font-weight:750} .pstat span{display:block;font-size:10.5px;color:var(--muted)}
-  .pi{display:flex;gap:8px;align-items:flex-start;padding:8px 15px;border-top:1px solid var(--border);font-size:12.5px}
-  .pi .t{flex:1;min-width:0} .pi .t small{color:var(--muted);display:block}
   .note{background:var(--warn-bg);color:var(--warn);padding:9px 13px;border-radius:9px;font-size:12px;margin-bottom:14px}
-  .msg{padding:50px;text-align:center;color:var(--muted)}
+  .msg{padding:44px;text-align:center;color:var(--muted)}
   .modal{position:fixed;inset:0;background:rgba(10,15,25,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
   .modal.on{display:flex}
   .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:460px;max-width:100%}
@@ -83,6 +97,7 @@
   #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}
   #toast.show{opacity:1}
   .foot{margin-top:24px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
+  .foot a{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -91,34 +106,26 @@
     <div class="logo">🧭</div>
     <div class="title"><h1>SEGE Command Center</h1><p>Who's doing what — live over your GitHub project tracker</p></div>
     <div class="right">
-      <span id="conn" class="conn off">● View only</span>
       <button class="btn" onclick="loadAll()">↻ Refresh</button>
-      <button class="btn" id="connectBtn" onclick="openConnect()">Connect to edit</button>
       <button class="btn pri" onclick="openAdd()">+ Add</button>
       <a class="btn" href="./index.html">Classic board</a>
+      <span id="conn" class="conn off">● View only</span>
+      <button class="btn" id="connectBtn" onclick="openConnect()">Connect to edit</button>
+      <span id="meChip"></span>
     </div>
   </header>
 
-  <div class="kpis" id="kpis"></div>
-  <nav class="tabs" id="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-t="overview">Overview</button>
-    <button role="tab" aria-selected="false" data-t="people">People</button>
-    <button role="tab" aria-selected="false" data-t="facility">Facility</button>
-    <button role="tab" aria-selected="false" data-t="provider">Provider</button>
-    <button role="tab" aria-selected="false" data-t="business">Business</button>
-    <button role="tab" aria-selected="false" data-t="followups">Follow-ups</button>
-    <button role="tab" aria-selected="false" data-t="done">Done</button>
-  </nav>
   <div id="view"><div class="msg">Loading live projects…</div></div>
+
   <div class="foot">Live data from <b>togohealth-dev/sege-tracker</b> GitHub Issues · shared with everyone ·
-    edits require a GitHub token (repo scope). Marking done here updates the classic board too.</div>
+    edits require a GitHub token (Issues scope). Marking done here updates the classic board too.</div>
 </div>
 
 <!-- Connect modal -->
 <div class="modal" id="connect"><div class="box">
   <h2>Connect to edit</h2>
-  <p>Paste a GitHub personal access token with <b>repo</b> scope on togohealth-dev. It's stored only in this browser (same token the classic board uses). Without it you can still view everything.</p>
-  <input id="pat" type="password" placeholder="ghp_… or github_pat_…">
+  <p>Paste a GitHub personal access token. Fine-grained (repo <b>sege-tracker</b>, permission <b>Issues: read &amp; write</b>) is recommended; a classic <b>repo</b>-scope token also works. Stored only in this browser. Without it you can still view everything.</p>
+  <input id="pat" type="password" placeholder="github_pat_… or ghp_…">
   <div class="acts" style="justify-content:flex-end">
     <button class="btn" onclick="closeConnect()">Cancel</button>
     <button class="btn pri" onclick="saveConnect()">Connect</button>
@@ -129,7 +136,7 @@
 <div class="modal" id="add"><div class="box">
   <h2>Add project / task</h2>
   <label>Title</label><input id="a_title" placeholder="Short name">
-  <label>Category</label><select id="a_cat"><option value="facility">🟢 Facility</option><option value="provider">🟣 Provider</option><option value="business">🔵 Business</option></select>
+  <label>Category</label><select id="a_cat"><option value="facility">🟢 Accounts</option><option value="provider">🟣 Providers</option><option value="business">🔵 Business</option></select>
   <label>Owner</label><select id="a_who"></select>
   <label>Priority</label><select id="a_prio"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3" selected>★★★</option><option value="2">★★</option><option value="1">★</option></select>
   <label>Notes</label><textarea id="a_notes" rows="3" placeholder="Optional context"></textarea>
@@ -151,10 +158,22 @@ const TEAM={
   'Jordan-togoclaude':{name:'Jordan Anderson',role:'COO · Togo Health',c:'#7a5cc0'},
   msdrigg:{name:'Scott',role:'Engineering',c:'#3f6fb0'},
 };
-let issues=[], me=null;
+// category tiles + the filter dimensions each one drills down by (from prefixed labels)
+const CATS={
+  facility:{label:'Accounts', mark:'🟢', dims:['company','facility']},
+  provider:{label:'Providers',mark:'🟣', dims:['company','facility','provider']},
+  business:{label:'Business', mark:'🔵', dims:['state','mso','manager']},
+};
+const DIM={company:'Company',facility:'Facility',provider:'Provider',state:'State',mso:'MSO',manager:'Manager'};
+const ORDER=['facility','provider','business'];
+
+let issues=[], me=null, loaded=false;
+let route={v:'home'};        // {v:'home'} | {v:'cat',cat} | {v:'person',login} | {v:'done'}
+let filters={};              // filters[cat][dim] = selected value
 const $=(s,r=document)=>r.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
 const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
 
 async function gh(path,opts={}){
@@ -172,11 +191,14 @@ function normalize(i){
   const prio=+((labels.find(l=>l.startsWith('priority-'))||'priority-3').slice(9));
   const done=i.state==='closed'||labels.includes('status:done');
   const status=done?'done':labels.includes('status:blocked')?'blocked':labels.includes('status:in-progress')?'in-progress':'not-started';
+  const tag=p=>{const l=labels.find(x=>x.startsWith(p+':'));return l?l.slice(p.length+1):'';};
   return {n:i.number,title:i.title,url:i.html_url,labels,cat,prio,done,status,
-    who:(i.assignees||[]).map(a=>a.login),comm:labels.includes('communication')};
+    who:(i.assignees||[]).map(a=>a.login),comm:labels.includes('communication'),
+    company:tag('company'),facility:tag('facility'),provider:tag('provider'),
+    state:tag('state'),mso:tag('mso'),manager:tag('manager')};
 }
 async function loadAll(){
-  $('#view').innerHTML='<div class="msg">Loading live projects…</div>';
+  if(!loaded) $('#view').innerHTML='<div class="msg">Loading live projects…</div>';
   try{
     if(pat()&&!me){ try{me=await gh('/user');}catch(e){} }
     const [op,cl]=await Promise.all([
@@ -184,29 +206,28 @@ async function loadAll(){
       gh(`/repos/${REPO}/issues?state=closed&per_page=100`)]);
     const seen=new Map(); for(const i of [...op,...cl]) if(!seen.has(i.number)) seen.set(i.number,i);
     issues=[...seen.values()].map(normalize).sort((a,b)=>b.prio-a.prio||a.n-b.n);
-    setConn(); renderKpis(); render(current);
+    loaded=true; setConn(); render();
   }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load issues ('+e.message+'). If the repo is rate-limited, connect a token.</div>'; }
 }
 function setConn(){
-  const c=$('#conn'), b=$('#connectBtn');
-  if(pat()){ c.className='conn on'; c.textContent='● '+(me?me.login:'connected')+' · can edit'; b.textContent='Disconnect'; b.onclick=disconnect; }
-  else{ c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; }
+  const c=$('#conn'), b=$('#connectBtn'), chip=$('#meChip');
+  if(pat()){
+    c.className='conn on'; c.textContent='● can edit'; b.textContent='Disconnect'; b.onclick=disconnect;
+    if(me){ const t=TEAM[me.login]||{name:me.login,role:'',c:'#0e7c86'};
+      chip.innerHTML=`<button class="me" onclick="go({v:'person',login:'${me.login}'})" title="My tasks">
+        <span class="avatar" style="background:${t.c}">${initials(t.name)}</span>${esc(t.name.split(' ')[0])}</button>`;
+    } else chip.innerHTML='';
+  } else { c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; chip.innerHTML=''; }
 }
 function disconnect(){ localStorage.removeItem('sege-tracker-pat'); me=null; setConn(); toast('Disconnected'); }
 
 const active=()=>issues.filter(i=>!i.done);
-function renderKpis(){
-  const a=active(), byc=c=>a.filter(i=>i.cat===c).length;
-  const blocked=a.filter(i=>i.status==='blocked').length;
-  const prog=a.filter(i=>i.status==='in-progress').length;
-  const k=[['facility '+'','Facility',byc('facility'),''],['','Provider',byc('provider'),''],
-    ['','Business',byc('business'),''],['warn','In progress',prog,''],['bad','Blocked',blocked,'']];
-  $('#kpis').innerHTML=k.map(x=>`<div class="kpi ${x[0]}"><div class="n tnum">${x[2]}</div><div class="l">${x[1]}</div></div>`).join('');
-}
-
 const statusPill=s=>({'not-started':['p-idle','Not started'],'in-progress':['p-prog','● In progress'],'blocked':['p-bad','⚠ Blocked'],'done':['p-ok','✓ Done']}[s]);
 const dots=p=>`<div class="dots">${[1,2,3,4,5].map(n=>`<span class="d${n<=p?' on':''}"></span>`).join('')}</div>`;
 const nm=l=>TEAM[l]?TEAM[l].name:l;
+
+// distinct values present for a filter dimension within a category (active items only)
+function distinct(cat,dim){const s=new Set();issues.filter(i=>i.cat===cat&&!i.done).forEach(i=>{if(i[dim])s.add(i[dim]);});return[...s].sort();}
 
 function issueRow(i){
   const [pc,pl]=statusPill(i.status);
@@ -222,75 +243,123 @@ function issueRow(i){
     <span class="pill ${pc}">${pl}</span>${dots(i.prio)}
     <div class="acts">${acts}</div></div>`;
 }
-function catCard(cat,label){
-  const list=issues.filter(i=>i.cat===cat&&!i.done);
-  const c=el('div','card'); c.appendChild(el('h3',null,`${label} <span class="count">${list.length} active</span>`));
-  if(list.length) list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));
-  else c.appendChild(el('div','msg','Nothing active here.'));
-  return c;
+
+// ── views ──
+function homeView(){
+  const v=el('div'); const a=active();
+  // hero: 3 category tiles
+  const hero=el('div','hero');
+  ORDER.forEach(cat=>{
+    const c=CATS[cat], list=a.filter(i=>i.cat===cat);
+    const prog=list.filter(i=>i.status==='in-progress').length;
+    const blk=list.filter(i=>i.status==='blocked').length;
+    const b=el('button','tile');
+    b.onclick=()=>go({v:'cat',cat});
+    b.innerHTML=`<div class="tl">${c.mark} ${c.label}<span class="arrow">→</span></div>
+      <div class="tn tnum">${list.length}</div>
+      <div class="ts"><span>${prog} in progress</span>${blk?`<span style="color:var(--bad)">${blk} blocked</span>`:''}</div>`;
+    hero.appendChild(b);
+  });
+  v.appendChild(hero);
+  // people
+  v.appendChild(el('div','sect','People — tap a person for their list'));
+  const grid=el('div','ppl');
+  const people=Object.keys(TEAM).map(l=>({l,items:a.filter(i=>i.who.includes(l))}));
+  people.push({l:null,items:a.filter(i=>!i.who.length)});
+  people.forEach(p=>{
+    const t=p.l?TEAM[p.l]:{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
+    const b=el('button','ptile'); b.onclick=()=>go({v:'person',login:p.l});
+    b.innerHTML=`<div class="avatar" style="background:${t.c}">${initials(t.name)}</div>
+      <div style="min-width:0"><div class="who">${esc(t.name)}</div><div class="role">${esc(t.role)}</div></div>
+      <div class="pstat"><b class="tnum">${p.items.length}</b><span>active</span></div>`;
+    grid.appendChild(b);
+  });
+  v.appendChild(grid);
+  // needs-attention (blocked + top-priority not-started), secondary
+  const attn=a.filter(i=>i.status==='blocked').concat(a.filter(i=>i.status!=='blocked'&&i.prio>=5&&i.status==='not-started'));
+  if(attn.length){ v.appendChild(el('div','sect','Needs attention'));
+    const c=el('div','card'); attn.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i))); v.appendChild(c); }
+  return v;
 }
 
-const views={
-  overview(){
-    const v=el('div');
-    const a=active();
-    const attn=a.filter(i=>i.status==='blocked').concat(a.filter(i=>i.status!=='blocked'&&i.prio>=5&&i.status==='not-started'));
-    const c=el('div','card'); c.appendChild(el('h3',null,`⚠️ Needs attention <span class="count">${attn.length}</span>`));
-    if(attn.length) attn.forEach(i=>c.insertAdjacentHTML('beforeend',
-      `<div class="row"><div class="main"><div class="name">${esc(i.title)}</div><div class="sub">#${i.n} · ${i.status==='blocked'?'blocked':'top priority, not started'}</div></div><span class="pill ${statusPill(i.status)[0]}">${statusPill(i.status)[1]}</span></div>`));
-    else c.appendChild(el('div','msg','Nothing blocked or urgent. 🎉'));
-    v.appendChild(c);
-    v.appendChild(el('div','sect','In progress now'));
-    const p=el('div','card'); const ip=a.filter(i=>i.status==='in-progress');
-    if(ip.length) ip.forEach(i=>p.insertAdjacentHTML('beforeend',issueRow(i))); else p.appendChild(el('div','msg','Nothing in progress.'));
-    v.appendChild(p);
-    return v;
-  },
-  people(){
-    const v=el('div');
-    v.appendChild(el('div','note','Owners with a GitHub login show here. Ed, Sam, Eric, Robin & Grace aren\'t GitHub users yet — next step is owner tags so every teammate can be assigned.'));
-    const wrap=el('div','people');
-    const buckets=Object.keys(TEAM).map(l=>({l,items:active().filter(i=>i.who.includes(l))}));
-    buckets.push({l:null,items:active().filter(i=>!i.who.length)});
-    buckets.forEach(b=>{
-      const t=b.l?TEAM[b.l]:{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
-      const card=el('div','pcard');
-      card.appendChild(el('div','phead',`<div class="avatar" style="background:${t.c}">${t.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
-        <div><div class="who">${t.name}</div><div class="role">${t.role}</div></div>
-        <div class="pstat"><b class="tnum">${b.items.length}</b><span>active</span></div>`));
-      b.items.slice(0,8).forEach(i=>{const[pc,pl]=statusPill(i.status);
-        card.insertAdjacentHTML('beforeend',`<div class="pi"><div class="t"><b><a class="name" href="${i.url}" target="_blank">${esc(i.title)}</a></b><small>#${i.n} · ${i.cat}</small></div><span class="pill ${pc}">${pl}</span></div>`);});
-      if(!b.items.length) card.insertAdjacentHTML('beforeend','<div class="pi"><div class="t sub">No active items</div></div>');
-      wrap.appendChild(card);
-    });
-    v.appendChild(wrap); return v;
-  },
-  facility(){const v=el('div');v.appendChild(catCard('facility','🟢 Facility projects'));return v;},
-  provider(){const v=el('div');v.appendChild(catCard('provider','🟣 Provider projects'));return v;},
-  business(){const v=el('div');v.appendChild(catCard('business','🔵 Business projects'));return v;},
-  followups(){const v=el('div');v.appendChild(el('div','card',
-    `<h3>⏳ Email follow-ups</h3><div class="msg" style="text-align:left;padding:18px 16px">
-     This pulls from each teammate's <b>Ops Assistant</b> (the Gmail + Google Tasks nagger already live in your Workspace):
-     emails awaiting a reply and unanswered inbox mail. Wiring the two together is the next build —
-     for now each person gets their own daily escalating digest by email.</div>`));return v;},
-  done(){const v=el('div');const d=issues.filter(i=>i.done);
-    const c=el('div','card');c.appendChild(el('h3',null,`✓ Done <span class="count">${d.length}</span>`));
-    if(d.length)d.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing completed yet.'));
-    v.appendChild(c);return v;},
-};
-let current='overview';
-function render(t){current=t;const v=$('#view');v.innerHTML='';v.appendChild(views[t]());}
+function catView(cat){
+  const c=CATS[cat], v=el('div'), f=filters[cat]||{};
+  const list=issues.filter(i=>i.cat===cat&&!i.done).filter(i=>c.dims.every(d=>!f[d]||i[d]===f[d]));
+  const crumb=el('div','crumb');
+  const back=el('button','back','← Home'); back.onclick=()=>go({v:'home'}); crumb.appendChild(back);
+  crumb.appendChild(el('h2',null,`${c.mark} ${c.label}`));
+  crumb.appendChild(el('span','count',`${list.length} active`));
+  v.appendChild(crumb);
+  const fb=el('div','filters');
+  c.dims.forEach(d=>{
+    const vals=distinct(cat,d), fg=el('div','fg');
+    fg.innerHTML=`<label>${DIM[d]}</label>`;
+    const sel=el('select');
+    sel.innerHTML=`<option value="">All ${DIM[d].toLowerCase()}${vals.length?'':' — none tagged'}</option>`
+      +vals.map(x=>`<option value="${esc(x)}"${f[d]===x?' selected':''}>${esc(x)}</option>`).join('');
+    sel.onchange=()=>setFilter(cat,d,sel.value);
+    fg.appendChild(sel); fb.appendChild(fg);
+  });
+  v.appendChild(fb);
+  const card=el('div','card');
+  if(list.length) list.forEach(i=>card.insertAdjacentHTML('beforeend',issueRow(i)));
+  else card.appendChild(el('div','msg','No matching items.'));
+  v.appendChild(card);
+  return v;
+}
 
-$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-  document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
-  render(b.dataset.t);});
+function personView(login){
+  const t=login?(TEAM[login]||{name:login,role:'',c:'#8a97a6'}):{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
+  const v=el('div');
+  const crumb=el('div','crumb');
+  const back=el('button','back','← Home'); back.onclick=()=>go({v:'home'}); crumb.appendChild(back);
+  crumb.insertAdjacentHTML('beforeend',`<span class="avatar" style="background:${t.c};width:30px;height:30px;border-radius:8px">${initials(t.name)}</span>`);
+  const list=active().filter(i=>login?i.who.includes(login):!i.who.length);
+  crumb.appendChild(el('h2',null,esc(t.name)));
+  crumb.appendChild(el('span','count',`${list.length} active${t.role?' · '+esc(t.role):''}`));
+  v.appendChild(crumb);
+  const card=el('div','card');
+  if(list.length) list.forEach(i=>card.insertAdjacentHTML('beforeend',issueRow(i)));
+  else card.appendChild(el('div','msg','No active items.'));
+  v.appendChild(card);
+  const dn=issues.filter(i=>i.done&&(login?i.who.includes(login):!i.who.length));
+  if(dn.length){ v.appendChild(el('div','sect',`Completed (${dn.length})`));
+    const dc=el('div','card'); dn.forEach(i=>dc.insertAdjacentHTML('beforeend',issueRow(i))); v.appendChild(dc); }
+  return v;
+}
+
+function doneView(){
+  const v=el('div');
+  const crumb=el('div','crumb');
+  const back=el('button','back','← Home'); back.onclick=()=>go({v:'home'}); crumb.appendChild(back);
+  crumb.appendChild(el('h2',null,'✓ Done'));
+  const d=issues.filter(i=>i.done); crumb.appendChild(el('span','count',`${d.length}`));
+  v.appendChild(crumb);
+  const card=el('div','card');
+  if(d.length) d.forEach(i=>card.insertAdjacentHTML('beforeend',issueRow(i)));
+  else card.appendChild(el('div','msg','Nothing completed yet.'));
+  v.appendChild(card);
+  return v;
+}
+
+function go(r){route=r;window.scrollTo(0,0);render();}
+function setFilter(cat,dim,val){filters[cat]=filters[cat]||{};filters[cat][dim]=val;render();}
+function render(){
+  const view=$('#view'); view.innerHTML='';
+  let node;
+  if(route.v==='cat') node=catView(route.cat);
+  else if(route.v==='person') node=personView(route.login);
+  else if(route.v==='done') node=doneView();
+  else node=homeView();
+  view.appendChild(node);
+}
 
 // ── write actions (need token) ──
 async function addLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({labels:[l]})});}
 async function rmLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels/${encodeURIComponent(l)}`,{method:'DELETE'}).catch(()=>{});}
 async function busy(n,fn){const btns=document.querySelectorAll('#r'+n+' button');btns.forEach(b=>b.disabled=true);
   try{await fn();await loadAll();}catch(e){toast('Error: '+e.message);btns.forEach(b=>b.disabled=false);}}
-function claim(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({assignees:[me.login]})});await addLabel(n,'status:in-progress');await rmLabel(n,'status:not-started');toast('Claimed #'+n);});}
+function claim(n){if(!requireAuth())return;if(!me){toast('Reconnect your token');return;}busy(n,async()=>{await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({assignees:[me.login]})});await addLabel(n,'status:in-progress');await rmLabel(n,'status:not-started');toast('Claimed #'+n);});}
 function block(n){if(!requireAuth())return;busy(n,async()=>{await addLabel(n,'status:blocked');await rmLabel(n,'status:in-progress');toast('Marked blocked');});}
 function done(n){if(!requireAuth())return;if(!confirm('Mark #'+n+' done?'))return;busy(n,async()=>{await addLabel(n,'status:done');await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'closed'})});toast('#'+n+' done ✓');});}
 function reopen(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'open'})});await rmLabel(n,'status:done');await addLabel(n,'status:in-progress');toast('#'+n+' reopened');});}
@@ -309,7 +378,10 @@ async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast
   }catch(e){toast('Error: '+e.message);}}
 
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600);}
+
 setConn();loadAll();
+// auto-refresh every 5 min, but only when the tab is visible (avoids burning the 60/hr unauthenticated rate limit)
+setInterval(()=>{if(document.visibilityState==='visible')loadAll();},300000);
 </script>
 </body>
 </html>
