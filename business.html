@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEGE Business</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="stylesheet" href="./assets/business.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>SEGE · Business</h1><p>MSO entities, contracts, compliance &amp; marketing</p></div>
+    <div class="right">
+      <button class="btn" onclick="loadAll()">↻ Refresh</button>
+      <a class="btn" href="./command.html">← Command Center</a>
+      <span id="conn" class="conn off">● View locked</span>
+      <button class="btn" id="connectBtn" onclick="openConnect()">Connect</button>
+      <span id="meChip"></span>
+    </div>
+  </header>
+
+  <nav id="nav" style="display:none">
+    <button data-v="entities" class="on" onclick="go('entities')">🔵 Entities &amp; Contracts</button>
+    <button data-v="compliance" onclick="go('compliance')">📋 State Compliance</button>
+    <button data-v="marketing" onclick="go('marketing')">📣 Marketing</button>
+    <button data-v="renewals" onclick="go('renewals')">🗓 Renewals</button>
+  </nav>
+
+  <div id="view"><div class="msg">Loading…</div></div>
+
+  <div class="foot">Private data from <b>togohealth-dev/sege-business</b> · edits need a token with <b>Contents: read &amp; write</b> on that repo ·
+    <a href="#" onclick="disconnect();return false">disconnect</a></div>
+</div>
+
+<!-- Connect modal -->
+<div class="modal" id="connect"><div class="box">
+  <h2>Connect a token</h2>
+  <p>Paste a GitHub fine-grained personal access token with <b>Contents: read &amp; write</b> on <b>sege-business</b> (and <b>Issues</b> on <b>sege-tracker</b> for the rest of the Command Center). A classic <b>repo</b>-scope token also works. Stored only in this browser.</p>
+  <input id="pat" type="password" placeholder="github_pat_… or ghp_…">
+  <div class="acts" style="justify-content:flex-end">
+    <button class="btn" onclick="closeConnect()">Cancel</button>
+    <button class="btn pri" onclick="saveConnect()">Connect</button>
+  </div>
+</div></div>
+
+<!-- Generic add/edit modal -->
+<div class="modal" id="modal"><div class="box" id="modalBody"></div></div>
+
+<div id="saving">Saving…</div>
+<div id="toast"></div>
+
+<script src="./assets/store.js"></script>
+<script src="./assets/business.js"></script>
+</body>
+</html>
