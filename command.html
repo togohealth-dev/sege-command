@@ -117,6 +117,7 @@
   .box label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:4px}
   #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}
   #toast.show{opacity:1}
+  .bizframe{width:100%;min-height:480px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);background:var(--surface);margin-bottom:16px;display:block}
   .foot{margin-top:24px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
 </style>
 </head>
@@ -537,8 +538,17 @@ function openEmail(){
 }
 
 /* ═════════ issue views (Business / People / Done) ═════════ */
-function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business projects'));
-  v.insertAdjacentHTML('beforeend','<a class="btn pri" href="./business.html" style="display:inline-flex;margin-bottom:14px">Open Business workspace — entities, contracts, compliance &amp; marketing →</a>');
+function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business'));
+  // Business workspace embedded inline (entities, contracts, compliance & marketing) — no extra click.
+  v.appendChild(el('div','sect','Business workspace — entities · contracts · compliance · marketing'));
+  const frame=el('iframe');frame.className='bizframe';frame.src='./business.html';frame.title='Business workspace';
+  frame.onload=()=>{try{const d=frame.contentDocument;const s=d.createElement('style');
+    s.textContent='header.top,.foot{display:none!important}html,body{background:transparent!important}.wrap{padding:2px 0 10px!important;max-width:100%!important}';
+    d.head.appendChild(s);
+    const fit=()=>{try{frame.style.height=Math.max(420,(d.body.scrollHeight||600)+16)+'px';}catch(e){}};
+    fit();clearInterval(frame._t);frame._t=setInterval(fit,700);}catch(e){}};
+  v.appendChild(frame);
+  v.appendChild(el('div','sect','Business projects (tracker)'));
   const list=active().filter(i=>i.cat==='business');const c=el('div','card');
   c.appendChild(el('h3',null,`Active <span class="count">${list.length}</span>`));
   if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing active.'));
