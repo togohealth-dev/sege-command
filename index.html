@@ -427,7 +427,7 @@ function facilityView(id){
     (ents||[]).slice(0,8).forEach(e=>bc.insertAdjacentHTML('beforeend',`<div class="row"><div class="main"><div class="name">${esc(e.legal_name||e.use_label||e.id)}</div>
       <div class="sub">${esc(e.entity_type||'')}${e.role?' · '+esc(e.role):''}${e.next_step?' · next: '+esc(e.next_step):''}</div></div>
       <span class="pill p-idle">${esc(e.lifecycle_status||'—')}</span></div>`));
-    bc.insertAdjacentHTML('beforeend',`<a class="row clk" href="./business.html" style="color:var(--accent);font-weight:600">Manage in Business workspace →</a>`);
+    bc.insertAdjacentHTML('beforeend',`<a class="row clk" href="./business" style="color:var(--accent);font-weight:600">Manage in Business workspace →</a>`);
     v.appendChild(bc);
   }
   const card=el('div','card');card.appendChild(el('h3',null,`Providers <span class="count">${fac.providers.length}</span>`));
