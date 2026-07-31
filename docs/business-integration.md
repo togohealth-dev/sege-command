@@ -17,7 +17,7 @@ v.insertAdjacentHTML('beforeend','<a class="btn pri" href="./business.html" styl
 
 ## Token / ops
 Users need a fine-grained PAT with **Contents: read & write on `sege-business`**
-(in addition to `sege-tracker` Issues). Same `localStorage['sege-tracker-pat']`.
+(in addition to `sege-command` Issues). Same `localStorage['sege-command-pat']`.
 
 ## Data follow-ups (all editable in-app, not code)
 - `marketing/domains.json` is a partial seed — import the rest via the Marketing tab.

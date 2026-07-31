@@ -102,7 +102,7 @@ function renderLocked(expired){
     <h2>🔒 Business data is private</h2>
     <p>${expired ? 'Your token was rejected or lacks access. ' : ''}This section reads the private
     <b>togohealth-dev/sege-business</b> repo. Connect a GitHub token with
-    <b>Contents: read &amp; write</b> on that repo (plus <b>sege-tracker</b> Issues for the rest of the Command Center).</p>
+    <b>Contents: read &amp; write</b> on that repo (plus <b>sege-command</b> Issues for the rest of the Command Center).</p>
     <button class="btn pri" onclick="openConnect()">Connect a token</button>
   </div>`;
 }
@@ -491,8 +491,8 @@ function setConn(){
 }
 function openConnect(){ $('#connect').classList.add('on'); $('#pat').focus(); }
 function closeConnect(){ $('#connect').classList.remove('on'); }
-async function saveConnect(){ const v=$('#pat').value.trim(); if(!v){toast('Paste a token');return;} localStorage.setItem('sege-tracker-pat',v); me=null; closeConnect(); toast('Connecting…'); loadAll(); }
-function disconnect(){ localStorage.removeItem('sege-tracker-pat'); me=null; renderLocked(); setConn(); toast('Disconnected'); }
+async function saveConnect(){ const v=$('#pat').value.trim(); if(!v){toast('Paste a token');return;} localStorage.setItem('sege-command-pat',v); me=null; closeConnect(); toast('Connecting…'); loadAll(); }
+function disconnect(){ localStorage.removeItem('sege-command-pat'); me=null; renderLocked(); setConn(); toast('Disconnected'); }
 function openModal(){ $('#modal').classList.add('on'); }
 function closeModal(){ $('#modal').classList.remove('on'); }
 let tt; function toast(m){ const e=$('#toast'); e.textContent=m; e.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>e.classList.remove('show'),2400); }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<base href="/sege-tracker/">
+<base href="/sege-command/">
 <title>SEGE Command Center</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
@@ -140,7 +140,7 @@
 
   <div id="view"><div class="msg">Loading live data…</div></div>
 
-  <div class="foot">Projects from <b>togohealth-dev/sege-tracker</b> (public) · staffing from <b>sege-staffing</b> (private, token required) ·
+  <div class="foot">Projects from <b>togohealth-dev/sege-command</b> (public) · staffing from <b>sege-staffing</b> (private, token required) ·
     percentages computed live from onboarding items.</div>
 </div>
 
@@ -172,7 +172,7 @@
 <div id="toast"></div>
 
 <script>
-const REPO='togohealth-dev/sege-tracker', API='https://api.github.com';
+const REPO='togohealth-dev/sege-command', API='https://api.github.com';
 const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json', FACONB_PATH='facility_onboarding.json';
 const BIZ_REPO='togohealth-dev/sege-business';  // read-only mirror (Business lane owns this)
 const TEAM={
@@ -193,7 +193,7 @@ const $=(s,r=document)=>r.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
-const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
+const pat=()=>localStorage.getItem('sege-command-pat')||'';
 
 async function gh(path,opts={}){
   const h={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})};
@@ -303,7 +303,7 @@ function setConn(){
     } else chip.innerHTML='';
   } else { c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; chip.innerHTML=''; }
 }
-function disconnect(){ localStorage.removeItem('sege-tracker-pat'); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
+function disconnect(){ localStorage.removeItem('sege-command-pat'); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
 
 const active=()=>issues.filter(i=>!i.done);
 const statusPill=s=>({'not-started':['p-idle','Not started'],'in-progress':['p-prog','● In progress'],'blocked':['p-bad','⚠ Blocked'],'done':['p-ok','✓ Done']}[s]);
@@ -568,14 +568,14 @@ function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8
   v.appendChild(c);return v;}
 
 /* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
-const BASE='/sege-tracker/';
+const BASE='/sege-command/';
 // routes namespaced under /command/ so they never collide with real files (business.html etc.)
 function pathFor(r){
   if(!r||r.v==='home') return BASE+'command';
   if(r.v==='facility') return BASE+'command/facility/'+encodeURIComponent(r.id);
   if(r.v==='provider') return BASE+'command/provider/'+encodeURIComponent(r.id);
   if(r.v==='person')   return BASE+'command/person/'+encodeURIComponent(r.login||'unassigned');
-  return BASE+'command/'+r.v;              // /sege-tracker/command/accounts | providers | business | bottleneck
+  return BASE+'command/'+r.v;              // /sege-command/command/accounts | providers | business | bottleneck
 }
 function routeFromPath(p){
   let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'').replace(/^command\.html$/,'command');
@@ -654,7 +654,7 @@ function reopen(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${
 /* ── modals ── */
 function openConnect(){$('#connect').classList.add('on');$('#pat').focus();}
 function closeConnect(){$('#connect').classList.remove('on');}
-async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem('sege-tracker-pat',v);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
+async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem('sege-command-pat',v);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
 function openAdd(){if(!requireAuth())return;const s=$('#a_who');s.innerHTML='<option value="">— Unassigned —</option>'+Object.keys(TEAM).map(l=>`<option value="${l}">${TEAM[l].name}</option>`).join('');$('#add').classList.add('on');$('#a_title').focus();}
 function closeAdd(){$('#add').classList.remove('on');}
 async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast('Title required');return;}
