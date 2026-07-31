@@ -146,10 +146,11 @@ window.loadAll=async()=>{
 };
 const itemsFor=type=>items.filter(x=>x.applies_to===type);
 const tasksFor=id=>tasks.filter(t=>t.account_id===id);
-function progress(acc){const ts=tasksFor(acc.id);let c=0,n=0;ts.forEach(t=>{if(t.state==='na')return;n++;if(t.state==='complete')c++;});
-  const total=itemsFor(acc.type).length; return {pct: n?Math.round(100*c/n):0, done:c, total};}
+const isMaint=iid=>{const it=items.find(x=>x.id===iid);return !!it&&it.phase==='Maintenance';};
+function progress(acc){const ts=tasksFor(acc.id);let c=0,n=0;ts.forEach(t=>{if(t.state==='na'||isMaint(t.item_id))return;n++;if(t.state==='complete')c++;});
+  return {pct: n?Math.round(100*c/n):0, done:c, total:itemsFor(acc.type).filter(i=>i.phase!=='Maintenance').length};}
 function nextAction(acc){const map={};tasksFor(acc.id).forEach(t=>map[t.item_id]=t.state);
-  for(const it of itemsFor(acc.type)){const s=map[it.id]||'not_started';if(s!=='complete'&&s!=='na')return it;}return null;}
+  for(const it of itemsFor(acc.type)){if(it.phase==='Maintenance')continue;const s=map[it.id]||'not_started';if(s!=='complete'&&s!=='na')return it;}return null;}
 const barCls=p=>p>=80?'hi':p===0?'zero':p<40?'lo':'';
 const bar=p=>`<div class="bar ${barCls(p)}"><span style="width:${p}%"></span></div><span class="pct">${p}%</span>`;
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
