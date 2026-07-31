@@ -305,17 +305,17 @@ function renderCompliance(){
       <div class="fg"><label>Malpractice</label><select onchange="setF('risk',this.value)"><option value="">All</option>${opt('Low',filt.risk,'Low')}${opt('Medium',filt.risk,'Medium')}${opt('High',filt.risk,'High')}</select></div>
     </div>
     <div class="card"><div class="tblwrap"><table class="tbl">
-      <thead><tr><th>State</th><th>CPOM</th><th>Required entity</th><th>IMLC</th><th>Malpractice</th><th>NP</th><th>PA cap</th><th>Entities</th></tr></thead>
+      <thead><tr><th>State</th><th>CPOM</th><th>Allowed entity</th><th>IMLC</th><th>Malpractice</th><th>NP</th><th>PA cap</th><th>Entities</th></tr></thead>
       <tbody>${list.map(s=>`<tr>
         <td><b>${esc(s.abbr)}</b> ${esc(s.state)}</td>
         <td><span class="pill ${cpomCls(s.cpom_status)}">${esc(s.cpom_status)}</span></td>
-        <td>${esc(s.required_entity)}</td>
+        <td>${entityDisplay(s.required_entity)}${s.note?`<button class="cstar" onclick="toggleCNote('${s.abbr}')" title="Show clarification" style="border:0;background:none;color:var(--accent,#0e7c86);cursor:pointer;font-weight:800;font-size:13px;padding:0 3px;vertical-align:super">*</button><div id="cn-${s.abbr}" style="display:none;margin-top:5px;font-size:11.5px;line-height:1.4;color:var(--muted,#5c6875);max-width:280px">${esc(s.note)}</div>`:''}</td>
         <td><span class="pill ${imlcCls(s.imlc)}">${esc(imlcLbl(s.imlc))}</span></td>
         <td><span class="pill ${riskCls(s.malpractice_risk)}">${esc(s.malpractice_risk)}</span></td>
         <td><span class="pill ${npCls(s.np_authority)}">${esc(s.np_authority||'—')}</span></td>
         <td class="tnum">${esc(s.pa_supervision_cap||'—')}</td>
         <td class="tnum">${entCount[s.abbr]?`<span class="pill p-prog">${entCount[s.abbr]}</span>`:'<span style="color:var(--faint)">–</span>'}</td>
-      </tr>${s.note?`<tr><td colspan="8" style="color:var(--muted);font-size:11.5px;padding-top:0">↳ ${esc(s.note)}</td></tr>`:''}`).join('')}</tbody>
+      </tr>`).join('')}</tbody>
     </table></div></div>`;
 }
 const cpomCls=(s)=> /not banned/i.test(s)? 'p-ok' : /\*/.test(s)?'p-warn':'p-bad';
@@ -323,6 +323,16 @@ const riskCls=(r)=> r==='Low'?'p-ok':r==='Medium'?'p-warn':'p-bad';
 const npCls=(n)=> n==='Full'?'p-ok':n==='Reduced'?'p-warn':n==='Restricted'?'p-bad':'p-idle';
 const imlcCls=(i)=> i==='member'?'p-ok':i==='pending'?'p-warn':'p-idle';
 const imlcLbl=(i)=> ({member:'Member',pending:'Pending',not_participating:'Not part.'}[i]||i||'—');
+// order allowed entities: PLLC first (required), PC second (option), others after — leaves parentheticals intact
+function entityDisplay(v){
+  if(!v) return '—';
+  const toks = String(v).split(/\s+or\s+/i).map(t=>t.trim()).filter(Boolean);
+  if(toks.length<2) return esc(v);
+  const rank = t => /pllc/i.test(t)?0 : /^pc\b/i.test(t)?1 : 2;
+  toks.sort((a,b)=>rank(a)-rank(b));
+  return esc(toks.join(' or '));
+}
+window.toggleCNote = function(abbr){ const d=document.getElementById('cn-'+abbr); if(d) d.style.display = d.style.display==='none' ? 'block' : 'none'; };
 
 /* ============================================================= MARKETING */
 function renderMarketing(){
