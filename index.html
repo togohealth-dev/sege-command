@@ -2,630 +2,671 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEGE Management Tracker</title>
-<link rel="icon" href="https://portal.togohealth.com/TogoHealthLogo.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/sege-command/">
+<title>SEGE Command Center</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <style>
-  :root {
-    --bg:#f9fafb; --card:#fff; --border:#e5e7eb; --text:#111827; --text-muted:#6b7280;
-    --blue:#3b82f6; --blue-light:#eff6ff; --green:#10b981; --green-light:#ecfdf5;
-    --purple:#8b5cf6; --purple-light:#f5f3ff; --amber:#f59e0b; --amber-light:#fffbeb;
-    --red:#ef4444; --red-light:#fef2f2; --gray:#9ca3af;
-    --radius:8px; --shadow:0 1px 3px rgba(0,0,0,.08);
+  :root{
+    --ground:#f6f8fa; --surface:#fff; --surface-2:#eef2f7; --border:#e2e7ee;
+    --ink:#17212f; --muted:#5c6875; --faint:#8a97a6;
+    --accent:#0e7c86; --accent-soft:#d9eef0; --accent-ink:#0a5a62;
+    --ok:#1f9d5b; --ok-bg:#e4f5ec; --warn:#c07708; --warn-bg:#faefdc;
+    --bad:#d1453b; --bad-bg:#fbe4e2; --idle:#8a97a6; --idle-bg:#eceff3;
+    --shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);
   }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
-  a { color:inherit; text-decoration:none; }
-
-  /* ── Header ── */
-  .header { background:var(--card); border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; }
-  .header-left { display:flex; align-items:center; gap:12px; }
-  .header-logo { width:32px; height:32px; border-radius:6px; }
-  .header h1 { font-size:18px; font-weight:700; }
-  .header-sub { font-size:12px; color:var(--text-muted); margin-top:1px; }
-  .header-right { display:flex; align-items:center; gap:10px; }
-
-  /* ── Auth ── */
-  #auth-screen { max-width:420px; margin:80px auto; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:32px; text-align:center; }
-  #auth-screen h2 { font-size:20px; font-weight:700; margin-bottom:8px; }
-  #auth-screen p { color:var(--text-muted); font-size:13px; margin-bottom:20px; }
-  #pat-input { width:100%; border:1px solid var(--border); border-radius:6px; padding:10px 12px; font-size:14px; margin-bottom:12px; }
-
-  /* ── Main ── */
-  .main { max-width:1280px; margin:0 auto; padding:24px 20px; }
-
-  /* ── Stat cards ── */
-  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:24px; }
-  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px; }
-  .stat-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:4px; }
-  .stat-val { font-size:28px; font-weight:700; }
-  .stat-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
-  .stat-blue .stat-val { color:var(--blue); }
-  .stat-green .stat-val { color:var(--green); }
-  .stat-purple .stat-val { color:var(--purple); }
-  .stat-amber .stat-val { color:var(--amber); }
-
-  /* ── Sections ── */
-  .section { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:16px; overflow:hidden; }
-  .section-header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; cursor:pointer; user-select:none; border-bottom:1px solid var(--border); }
-  .section-header:hover { background:#fafafa; }
-  .section-title { display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
-  .section-badge { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:600; }
-  .badge-business { background:var(--blue-light); color:var(--blue); }
-  .badge-facility { background:var(--green-light); color:var(--green); }
-  .badge-provider { background:var(--purple-light); color:var(--purple); }
-  .badge-done { background:var(--green-light); color:var(--green); }
-  .section-meta { font-size:12px; color:var(--text-muted); display:flex; gap:16px; align-items:center; }
-  .section-chevron { font-size:12px; color:var(--text-muted); transition:.2s; }
-  .section-chevron.open { transform:rotate(180deg); }
-
-  /* ── Table ── */
-  .proj-table { width:100%; border-collapse:collapse; }
-  .proj-table th { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); padding:10px 16px; text-align:left; background:#f9fafb; border-bottom:1px solid var(--border); }
-  .proj-table td { padding:14px 16px; border-bottom:1px solid var(--border); vertical-align:top; }
-  .proj-table tr:last-child td { border-bottom:none; }
-  .proj-table tr:hover td { background:#fafafa; }
-  .proj-title { font-weight:600; font-size:14px; display:block; }
-  .proj-title:hover { color:var(--blue); }
-  .proj-desc { font-size:12px; color:var(--text-muted); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:380px; }
-
-  /* ── Status badges ── */
-  .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
-  .s-not-started { background:#f3f4f6; color:#6b7280; }
-  .s-in-progress { background:#dbeafe; color:#2563eb; }
-  .s-blocked     { background:#fee2e2; color:#dc2626; }
-  .s-done        { background:#d1fae5; color:#059669; }
-  .s-comm        { background:var(--amber-light); color:var(--amber); font-size:10px; padding:2px 6px; border-radius:10px; margin-left:4px; }
-
-  /* ── Priority dots ── */
-  .dots { display:flex; gap:3px; align-items:center; }
-  .dot { width:8px; height:8px; border-radius:50%; background:var(--border); }
-  .dot.on { background:var(--amber); }
-
-  /* ── Actions ── */
-  .actions { display:flex; gap:6px; flex-wrap:wrap; }
-  .btn { border:none; border-radius:6px; padding:6px 12px; font-size:12px; font-weight:600; cursor:pointer; transition:.15s; white-space:nowrap; }
-  .btn:disabled { opacity:.5; cursor:default; }
-  .btn-primary  { background:var(--blue); color:#fff; }
-  .btn-primary:hover { background:#2563eb; }
-  .btn-green    { background:var(--green); color:#fff; }
-  .btn-green:hover { background:#059669; }
-  .btn-amber    { background:var(--amber); color:#fff; }
-  .btn-amber:hover { background:#d97706; }
-  .btn-outline  { background:#fff; color:var(--text); border:1px solid var(--border); }
-  .btn-outline:hover { background:#f9fafb; }
-  .btn-danger   { background:#fff; color:var(--red); border:1px solid #fca5a5; }
-  .btn-danger:hover { background:var(--red-light); }
-  .btn-lg { padding:10px 20px; font-size:14px; }
-  .btn-sm { padding:4px 10px; font-size:11px; }
-
-  /* ── Assignee ── */
-  .assignee { font-size:11px; font-weight:600; background:#f3f4f6; border-radius:20px; padding:2px 8px; display:inline-block; }
-
-  /* ── Add button row ── */
-  .add-row { padding:12px 20px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; }
-
-  /* ── Modal ── */
-  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1000; align-items:center; justify-content:center; }
-  .modal-overlay.open { display:flex; }
-  .modal { background:#fff; border-radius:12px; padding:28px; width:520px; max-width:95vw; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.15); }
-  .modal h2 { font-size:18px; font-weight:700; margin-bottom:20px; }
-  .modal-field { margin-bottom:14px; }
-  .modal-field label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:6px; }
-  .modal-field input, .modal-field select, .modal-field textarea { width:100%; border:1px solid var(--border); border-radius:6px; padding:9px 12px; font-size:14px; font-family:inherit; }
-  .modal-field textarea { height:80px; resize:vertical; }
-  .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:20px; }
-
-  /* ── Toast ── */
-  #toast { position:fixed; bottom:24px; right:24px; background:#1f2937; color:#fff; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:500; opacity:0; transition:opacity .2s; pointer-events:none; z-index:9999; }
-  #toast.show { opacity:1; }
-
-  /* ── Loading ── */
-  #loading { text-align:center; padding:60px; color:var(--text-muted); font-size:14px; }
-  .spinner { width:24px; height:24px; border:3px solid var(--border); border-top-color:var(--blue); border-radius:50%; animation:spin .7s linear infinite; margin:0 auto 12px; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-
-  /* ── Empty ── */
-  .empty-state { padding:32px; text-align:center; color:var(--text-muted); font-size:13px; }
-
-  /* ── Comm prompt box ── */
-  .prompt-box { background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-family:monospace; font-size:11px; white-space:pre-wrap; max-height:200px; overflow-y:auto; margin-top:8px; }
-
-  @media (max-width:768px) {
-    .proj-table th:nth-child(n+4), .proj-table td:nth-child(n+4) { display:none; }
-    .proj-desc { max-width:200px; }
-  }
+  @media (prefers-color-scheme:dark){:root{
+    --ground:#0e1319; --surface:#161d27; --surface-2:#1e2833; --border:#28323f;
+    --ink:#e8edf4; --muted:#93a2b3; --faint:#6b7888;
+    --accent:#26b3bd; --accent-soft:#123037; --accent-ink:#7fd8de;
+    --ok:#39c07d; --ok-bg:#12291f; --warn:#e0a13a; --warn-bg:#2c2413;
+    --bad:#e5695f; --bad-bg:#2e1a19; --idle:#6b7888; --idle-bg:#1c242e;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);
+  }}
+  :root[data-theme="light"]{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  :root[data-theme="dark"]{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .tnum{font-variant-numeric:tabular-nums}
+  .wrap{max-width:1140px;margin:0 auto;padding:18px 16px 60px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:20px}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;flex:none;box-shadow:var(--shadow)}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}
+  .title p{color:var(--muted);font-size:12px}
+  .top .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .btn:hover{border-color:var(--accent)}
+  .btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .conn{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:999px}
+  .conn.on{background:var(--ok-bg);color:var(--ok)} .conn.off{background:var(--warn-bg);color:var(--warn)}
+  .me{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 13px 4px 4px;cursor:pointer;font:inherit;font-weight:650;font-size:12.5px;color:inherit}
+  .me:hover{border-color:var(--accent)}
+  .me .avatar{width:26px;height:26px;font-size:11px;border-radius:50%}
+  .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+  @media(max-width:720px){.hero{grid-template-columns:1fr}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 18px 15px;box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:5px;transition:transform .12s,border-color .12s}
+  .tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .tile .tl{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .tile .arrow{margin-left:auto;color:var(--faint);font-weight:700}
+  .tile .tn{font-size:34px;font-weight:780;letter-spacing:-.02em;line-height:1.1}
+  .tile .ts{font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .ppl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .ptile{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:border-color .12s}
+  .ptile:hover{border-color:var(--accent)}
+  .avatar{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
+  .who{font-weight:700} .role{font-size:11.5px;color:var(--muted)}
+  .pstat{margin-left:auto;text-align:right} .pstat b{font-size:19px;font-weight:750;display:block} .pstat span{font-size:10px;color:var(--muted)}
+  .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}
+  .crumb h2{font-size:18px;font-weight:750;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+  .crumb .count{color:var(--muted);font-size:13px;font-weight:600}
+  .crumb .sp{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .back{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer}
+  .back:hover{border-color:var(--accent)}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+  .fg{display:flex;flex-direction:column;gap:3px}
+  .fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .fg select,.fg input{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:150px;cursor:pointer}
+  .fg input{cursor:text;font-weight:500}
+  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px;display:flex;align-items:center;gap:8px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+  .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
+  .row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border)}
+  .row:last-child{border-bottom:0} .row .main{flex:1;min-width:0}
+  .row.clk{cursor:pointer} .row.clk:hover{background:var(--surface-2)}
+  .row .name{font-weight:600} .row .sub{color:var(--muted);font-size:12px;margin-top:1px}
+  a.name{color:inherit;text-decoration:none} a.name:hover{color:var(--accent)}
+  .pill{font-size:11px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)}
+  .p-bad{background:var(--bad-bg);color:var(--bad)} .p-idle{background:var(--idle-bg);color:var(--faint)}
+  .p-prog{background:var(--accent-soft);color:var(--accent-ink)}
+  .dots{display:flex;gap:3px} .d{width:7px;height:7px;border-radius:50%;background:var(--border)} .d.on{background:var(--warn)}
+  .acts{display:flex;gap:6px;flex-wrap:wrap}
+  .mini{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:11px;font-weight:600;padding:4px 9px;border-radius:6px;cursor:pointer}
+  .mini:hover{border-color:var(--accent)} .mini.g{background:var(--ok);color:#fff;border-color:var(--ok)} .mini.a{background:var(--warn);color:#fff;border-color:var(--warn)}
+  .mini:disabled{opacity:.5;cursor:default}
+  .note{background:var(--warn-bg);color:var(--warn);padding:9px 13px;border-radius:9px;font-size:12px;margin-bottom:14px}
+  .msg{padding:44px;text-align:center;color:var(--muted)}
+  /* progress bar */
+  .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden;min-width:80px;flex:1;max-width:180px}
+  .bar span{display:block;height:100%;border-radius:999px;background:var(--accent)}
+  .bar.hi span{background:var(--ok)} .bar.lo span{background:var(--warn)} .bar.zero span{background:var(--bad)}
+  .pctlab{font-weight:750;font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+  /* onboarding checklist */
+  .phase{border-bottom:1px solid var(--border)} .phase:last-child{border-bottom:0}
+  .phhead{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface-2);cursor:pointer}
+  .phhead b{font-size:12.5px} .phhead .count{color:var(--muted);font-size:11.5px}
+  .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;padding:10px 16px}
+  .it{display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;user-select:none}
+  .it:hover{border-color:var(--accent)}
+  .it .ic{width:16px;height:16px;border-radius:5px;display:grid;place-items:center;font-size:11px;flex:none;color:#fff}
+  .it.s-complete .ic{background:var(--ok)} .it.s-in_progress .ic{background:var(--warn)}
+  .it.s-not_started .ic{background:var(--idle);color:var(--surface)} .it.s-na .ic{background:transparent;border:1px dashed var(--faint);color:var(--faint)}
+  .it.s-complete{background:var(--ok-bg)} .it.s-in_progress{background:var(--warn-bg)}
+  .it .lb{flex:1;min-width:0}
+  .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:16px}
+  .kv{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+  .kv b{font-size:20px;font-weight:750;display:block} .kv span{font-size:11px;color:var(--muted)}
+  .barrow{display:flex;align-items:center;gap:10px}
+  .modal{position:fixed;inset:0;background:rgba(10,15,25,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .modal.on{display:flex}
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;width:520px;max-width:100%;max-height:88vh;overflow:auto}
+  .box h2{font-size:17px;margin-bottom:6px} .box p{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .box input,.box select,.box textarea{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:7px;padding:9px 11px;font:inherit;margin-bottom:10px}
+  .box label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);display:block;margin-bottom:4px}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}
+  #toast.show{opacity:1}
+  .bizframe{width:100%;min-height:480px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);background:var(--surface);margin-bottom:16px;display:block}
+  .foot{margin-top:24px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
 </style>
 </head>
 <body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>SEGE Command Center</h1><p>Who's doing what — live over your GitHub project tracker</p></div>
+    <div class="right">
+      <button class="btn" onclick="loadAll()">↻ Refresh</button>
+      <button class="btn pri" onclick="openAdd()">+ Add</button>
+      <a class="btn pri" href="./checklist.html">✓ Checklists</a>
+      <a class="btn" href="./classic.html">Classic board</a>
+      <span id="conn" class="conn off">● View only</span>
+      <button class="btn" id="connectBtn" onclick="openConnect()">Connect to edit</button>
+      <span id="meChip"></span>
+    </div>
+  </header>
 
-<!-- Auth -->
-<div id="auth-screen" style="display:none">
-  <img src="https://portal.togohealth.com/TogoHealthLogo.png" style="width:48px;margin-bottom:12px">
-  <h2>SEGE Management Tracker</h2>
-  <p>Enter your GitHub Personal Access Token to load the tracker.<br>Token needs <strong>repo</strong> scope on togohealth-dev.</p>
-  <input id="pat-input" type="password" placeholder="ghp_…">
-  <button class="btn btn-primary btn-lg" onclick="startOAuth()" style="width:100%">Connect →</button>
+  <div id="view"><div class="msg">Loading live data…</div></div>
+
+  <div class="foot">Projects from <b>togohealth-dev/sege-command</b> (public) · staffing from <b>sege-staffing</b> (private, token required) ·
+    percentages computed live from onboarding items.</div>
 </div>
 
-<!-- Header -->
-<div class="header" id="app-header" style="display:none">
-  <div class="header-left">
-    <img src="https://portal.togohealth.com/TogoHealthLogo.png" class="header-logo">
-    <div>
-      <h1>SEGE Management Tracker</h1>
-      <div class="header-sub">Business · Facility · Provider — GitHub Issues as source of truth</div>
-    </div>
+<!-- Connect modal -->
+<div class="modal" id="connect"><div class="box">
+  <h2>Connect to edit</h2>
+  <p>Paste a GitHub personal access token. To also see staffing/onboarding, the token needs access to the private <b>sege-staffing</b> repo (Issues + Contents: read &amp; write). Fine-grained recommended. Stored only in this browser.</p>
+  <input id="pat" type="password" placeholder="github_pat_… or ghp_…">
+  <div class="acts" style="justify-content:flex-end">
+    <button class="btn" onclick="closeConnect()">Cancel</button>
+    <button class="btn pri" onclick="saveConnect()">Connect</button>
   </div>
-  <div class="header-right">
-    <button class="btn btn-outline btn-sm" onclick="loadAll()">↻ Refresh</button>
-    <button class="btn btn-primary btn-sm" onclick="openAddModal()">+ Add Project</button>
-    <a href="https://github.com/togohealth-dev/sege-command/issues" target="_blank" class="btn btn-outline btn-sm">GitHub ↗</a>
-  </div>
-</div>
+</div></div>
 
-<!-- Main -->
-<div class="main" id="main-content" style="display:none">
-  <div id="loading"><div class="spinner"></div>Loading tracker…</div>
-  <div id="content" style="display:none">
-    <!-- Stats -->
-    <div class="stats" id="stats-row"></div>
-    <!-- Sections -->
-    <div id="section-business"></div>
-    <div id="section-facility"></div>
-    <div id="section-provider"></div>
-    <div id="section-done"></div>
+<!-- Add modal -->
+<div class="modal" id="add"><div class="box">
+  <h2>Add project / task</h2>
+  <label>Title</label><input id="a_title" placeholder="Short name">
+  <label>Category</label><select id="a_cat"><option value="business">🔵 Business</option><option value="facility">🟢 Accounts</option><option value="provider">🟣 Providers</option></select>
+  <label>Owner</label><select id="a_who"></select>
+  <label>Priority</label><select id="a_prio"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3" selected>★★★</option><option value="2">★★</option><option value="1">★</option></select>
+  <label>Notes</label><textarea id="a_notes" rows="3" placeholder="Optional context"></textarea>
+  <div class="acts" style="justify-content:flex-end">
+    <button class="btn" onclick="closeAdd()">Cancel</button>
+    <button class="btn pri" onclick="saveAdd()">Create</button>
   </div>
-</div>
-
-<!-- Add Modal -->
-<div class="modal-overlay" id="add-modal" onclick="closeAddModal(event)">
-  <div class="modal">
-    <h2>Add Project</h2>
-    <div class="modal-field">
-      <label>Title</label>
-      <input type="text" id="add-title" placeholder="Short project name">
-    </div>
-    <div class="modal-field">
-      <label>Category</label>
-      <select id="add-category">
-        <option value="business">🔵 Business</option>
-        <option value="facility">🟢 Facility</option>
-        <option value="provider">🟣 Provider</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Priority</label>
-      <select id="add-priority">
-        <option value="5">★★★★★ Highest (5)</option>
-        <option value="4">★★★★☆ High (4)</option>
-        <option value="3" selected>★★★☆☆ Medium (3)</option>
-        <option value="2">★★☆☆☆ Low (2)</option>
-        <option value="1">★☆☆☆☆ Lowest (1)</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Assignee</label>
-      <select id="add-assignee">
-        <option value="">— Unassigned —</option>
-        <option value="gregbaird11">Greg</option>
-        <option value="riley870">Riley</option>
-        <option value="morgan477">Morgan</option>
-        <option value="Jordan-togoclaude">Jordan</option>
-        <option value="msdrigg">Scott</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Communication automation? <span style="font-weight:400;color:var(--text-muted)">(adds 📧 tag)</span></label>
-      <select id="add-comm">
-        <option value="">No</option>
-        <option value="communication">Yes — email outreach / escalation</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Notes / description</label>
-      <textarea id="add-notes" placeholder="Brief description or context…"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeAddModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveAdd()">Create →</button>
-    </div>
-  </div>
-</div>
-
-<!-- Edit Modal -->
-<div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
-  <div class="modal">
-    <h2>Edit Project</h2>
-    <div class="modal-field">
-      <label>Title</label>
-      <input type="text" id="edit-title">
-    </div>
-    <div class="modal-field">
-      <label>Priority</label>
-      <select id="edit-priority">
-        <option value="5">★★★★★ Highest (5)</option>
-        <option value="4">★★★★☆ High (4)</option>
-        <option value="3">★★★☆☆ Medium (3)</option>
-        <option value="2">★★☆☆☆ Low (2)</option>
-        <option value="1">★☆☆☆☆ Lowest (1)</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Assignee</label>
-      <select id="edit-assignee">
-        <option value="">— Unassigned —</option>
-        <option value="gregbaird11">Greg</option>
-        <option value="riley870">Riley</option>
-        <option value="morgan477">Morgan</option>
-        <option value="Jordan-togoclaude">Jordan</option>
-        <option value="msdrigg">Scott</option>
-      </select>
-    </div>
-    <div class="modal-field">
-      <label>Notes / description</label>
-      <textarea id="edit-notes"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveEdit()">Save</button>
-    </div>
-  </div>
-</div>
+</div></div>
 
 <div id="toast"></div>
 
 <script>
-const REPO = 'togohealth-dev/sege-command';
-const API  = 'https://api.github.com';
-const TEAM = { gregbaird11:'Greg', riley870:'Riley', morgan477:'Morgan', 'Jordan-togoclaude':'Jordan', msdrigg:'Scott' };
+const REPO='togohealth-dev/sege-command', API='https://api.github.com';
+const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json', FACONB_PATH='facility_onboarding.json';
+const BIZ_REPO='togohealth-dev/sege-business';  // read-only mirror (Business lane owns this)
+const TEAM={
+  gregbaird11:{name:'Greg Baird',role:'Owner · Togo Health',c:'#c0603a'},
+  riley870:{name:'Riley Moore',role:'COO · SEGE',c:'#c07708'},
+  morgan477:{name:'Morgan Rawlings',role:'CCO · SEGE',c:'#2f8f4e'},
+  'Jordan-togoclaude':{name:'Jordan Anderson',role:'COO · Togo Health',c:'#7a5cc0'},
+  msdrigg:{name:'Scott',role:'Engineering',c:'#3f6fb0'},
+};
+const FSTATUS={live:['p-ok','✅ Live'],go_live_soon:['p-warn','🟡 Go-Live Soon'],scheduled:['p-prog','🔵 Scheduled'],unknown:['p-idle','— TBD']};
+const ST_NEXT={not_started:'in_progress',in_progress:'complete',complete:'na',na:'not_started'};
+const ST_ICON={complete:'✓',in_progress:'⋯',not_started:'',na:'–'};
 
-let currentUser = null;
-let allIssues   = [];
-let editIssueNumber = null;
+let issues=[], me=null, loaded=false;
+let route={v:'home'};
+let filters={};
+const $=(s,r=document)=>r.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
+const pat=()=>localStorage.getItem('sege-command-pat')||'';
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
-
-function getPAT() { return localStorage.getItem('sege-command-pat') || ''; }
-function setPAT(v) { localStorage.setItem('sege-command-pat', v); }
-
-function startOAuth() {
-  const pat = document.getElementById('pat-input').value.trim();
-  if (!pat) { toast('Enter a GitHub PAT first'); return; }
-  setPAT(pat);
-  init();
+async function gh(path,opts={}){
+  const h={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})};
+  if(pat()) h.Authorization='Bearer '+pat();
+  const res=await fetch(path.startsWith('http')?path:API+path,{...opts,headers:h});
+  if(!res.ok) throw new Error('GitHub '+res.status);
+  return res.status===204?null:res.json();
 }
+function requireAuth(){ if(!pat()){ openConnect(); toast('Connect a token to make changes'); return false;} return true; }
+const b64d=b64=>decodeURIComponent(escape(atob(String(b64).replace(/\s/g,''))));
+const b64e=str=>btoa(unescape(encodeURIComponent(str)));
 
-async function ghFetch(path, opts={}) {
-  const url = path.startsWith('http') ? path : `${API}${path}`;
-  const res = await fetch(url, { ...opts, headers: { Authorization:`Bearer ${getPAT()}`, Accept:'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28', ...(opts.headers||{}) } });
-  if (!res.ok) throw new Error(`GitHub ${res.status}: ${path}`);
-  if (res.status === 204) return null;
-  return res.json();
-}
-
-async function init() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app-header').style.display  = 'flex';
-  document.getElementById('main-content').style.display = 'block';
-  try {
-    currentUser = await ghFetch('/user');
-    await loadAll();
-  } catch(e) {
-    toast('Auth failed — check your PAT', true);
-    document.getElementById('auth-screen').style.display = 'block';
-    document.getElementById('app-header').style.display  = 'none';
-    document.getElementById('main-content').style.display = 'none';
+/* ── Store adapter (PORTABILITY SEAM — swap this object to point at the portal API later) ── */
+const Staff={
+  doc:null, sha:null, err:null, snaps:null, snapSha:null,
+  async load(){
+    try{
+      const r=await gh(`/repos/${STAFF_REPO}/contents/${STAFF_PATH}`);
+      this.sha=r.sha; this.doc=JSON.parse(b64d(r.content)); this.err=null;
+    }catch(e){ this.doc=null; this.err=e.message; }
+    return this.doc;
+  },
+  async save(msg){
+    const body={message:msg||'Update onboarding',content:b64e(JSON.stringify(this.doc,null,1)),sha:this.sha,branch:'main'};
+    const r=await gh(`/repos/${STAFF_REPO}/contents/${STAFF_PATH}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    this.sha=r.content.sha;
+  },
+  async loadSnaps(){
+    try{const r=await gh(`/repos/${STAFF_REPO}/contents/${SNAP_PATH}`);this.snapSha=r.sha;this.snaps=JSON.parse(b64d(r.content));}
+    catch(e){this.snaps=[];this.snapSha=null;}
+    return this.snaps;
+  },
+  async saveSnaps(msg){
+    const body={message:msg||'Snapshot',content:b64e(JSON.stringify(this.snaps,null,1)),branch:'main'};
+    if(this.snapSha)body.sha=this.snapSha;
+    const r=await gh(`/repos/${STAFF_REPO}/contents/${SNAP_PATH}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    this.snapSha=r.content.sha;
   }
-}
-
-window.addEventListener('load', () => {
-  if (getPAT()) init();
-  else document.getElementById('auth-screen').style.display = 'block';
-});
-
-// ── Data ─────────────────────────────────────────────────────────────────────
-
-function normalizeIssue(issue) {
-  const labels  = (issue.labels||[]).map(l=>l.name);
-  const assignees = (issue.assignees||[]).map(a=>a.login);
-  const priority = +(labels.find(l=>l.startsWith('priority-'))?.slice(9)||'3');
-  const category = ['business','facility','provider'].find(c=>labels.includes(c)) || 'facility';
-  const isComm   = labels.includes('communication');
-  const isDone   = issue.state==='closed' || labels.includes('status:done');
-  const status   = issue.state==='closed' ? 'done'
-    : labels.includes('status:done')        ? 'done'
-    : labels.includes('status:blocked')     ? 'blocked'
-    : labels.includes('status:in-progress') ? 'in-progress'
-    : 'not-started';
-  const bodyFirst = (issue.body||'').split('\n')[0].replace(/^#+\s*/,'').slice(0,120);
-  return { number:issue.number, title:issue.title, body:issue.body||'', bodyFirst, url:issue.html_url, labels, assignees, priority, category, isComm, status, isDone };
-}
-
-async function loadAll() {
-  document.getElementById('loading').style.display = 'block';
-  document.getElementById('content').style.display = 'none';
-  try {
-    const [open, closed] = await Promise.all([
-      ghFetch(`/repos/${REPO}/issues?state=open&per_page=100`),
-      ghFetch(`/repos/${REPO}/issues?state=closed&per_page=100`),
-    ]);
-    const seen = new Map();
-    for (const i of [...open,...closed]) if (!seen.has(i.number)) seen.set(i.number, i);
-    allIssues = [...seen.values()].map(normalizeIssue).sort((a,b)=>b.priority-a.priority||a.number-b.number);
-    renderStats();
-    renderSections();
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('content').style.display = 'block';
-  } catch(e) {
-    document.getElementById('loading').style.display = 'none';
-    toast(`Error loading: ${e.message}`, true);
+};
+/* facility-level onboarding checklist (separate file, same facility ids) */
+const FacOnb={
+  doc:null, sha:null,
+  async load(){ try{const r=await gh(`/repos/${STAFF_REPO}/contents/${FACONB_PATH}`);this.sha=r.sha;this.doc=JSON.parse(b64d(r.content));}catch(e){this.doc=null;} return this.doc; },
+  async save(msg){ const body={message:msg||'Update facility onboarding',content:b64e(JSON.stringify(this.doc,null,1)),sha:this.sha,branch:'main'};
+    const r=await gh(`/repos/${STAFF_REPO}/contents/${FACONB_PATH}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});this.sha=r.content.sha; }
+};
+/* business-setup mirror — READ-ONLY from the Business lane's private repo */
+const Biz={ entities:null, states:null,
+  async load(){
+    try{const r=await gh(`/repos/${BIZ_REPO}/contents/mso/entities.json`);this.entities=JSON.parse(b64d(r.content)).entities;}catch(e){this.entities=null;}
+    try{const r=await gh(`/repos/${BIZ_REPO}/contents/reference/state-compliance.json`);this.states=JSON.parse(b64d(r.content)).states;}catch(e){this.states=null;}
   }
+};
+
+/* ── onboarding compute helpers (pure; percentages never stored) ── */
+const PH=()=>Staff.doc?Staff.doc.phases:[];
+const allFac=()=>Staff.doc?Staff.doc.portfolios.flatMap(p=>p.facilities.map(f=>({...f,portfolio:p.label,portId:p.id}))):[];
+const allProv=()=>Staff.doc?Staff.doc.portfolios.flatMap(p=>p.facilities.flatMap(f=>f.providers.map(pr=>({...pr,portfolio:p.label,portId:p.id,facLabel:f.label,facId:f.id,facStatus:f.status})))):[];
+function findProv(id){for(const p of Staff.doc.portfolios)for(const f of p.facilities)for(const pr of f.providers)if(pr.id===id)return{pr,f,p};return null;}
+function phasePct(pr,ph){let c=0,t=0;ph.items.forEach(it=>{const s=pr.items[it.key];if(s==='na')return;t++;if(s==='complete')c++;});return{c,t,pct:t?Math.round(100*c/t):100};}
+function provPct(pr){let c=0,t=0;PH().forEach(ph=>{const r=phasePct(pr,ph);c+=r.c;t+=r.t;});return t?Math.round(100*c/t):0;}
+function facPct(f){let c=0,t=0;f.providers.forEach(pr=>PH().forEach(ph=>{const r=phasePct(pr,ph);c+=r.c;t+=r.t;}));return t?Math.round(100*c/t):0;}
+function portPct(p){let c=0,t=0;p.facilities.forEach(f=>f.providers.forEach(pr=>PH().forEach(ph=>{const r=phasePct(pr,ph);c+=r.c;t+=r.t;})));return t?Math.round(100*c/t):0;}
+function nextAction(pr){for(const ph of PH())for(const it of ph.items){const s=pr.items[it.key];if(s!=='complete'&&s!=='na')return{phase:ph.label,item:it.label,state:s};}return null;}
+function currentPhase(pr){for(const ph of PH()){if(phasePct(pr,ph).pct<100)return ph.label;}return 'Live';}
+function bottlenecks(list){const m={};list.forEach(pr=>PH().forEach(ph=>ph.items.forEach(it=>{const s=pr.items[it.key];if(s==='not_started'||s==='in_progress'){const k=ph.label+'||'+it.label;(m[k]=m[k]||{phase:ph.label,item:it.label,n:0,prog:0}).n++;if(s==='in_progress')m[k].prog++;}})));return Object.values(m).sort((a,b)=>b.n-a.n);}
+const barClass=p=>p>=80?'hi':p===0?'zero':p<40?'lo':'';
+const bar=p=>`<div class="bar ${barClass(p)}"><span style="width:${p}%"></span></div><span class="pctlab">${p}%</span>`;
+/* facility checklist helpers */
+const FCL=()=>FacOnb.doc?FacOnb.doc.checklist:[];
+const facOnb=fid=>FacOnb.doc&&FacOnb.doc.facilities?FacOnb.doc.facilities[fid]:null;
+function facChkPct(fid){const f=facOnb(fid);if(!f)return null;let c=0,t=0;FCL().forEach(it=>{const s=f.items[it.key];if(s==='na')return;t++;if(s==='complete')c++;});return t?Math.round(100*c/t):0;}
+const bizForState=st=>Biz.entities?Biz.entities.filter(e=>e.state===st):[];
+const compForState=st=>Biz.states?Biz.states.find(s=>s.abbr===st):null;
+
+async function loadStaff(){ if(pat()){ await Staff.load(); await Staff.loadSnaps(); await FacOnb.load(); await Biz.load(); } else { Staff.doc=null; Staff.err='no-token'; } }
+
+async function loadAll(){
+  if(!loaded) $('#view').innerHTML='<div class="msg">Loading live data…</div>';
+  try{
+    if(pat()&&!me){ try{me=await gh('/user');}catch(e){} }
+    const [op,cl]=await Promise.all([
+      gh(`/repos/${REPO}/issues?state=open&per_page=100`),
+      gh(`/repos/${REPO}/issues?state=closed&per_page=100`)]);
+    const seen=new Map(); for(const i of [...op,...cl]) if(!seen.has(i.number)) seen.set(i.number,i);
+    issues=[...seen.values()].map(normalize).sort((a,b)=>b.prio-a.prio||a.n-b.n);
+    await loadStaff();
+    loaded=true; setConn(); if(!window.__routed){window.__routed=1; applyPath();} else render();
+  }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load ('+e.message+'). If rate-limited, connect a token.</div>'; }
+}
+function normalize(i){
+  const labels=(i.labels||[]).map(l=>l.name);
+  const cat=['business','facility','provider'].find(c=>labels.includes(c))||'business';
+  const prio=+((labels.find(l=>l.startsWith('priority-'))||'priority-3').slice(9));
+  const done=i.state==='closed'||labels.includes('status:done');
+  const status=done?'done':labels.includes('status:blocked')?'blocked':labels.includes('status:in-progress')?'in-progress':'not-started';
+  return {n:i.number,title:i.title,url:i.html_url,labels,cat,prio,done,status,
+    who:(i.assignees||[]).map(a=>a.login),comm:labels.includes('communication')};
+}
+function setConn(){
+  const c=$('#conn'), b=$('#connectBtn'), chip=$('#meChip');
+  if(pat()){
+    c.className='conn on'; c.textContent='● can edit'; b.textContent='Disconnect'; b.onclick=disconnect;
+    if(me){ const t=TEAM[me.login]||{name:me.login,role:'',c:'#0e7c86'};
+      chip.innerHTML=`<button class="me" onclick="go({v:'person',login:'${me.login}'})" title="My tasks">
+        <span class="avatar" style="background:${t.c}">${initials(t.name)}</span>${esc(t.name.split(' ')[0])}</button>`;
+    } else chip.innerHTML='';
+  } else { c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; chip.innerHTML=''; }
+}
+function disconnect(){ localStorage.removeItem('sege-command-pat'); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
+
+const active=()=>issues.filter(i=>!i.done);
+const statusPill=s=>({'not-started':['p-idle','Not started'],'in-progress':['p-prog','● In progress'],'blocked':['p-bad','⚠ Blocked'],'done':['p-ok','✓ Done']}[s]);
+const dots=p=>`<div class="dots">${[1,2,3,4,5].map(n=>`<span class="d${n<=p?' on':''}"></span>`).join('')}</div>`;
+const nm=l=>TEAM[l]?TEAM[l].name:l;
+
+function issueRow(i){
+  const [pc,pl]=statusPill(i.status);
+  const who=i.who.length?i.who.map(w=>`<span class="pill p-idle">${esc(nm(w))}</span>`).join(' '):'<span class="sub">—</span>';
+  const acts=i.done?`<button class="mini" onclick="reopen(${i.n})">↩ Reopen</button>`
+    :`${i.who.length?'':`<button class="mini" onclick="claim(${i.n})">Claim</button>`}
+      ${i.status==='blocked'?'':`<button class="mini a" onclick="block(${i.n})">⚠</button>`}
+      <button class="mini g" onclick="done(${i.n})">✓ Done</button>`;
+  return `<div class="row" id="r${i.n}"><div class="main"><a class="name" href="${i.url}" target="_blank">${esc(i.title)}</a>${i.comm?' <span class="pill p-warn">📧</span>':''}
+    <div class="sub">#${i.n} · ${who}</div></div><span class="pill ${pc}">${pl}</span>${dots(i.prio)}<div class="acts">${acts}</div></div>`;
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
-
-const CAT_LABEL = { business:'🔵 Business', facility:'🟢 Facility', provider:'🟣 Provider' };
-const CAT_BADGE = { business:'badge-business', facility:'badge-facility', provider:'badge-provider' };
-
-function renderStats() {
-  const active = allIssues.filter(i=>!i.isDone);
-  const done   = allIssues.filter(i=>i.isDone);
-  const bycat  = cat => active.filter(i=>i.category===cat).length;
-  document.getElementById('stats-row').innerHTML = `
-    <div class="stat-card stat-blue"><div class="stat-label">Business</div><div class="stat-val">${bycat('business')}</div><div class="stat-sub">active projects</div></div>
-    <div class="stat-card stat-green"><div class="stat-label">Facility</div><div class="stat-val">${bycat('facility')}</div><div class="stat-sub">active projects</div></div>
-    <div class="stat-card stat-purple"><div class="stat-label">Provider</div><div class="stat-val">${bycat('provider')}</div><div class="stat-sub">active projects</div></div>
-    <div class="stat-card stat-amber"><div class="stat-label">Done</div><div class="stat-val">${done.length}</div><div class="stat-sub">completed</div></div>
-  `;
+/* ═════════ HOME ═════════ */
+function tileLocked(mark,label){const b=el('button','tile');b.onclick=openConnect;
+  b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">token needed for staffing</div>`;return b;}
+function homeView(){
+  const v=el('div'); const hero=el('div','hero');
+  // Accounts (facilities / onboarding)
+  if(Staff.doc){
+    const fac=allFac(), live=fac.filter(f=>f.status==='live').length;
+    const a=el('button','tile');a.onclick=()=>go({v:'accounts'});
+    a.innerHTML=`<div class="tl">🟢 Accounts<span class="arrow">→</span></div><div class="tn tnum">${fac.length}</div>
+      <div class="ts"><span>${live} live</span><span>${Math.round(fac.reduce((s,f)=>s+facPct(f),0)/(fac.length||1))}% onboarded</span></div>`;
+    hero.appendChild(a);
+    const prov=allProv();
+    const p=el('button','tile');p.onclick=()=>go({v:'providers'});
+    p.innerHTML=`<div class="tl">🟣 Providers<span class="arrow">→</span></div><div class="tn tnum">${prov.length}</div>
+      <div class="ts"><span>${Math.round(prov.reduce((s,pr)=>s+provPct(pr),0)/(prov.length||1))}% onboarded</span><span>${prov.filter(pr=>provPct(pr)>=100).length} live</span></div>`;
+    hero.appendChild(p);
+  } else { hero.appendChild(tileLocked('🟢','Accounts')); hero.appendChild(tileLocked('🟣','Providers')); }
+  // Business (issues)
+  const biz=active().filter(i=>i.cat==='business');
+  const b=el('button','tile');b.onclick=()=>go({v:'business'});
+  b.innerHTML=`<div class="tl">🔵 Business<span class="arrow">→</span></div><div class="tn tnum">${biz.length}</div>
+    <div class="ts"><span>${biz.filter(i=>i.status==='in-progress').length} in progress</span>${biz.filter(i=>i.status==='blocked').length?`<span style="color:var(--bad)">${biz.filter(i=>i.status==='blocked').length} blocked</span>`:''}</div>`;
+  hero.appendChild(b);
+  v.appendChild(hero);
+  if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
+    v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
+  // People (issues)
+  v.appendChild(el('div','sect','People — tap for their project list'));
+  const grid=el('div','ppl');
+  const people=Object.keys(TEAM).map(l=>({l,items:active().filter(i=>i.who.includes(l))}));
+  people.push({l:null,items:active().filter(i=>!i.who.length)});
+  people.forEach(p=>{const t=p.l?TEAM[p.l]:{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
+    const bt=el('button','ptile');bt.onclick=()=>go({v:'person',login:p.l});
+    bt.innerHTML=`<div class="avatar" style="background:${t.c}">${initials(t.name)}</div>
+      <div style="min-width:0"><div class="who">${esc(t.name)}</div><div class="role">${esc(t.role)}</div></div>
+      <div class="pstat"><b class="tnum">${p.items.length}</b><span>active</span></div>`;
+    grid.appendChild(bt);});
+  v.appendChild(grid);
+  return v;
 }
 
-function statusBadge(s) {
-  return { 'not-started':'<span class="badge s-not-started">Not started</span>', 'in-progress':'<span class="badge s-in-progress">● In Progress</span>', 'blocked':'<span class="badge s-blocked">⚠ Blocked</span>', done:'<span class="badge s-done">✓ Done</span>' }[s] || '';
+/* ═════════ ACCOUNTS (facility go-live readiness) ═════════ */
+function backCrumb(v,title,right){const c=el('div','crumb');const b=el('button','back','← Home');b.onclick=()=>go({v:'home'});c.appendChild(b);
+  c.appendChild(el('h2',null,title));if(right){const s=el('div','sp');s.innerHTML=right;c.appendChild(s);}return c;}
+function distinctFac(dim){return [...new Set(allFac().map(f=>f[dim]).filter(Boolean))].sort();}
+function accountsView(){
+  const v=el('div'); const f=filters.accounts||(filters.accounts={});
+  v.appendChild(backCrumb('accounts','🟢 Accounts — Go-Live Readiness',
+    `<button class="back" onclick="captureSnapshot()">📸 Snapshot</button><button class="back" onclick="openEmail()">✉️ Email report</button>`));
+  // filters
+  const fb=el('div','filters');
+  [['portfolio','Portfolio'],['state','State'],['status','Status']].forEach(([dim,lab])=>{
+    const vals=dim==='status'?['live','go_live_soon','scheduled','unknown']:distinctFac(dim);
+    const fg=el('div','fg');fg.innerHTML=`<label>${lab}</label>`;const sel=el('select');
+    sel.innerHTML=`<option value="">All</option>`+vals.map(x=>`<option value="${esc(x)}"${f[dim]===x?' selected':''}>${dim==='status'?FSTATUS[x][1]:esc(x)}</option>`).join('');
+    sel.onchange=()=>{f[dim]=sel.value;render();};fg.appendChild(sel);fb.appendChild(fg);});
+  v.appendChild(fb);
+  let fac=allFac().filter(x=>(!f.portfolio||x.portfolio===f.portfolio)&&(!f.state||x.state===f.state)&&(!f.status||x.status===f.status));
+  // readiness order: closest to live but not done first (scheduled/go-live with high %), then live
+  const rank={go_live_soon:0,scheduled:1,unknown:2,live:3};
+  fac.sort((a,b)=>(rank[a.status]-rank[b.status])||facPct(b)-facPct(a));
+  const c=el('div','card');c.appendChild(el('h3',null,`Facilities <span class="count">${fac.length}</span>`));
+  if(!fac.length)c.appendChild(el('div','msg','No facilities match.'));
+  fac.forEach(x=>{const pct=facPct(x);const st=FSTATUS[x.status];const fchk=facChkPct(x.id);
+    const stuck=bottlenecks(x.providers).slice(0,1).map(b=>`${b.item} (${b.n})`).join('');
+    const row=el('div','row clk');row.onclick=()=>go({v:'facility',id:x.id});
+    row.innerHTML=`<div class="main"><div class="name">${esc(x.label)} <span class="pill p-idle">${esc(x.state||'')}</span></div>
+      <div class="sub">${esc(x.portfolio)} · ${x.staffing.filled}/${x.staffing.target} staffed${fchk!=null?` · facility setup ${fchk}%`:''}${stuck?` · ⛔ ${esc(stuck)}`:''}</div></div>
+      <span class="pill ${st[0]}">${st[1]}</span><div class="barrow" style="width:200px" title="provider onboarding">${bar(pct)}</div>`;
+    c.appendChild(row);});
+  v.appendChild(c);
+  return v;
+}
+function facilityView(id){
+  const fac=allFac().find(f=>f.id===id); if(!fac)return backCrumb('','Not found');
+  const fo=facOnb(id); const fchk=facChkPct(id);
+  const v=el('div');const bk=el('button','back','← Accounts');bk.onclick=()=>go({v:'accounts'});
+  const c=el('div','crumb');c.appendChild(bk);c.appendChild(el('h2',null,esc(fac.label)));
+  c.appendChild(el('span','count',`${FSTATUS[fac.status][1]} · ${fac.staffing.filled}/${fac.staffing.target} staffed`));v.appendChild(c);
+  const st=el('div','stat');
+  st.innerHTML=`<div class="kv"><b class="tnum">${fchk!=null?fchk+'%':'—'}</b><span>facility setup</span></div>
+    <div class="kv"><b class="tnum">${facPct(fac)}%</b><span>providers onboarded</span></div>
+    <div class="kv"><b class="tnum">${fac.providers.filter(p=>provPct(p)>=100).length}/${fac.providers.length}</b><span>providers live</span></div>
+    <div class="kv"><b>${esc(fo&&fo.info.md_monthly_rate||'—')}</b><span>MD monthly rate</span></div>`;
+  v.appendChild(st);
+  // facility onboarding checklist (editable)
+  if(fo){ const fc=el('div','card'); const wrap=el('div','phase');
+    const head=el('div','phhead');head.innerHTML=`<b>🏢 Facility Onboarding</b><span class="count">${FCL().filter(it=>fo.items[it.key]==='complete').length}/${FCL().length}</span>
+      <div class="barrow" style="margin-left:auto;width:200px">${bar(fchk||0)}</div>
+      <button class="mini g" onclick="completeFacChecklist('${esc(id)}')" title="Mark all complete">✓ all</button>`;
+    wrap.appendChild(head);
+    const items=el('div','items');
+    FCL().forEach(it=>{const s=fo.items[it.key]||'not_started';const d=el('div','it s-'+s);
+      d.onclick=()=>cycleFacItem(id,it.key);d.innerHTML=`<span class="ic">${ST_ICON[s]}</span><span class="lb">${esc(it.label)}</span>`;items.appendChild(d);});
+    wrap.appendChild(items);fc.appendChild(wrap);v.appendChild(fc);
+  }
+  // business-setup mirror (read-only from Business lane)
+  const ents=bizForState(fac.state), comp=compForState(fac.state);
+  if((ents&&ents.length)||comp){ const bc=el('div','card');
+    bc.appendChild(el('h3',null,`🔵 Business setup — ${esc(fac.state||'')} <span class="count">read-only · mirror</span>`));
+    if(comp)bc.insertAdjacentHTML('beforeend',`<div class="row"><div class="main"><div class="name">State compliance</div>
+      <div class="sub">CPOM: ${esc(comp.cpom_status||'—')} · Required entity: ${esc(comp.required_entity||'—')} · IMLC: ${esc(comp.imlc||'—')}</div></div></div>`);
+    (ents||[]).slice(0,8).forEach(e=>bc.insertAdjacentHTML('beforeend',`<div class="row"><div class="main"><div class="name">${esc(e.legal_name||e.use_label||e.id)}</div>
+      <div class="sub">${esc(e.entity_type||'')}${e.role?' · '+esc(e.role):''}${e.next_step?' · next: '+esc(e.next_step):''}</div></div>
+      <span class="pill p-idle">${esc(e.lifecycle_status||'—')}</span></div>`));
+    bc.insertAdjacentHTML('beforeend',`<a class="row clk" href="./business.html" style="color:var(--accent);font-weight:600">Manage in Business workspace →</a>`);
+    v.appendChild(bc);
+  }
+  const card=el('div','card');card.appendChild(el('h3',null,`Providers <span class="count">${fac.providers.length}</span>`));
+  fac.providers.slice().sort((a,b)=>provPct(b)-provPct(a)).forEach(pr=>card.insertAdjacentHTML('beforeend',provRow(pr)));
+  bindProvRows(card);v.appendChild(card);
+  return v;
 }
 
-function dotsHtml(p) {
-  return `<div class="dots">${[1,2,3,4,5].map(n=>`<div class="dot${n<=p?' on':''}"></div>`).join('')}</div>`;
+/* ═════════ PROVIDERS (onboarding pipeline) ═════════ */
+function provRow(pr){const pct=provPct(pr);const na=nextAction(pr);
+  return `<div class="row clk" data-prov="${esc(pr.id)}"><div class="main"><div class="name">${esc(pr.name)} <span class="pill p-idle">${esc(pr.cred)}</span></div>
+    <div class="sub">${esc(pr.facLabel||pr.building||'')} · ${na?('Next: '+esc(na.item)+' — '+esc(na.phase)):'✅ fully onboarded'}</div></div>
+    <div class="barrow" style="width:210px">${bar(pct)}</div></div>`;}
+function bindProvRows(root){root.querySelectorAll('[data-prov]').forEach(r=>r.onclick=()=>go({v:'provider',id:r.dataset.prov}));}
+function distinctProv(dim){return [...new Set(allProv().map(p=>p[dim]).filter(Boolean))].sort();}
+function providersView(){
+  const v=el('div');const f=filters.providers||(filters.providers={});
+  v.appendChild(backCrumb('providers','🟣 Providers — Onboarding',
+    `<button class="back" onclick="go({v:'bottleneck'})">🚧 Bottlenecks</button>`));
+  const fb=el('div','filters');
+  [['portfolio','Portfolio'],['facLabel','Facility'],['state','State']].forEach(([dim,lab])=>{
+    const fg=el('div','fg');fg.innerHTML=`<label>${lab}</label>`;const sel=el('select');
+    sel.innerHTML=`<option value="">All</option>`+distinctProv(dim).map(x=>`<option value="${esc(x)}"${f[dim]===x?' selected':''}>${esc(x)}</option>`).join('');
+    sel.onchange=()=>{f[dim]=sel.value;render();};fg.appendChild(sel);fb.appendChild(fg);});
+  const sfg=el('div','fg');sfg.innerHTML=`<label>Search</label>`;const si=el('input');si.placeholder='name…';si.value=f.q||'';
+  si.oninput=()=>{f.q=si.value;const c=$('#provlist');if(c){c.innerHTML=provListHTML(f);bindProvRows(c);}};sfg.appendChild(si);fb.appendChild(sfg);
+  v.appendChild(fb);
+  const c=el('div','card');c.id='provlist';c.innerHTML=provListHTML(f);v.appendChild(c);bindProvRows(c);
+  setTimeout(()=>{const c2=$('#provlist');if(c2)bindProvRows(c2);},0);
+  return v;
 }
-
-function teamName(login) { return TEAM[login]||login; }
-
-function assigneeHtml(assignees) {
-  if (!assignees?.length) return `<span style="color:var(--border);font-size:12px">—</span>`;
-  return assignees.map(a=>`<span class="assignee">${teamName(a)}</span>`).join(' ');
+function provListHTML(f){
+  let list=allProv().filter(p=>(!f.portfolio||p.portfolio===f.portfolio)&&(!f.facLabel||p.facLabel===f.facLabel)&&(!f.state||p.state===f.state)&&(!f.q||p.name.toLowerCase().includes(f.q.toLowerCase())));
+  list.sort((a,b)=>provPct(a)-provPct(b));
+  const h=`<h3>Providers <span class="count">${list.length}</span></h3>`;
+  return h+(list.length?list.map(provRow).join(''):'<div class="msg">No providers match.</div>');
 }
-
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function renderRow(p, idx) {
-  const commTag = p.isComm ? `<span class="s-comm">📧 Comm</span>` : '';
-  const actions = buildActions(p);
-  return `<tr id="row-${p.number}">
-    <td style="font-size:12px;font-weight:600;color:var(--text-muted)">${idx+1}</td>
-    <td>
-      <a class="proj-title" href="${p.url}" target="_blank">${esc(p.title)}</a>${commTag}
-      <div class="proj-desc">${esc(p.bodyFirst)}</div>
-    </td>
-    <td>${statusBadge(p.status)}</td>
-    <td>${dotsHtml(p.priority)}</td>
-    <td>${assigneeHtml(p.assignees)}</td>
-    <td><div class="actions">${actions}</div></td>
-  </tr>`;
-}
-
-function buildActions(p) {
-  const edit = `<button class="btn btn-outline btn-sm" onclick="openEditModal(${p.number})">Edit</button>`;
-  if (p.isDone) return `${edit}<button class="btn btn-outline btn-sm" onclick="reopen(${p.number})">↩ Reopen</button>`;
-  const claim = p.assignees.length ? '' : `<button class="btn btn-primary btn-sm" onclick="claim(${p.number})">Claim</button>`;
-  const block  = p.status==='blocked' ? '' : `<button class="btn btn-amber btn-sm" onclick="markBlocked(${p.number})">⚠ Blocked</button>`;
-  const done   = `<button class="btn btn-green btn-sm" onclick="markDone(${p.number})">✓ Done</button>`;
-  return [claim, edit, block, done].filter(Boolean).join('');
-}
-
-const TABLE_HEAD = `<thead><tr>
-  <th style="width:36px">#</th>
-  <th>Project</th>
-  <th style="width:130px">Status</th>
-  <th style="width:90px">Priority</th>
-  <th style="width:90px">Assignee</th>
-  <th style="width:220px">Actions</th>
-</tr></thead>`;
-
-function renderSection(elId, cat, issues) {
-  const el = document.getElementById(elId);
-  const active = issues.filter(i=>!i.isDone && i.category===cat);
-  const inProg = active.filter(i=>i.status==='in-progress').length;
-  const blocked = active.filter(i=>i.status==='blocked').length;
-  el.innerHTML = `
-  <div class="section">
-    <div class="section-header" onclick="toggleSection('${elId}')">
-      <div class="section-title">
-        <span>${CAT_LABEL[cat]}</span>
-        <span class="section-badge ${CAT_BADGE[cat]}">${active.length} projects</span>
-        ${blocked ? `<span class="section-badge" style="background:#fee2e2;color:#dc2626">${blocked} blocked</span>` : ''}
-      </div>
-      <div class="section-meta">
-        <span>${inProg} in progress</span>
-        <span class="section-chevron open" id="chev-${elId}">▼</span>
-      </div>
-    </div>
-    <div id="body-${elId}">
-      ${active.length ? `<table class="proj-table">${TABLE_HEAD}<tbody>${active.map((p,i)=>renderRow(p,i)).join('')}</tbody></table>` : `<div class="empty-state">No ${cat} projects yet. <button class="btn btn-primary btn-sm" onclick="openAddModal('${cat}')" style="margin-left:8px">+ Add one</button></div>`}
-      <div class="add-row"><button class="btn btn-outline btn-sm" onclick="openAddModal('${cat}')">+ Add ${cat} project</button></div>
-    </div>
-  </div>`;
-}
-
-function renderDoneSection(issues) {
-  const done = issues.filter(i=>i.isDone);
-  const el = document.getElementById('section-done');
-  if (!done.length) { el.innerHTML=''; return; }
-  el.innerHTML = `
-  <div class="section">
-    <div class="section-header" onclick="toggleSection('section-done')">
-      <div class="section-title"><span>✓ Done</span><span class="section-badge badge-done">${done.length} completed</span></div>
-      <div class="section-meta"><span class="section-chevron" id="chev-section-done">▼</span></div>
-    </div>
-    <div id="body-section-done" style="display:none">
-      <table class="proj-table">${TABLE_HEAD}<tbody>${done.map((p,i)=>renderRow(p,i)).join('')}</tbody></table>
-    </div>
-  </div>`;
-}
-
-function renderSections() {
-  renderSection('section-business', 'business', allIssues);
-  renderSection('section-facility', 'facility', allIssues);
-  renderSection('section-provider', 'provider', allIssues);
-  renderDoneSection(allIssues);
-}
-
-function toggleSection(id) {
-  const body = document.getElementById(`body-${id}`);
-  const chev = document.getElementById(`chev-${id}`);
-  const hidden = body.style.display === 'none';
-  body.style.display = hidden ? '' : 'none';
-  if (chev) chev.classList.toggle('open', hidden);
-}
-
-// ── Actions ───────────────────────────────────────────────────────────────────
-
-async function withLoading(n, fn) {
-  const btns = document.querySelectorAll(`#row-${n} button`);
-  btns.forEach(b=>b.disabled=true);
-  try { await fn(); await loadAll(); }
-  catch(e) { toast(`Error: ${e.message}`, true); btns.forEach(b=>b.disabled=false); }
-}
-
-async function addLabel(n, label) {
-  await ghFetch(`/repos/${REPO}/issues/${n}/labels`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({labels:[label]}) });
-}
-async function removeLabel(n, label) {
-  await ghFetch(`/repos/${REPO}/issues/${n}/labels/${encodeURIComponent(label)}`, { method:'DELETE' }).catch(()=>{});
-}
-async function postComment(n, body) {
-  await ghFetch(`/repos/${REPO}/issues/${n}/comments`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({body}) });
-}
-
-function claim(n) {
-  withLoading(n, async()=>{
-    await ghFetch(`/repos/${REPO}/issues/${n}`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({assignees:[currentUser.login]})});
-    await addLabel(n,'status:in-progress');
-    await removeLabel(n,'status:not-started');
-    toast(`Claimed #${n}`);
+function providerView(id){
+  const fp=findProv(id); if(!fp)return backCrumb('','Provider not found');
+  const pr=fp.pr; const v=el('div');
+  const bk=el('button','back','← Back');bk.onclick=()=>history.back?go({v:'providers'}):go({v:'providers'});
+  const c=el('div','crumb');c.appendChild(bk);c.appendChild(el('h2',null,esc(pr.name)+' '));
+  c.appendChild(el('span','count',`${esc(pr.cred)} · ${esc(pr.group||'')} · ${esc(fp.f.label)}`));v.appendChild(c);
+  const na=nextAction(pr);
+  const stt=el('div','stat');
+  stt.innerHTML=`<div class="kv"><b class="tnum">${provPct(pr)}%</b><span>overall</span></div>
+    <div class="kv"><b>${esc(currentPhase(pr))}</b><span>current phase</span></div>
+    <div class="kv"><b style="font-size:13px">${na?esc(na.item):'✅ Done'}</b><span>next action</span></div>
+    <div class="kv"><b style="font-size:13px">${esc(pr.employment||'—')}</b><span>${esc(pr.contact?pr.contact.split('\n')[0]:'')||'employment'}</span></div>`;
+  v.appendChild(stt);
+  const card=el('div','card');
+  PH().forEach(ph=>{const r=phasePct(pr,ph);
+    const wrap=el('div','phase');
+    const head=el('div','phhead');
+    head.innerHTML=`<b>${esc(ph.label)}</b><span class="count">${r.c}/${r.t}</span><div class="barrow" style="margin-left:auto;width:200px">${bar(r.pct)}</div>
+      <button class="mini g" onclick="event.stopPropagation();completePhase('${esc(pr.id)}','${ph.key}')" title="Mark all in phase complete (umbrella)">✓ all</button>`;
+    wrap.appendChild(head);
+    const items=el('div','items');
+    ph.items.forEach(it=>{const s=pr.items[it.key]||'not_started';
+      const d=el('div','it s-'+s);d.onclick=()=>cycleItem(pr.id,it.key);
+      d.innerHTML=`<span class="ic">${ST_ICON[s]}</span><span class="lb">${esc(it.label)}</span>`;
+      items.appendChild(d);});
+    wrap.appendChild(items);card.appendChild(wrap);
   });
+  v.appendChild(card);
+  return v;
 }
 
-function markBlocked(n) {
-  withLoading(n, async()=>{
-    await addLabel(n,'status:blocked');
-    await removeLabel(n,'status:in-progress');
-    await postComment(n,`⚠️ **Blocked** by @${currentUser.login}`);
-    toast(`Marked blocked`);
-  });
+/* ═════════ BOTTLENECKS ═════════ */
+function bottleneckView(){
+  const v=el('div');v.appendChild(backCrumb('','🚧 Onboarding Bottlenecks'));
+  v.appendChild(el('div','note','Across all providers — the items blocking the most people. Attack the top of the list first.'));
+  const bn=bottlenecks(allProv());const max=bn.length?bn[0].n:1;
+  const c=el('div','card');c.appendChild(el('h3',null,`Stuck items <span class="count">${bn.length}</span>`));
+  bn.slice(0,40).forEach(b=>{const row=el('div','row');
+    row.innerHTML=`<div class="main"><div class="name">${esc(b.item)}</div><div class="sub">${esc(b.phase)} · ${b.prog} in progress</div></div>
+      <div class="barrow" style="width:240px"><div class="bar lo"><span style="width:${Math.round(100*b.n/max)}%"></span></div><span class="pctlab">${b.n}</span></div>`;
+    c.appendChild(row);});
+  v.appendChild(c);return v;
 }
 
-function markDone(n) {
-  if (!confirm('Mark this project done and close the issue?')) return;
-  withLoading(n, async()=>{
-    await addLabel(n,'status:done');
-    await ghFetch(`/repos/${REPO}/issues/${n}`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({state:'closed'})});
-    toast(`#${n} marked done ✓`);
-  });
+/* ═════════ WEEKLY SNAPSHOT ═════════ */
+async function captureSnapshot(){
+  if(!requireAuth()||!Staff.doc)return;
+  const d=new Date().toISOString().slice(0,10);
+  const snap={date:d,portfolios:Staff.doc.portfolios.map(p=>({id:p.id,label:p.label,pct:portPct(p),providers:p.facilities.reduce((s,f)=>s+f.providers.length,0)}))};
+  Staff.snaps=Staff.snaps||[]; Staff.snaps=Staff.snaps.filter(s=>s.date!==d); Staff.snaps.push(snap); Staff.snaps.sort((a,b)=>a.date<b.date?1:-1);
+  try{await Staff.saveSnaps('Snapshot '+d);toast('Snapshot saved '+d);render();}catch(e){toast('Error: '+e.message);}
+}
+function snapDelta(portId){
+  if(!Staff.snaps||Staff.snaps.length<2)return '';
+  const prev=Staff.snaps[1].portfolios.find(p=>p.id===portId);const cur=Staff.snaps[0].portfolios.find(p=>p.id===portId);
+  if(!prev||!cur)return '';const d=cur.pct-prev.pct;return d?` <span class="pill ${d>0?'p-ok':'p-bad'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:'';
 }
 
-function reopen(n) {
-  withLoading(n, async()=>{
-    await ghFetch(`/repos/${REPO}/issues/${n}`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({state:'open'})});
-    await removeLabel(n,'status:done');
-    await addLabel(n,'status:in-progress');
-    toast(`#${n} reopened`);
-  });
+/* ═════════ EMAIL REPORT ═════════ */
+function buildReport(){
+  let lines=['SEGE Staffing / Onboarding — '+new Date().toLocaleDateString(),''];
+  Staff.doc.portfolios.forEach(p=>{lines.push(`◆ ${p.label} — ${portPct(p)}% onboarded`);
+    p.facilities.forEach(f=>{lines.push(`   • ${f.label} [${FSTATUS[f.status][1].replace(/[^\x20-\x7e]/g,'').trim()}] ${f.staffing.filled}/${f.staffing.target} — ${facPct(f)}%`);});
+    lines.push('');});
+  return lines.join('\n');
+}
+function openEmail(){
+  if(!Staff.doc){toast('Connect first');return;}
+  const rep=buildReport();
+  navigator.clipboard&&navigator.clipboard.writeText(rep).then(()=>toast('Report copied to clipboard')).catch(()=>{});
+  location.href='mailto:?subject='+encodeURIComponent('SEGE Onboarding Report')+'&body='+encodeURIComponent(rep.slice(0,1800));
 }
 
-// ── Add Modal ─────────────────────────────────────────────────────────────────
+/* ═════════ issue views (Business / People / Done) ═════════ */
+function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business'));
+  // Business workspace embedded inline (entities, contracts, compliance & marketing) — no extra click.
+  v.appendChild(el('div','sect','Business workspace — entities · contracts · compliance · marketing'));
+  const frame=el('iframe');frame.className='bizframe';frame.src='./bizworkspace.html';frame.title='Business workspace';
+  frame.onload=()=>{try{const d=frame.contentDocument;const s=d.createElement('style');
+    s.textContent='header.top,.foot{display:none!important}html,body{background:transparent!important}.wrap{padding:2px 0 10px!important;max-width:100%!important}'
+      +'#nav{display:flex!important;gap:6px!important;flex-wrap:wrap!important;align-items:center!important;padding:5px!important;margin:0 0 16px!important;border-radius:11px!important;background:rgba(128,128,128,.12)!important;border:1px solid rgba(128,128,128,.22)!important}'
+      +'#nav button{border:0!important;background:transparent!important;color:inherit!important;opacity:.65;font:inherit!important;font-size:13px!important;font-weight:600!important;padding:8px 14px!important;border-radius:8px!important;cursor:pointer!important;white-space:nowrap!important;box-shadow:none!important}'
+      +'#nav button:hover{opacity:1}'
+      +'#nav button.on{background:rgba(128,128,128,.28)!important;opacity:1!important;box-shadow:0 1px 3px rgba(0,0,0,.18)!important}';
+    d.head.appendChild(s);
+    const fit=()=>{try{frame.style.height=Math.max(420,(d.body.scrollHeight||600)+16)+'px';}catch(e){}};
+    fit();clearInterval(frame._t);frame._t=setInterval(fit,700);}catch(e){}};
+  v.appendChild(frame);
+  v.appendChild(el('div','sect','Business projects (tracker)'));
+  const list=active().filter(i=>i.cat==='business');const c=el('div','card');
+  c.appendChild(el('h3',null,`Active <span class="count">${list.length}</span>`));
+  if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing active.'));
+  v.appendChild(c);
+  const dn=issues.filter(i=>i.done&&i.cat==='business');if(dn.length){v.appendChild(el('div','sect','Done'));const d=el('div','card');dn.forEach(i=>d.insertAdjacentHTML('beforeend',issueRow(i)));v.appendChild(d);}
+  return v;}
+function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8a97a6'}):{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
+  const v=el('div');v.appendChild(backCrumb('',esc(t.name)));
+  const list=active().filter(i=>login?i.who.includes(login):!i.who.length);
+  const c=el('div','card');c.appendChild(el('h3',null,`Active projects <span class="count">${list.length}</span>`));
+  if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','No active items.'));
+  v.appendChild(c);return v;}
 
-function openAddModal(cat) {
-  if (cat) document.getElementById('add-category').value = cat;
-  document.getElementById('add-modal').classList.add('open');
-  document.getElementById('add-title').focus();
+/* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
+const BASE='/sege-command/';
+// Command Center is the site root; views are root-level paths (/sege-command/accounts …).
+// business.html was moved to bizworkspace.html so /business is a real app route (no pretty-URL clash).
+function pathFor(r){
+  if(!r||r.v==='home') return BASE;
+  if(r.v==='facility') return BASE+'facility/'+encodeURIComponent(r.id);
+  if(r.v==='provider') return BASE+'provider/'+encodeURIComponent(r.id);
+  if(r.v==='person')   return BASE+'person/'+encodeURIComponent(r.login||'unassigned');
+  return BASE+r.v;                         // /sege-command/accounts | providers | business | bottleneck
 }
-function closeAddModal(e) {
-  if (e && e.target !== document.getElementById('add-modal')) return;
-  document.getElementById('add-modal').classList.remove('open');
+function routeFromPath(p){
+  let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'');
+  if(!sub||sub==='index.html'||sub==='command.html') return {v:'home'};
+  const parts=sub.split('/'), seg=parts[0], id=decodeURIComponent(parts.slice(1).join('/'));
+  if(seg==='facility'&&id) return {v:'facility',id};
+  if(seg==='provider'&&id) return {v:'provider',id};
+  if(seg==='person')       return {v:'person',login:(id&&id!=='unassigned')?id:null};
+  if(['accounts','providers','business','bottleneck'].includes(seg)) return {v:seg};
+  return {v:'home'};
 }
-
-async function saveAdd() {
-  const title    = document.getElementById('add-title').value.trim();
-  const cat      = document.getElementById('add-category').value;
-  const prio     = document.getElementById('add-priority').value;
-  const assignee = document.getElementById('add-assignee').value;
-  const comm     = document.getElementById('add-comm').value;
-  const notes    = document.getElementById('add-notes').value.trim();
-  if (!title) { toast('Title is required'); return; }
-  const btn = document.querySelector('#add-modal .btn-primary');
-  btn.textContent='Creating…'; btn.disabled=true;
-  try {
-    const labels = [cat, `priority-${prio}`, 'status:in-progress', ...(comm?[comm]:[])];
-    const body = notes || '';
-    const issue = await ghFetch(`/repos/${REPO}/issues`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ title, body, labels, assignees: assignee?[assignee]:[] }) });
-    document.getElementById('add-modal').classList.remove('open');
-    document.getElementById('add-title').value='';
-    document.getElementById('add-notes').value='';
-    toast(`Created #${issue.number}`);
-    await loadAll();
-  } finally { btn.textContent='Create →'; btn.disabled=false; }
+function applyPath(){
+  let sub=null; try{sub=sessionStorage.getItem('spa-route'); if(sub)sessionStorage.removeItem('spa-route');}catch(e){}
+  route = sub ? routeFromPath(BASE+sub) : routeFromPath(location.pathname);
+  try{ history.replaceState(route,'',pathFor(route)); }catch(e){}
+  render();
 }
-
-// ── Edit Modal ────────────────────────────────────────────────────────────────
-
-function openEditModal(n) {
-  const p = allIssues.find(p=>p.number===n);
-  if (!p) return;
-  editIssueNumber = n;
-  document.getElementById('edit-title').value = p.title;
-  const prio = p.labels.find(l=>l.startsWith('priority-'))?.slice(9)||'3';
-  document.getElementById('edit-priority').value = prio;
-  document.getElementById('edit-assignee').value = p.assignees?.[0]||'';
-  document.getElementById('edit-notes').value = p.body.split('\n').slice(0,3).join('\n');
-  document.getElementById('edit-modal').classList.add('open');
-}
-function closeEditModal(e) {
-  if (e && e.target !== document.getElementById('edit-modal')) return;
-  document.getElementById('edit-modal').classList.remove('open');
-  editIssueNumber = null;
+function go(r){ try{history.pushState(r,'',pathFor(r));}catch(e){} route=r; window.scrollTo(0,0); render(); }
+window.addEventListener('popstate',()=>{ route=routeFromPath(location.pathname); render(); });
+function render(){
+  const view=$('#view'); view.innerHTML=''; let node;
+  const needStaff=['accounts','providers','facility','provider','bottleneck'].includes(route.v);
+  if(needStaff&&!Staff.doc){ node=el('div');node.appendChild(backCrumb('','Staffing'));
+    node.appendChild(el('div','msg',pat()?'This token can\'t read the private sege-staffing repo. Give it Contents access.':'🔒 Connect a token with sege-staffing access to view staffing & onboarding.'));
+    view.appendChild(node);return; }
+  if(route.v==='accounts')node=accountsView();
+  else if(route.v==='facility')node=facilityView(route.id);
+  else if(route.v==='providers')node=providersView();
+  else if(route.v==='provider')node=providerView(route.id);
+  else if(route.v==='bottleneck')node=bottleneckView();
+  else if(route.v==='business')node=bizView();
+  else if(route.v==='person')node=personView(route.login);
+  else node=homeView();
+  view.appendChild(node);
 }
 
-async function saveEdit() {
-  const n = editIssueNumber; if (!n) return;
-  const title    = document.getElementById('edit-title').value.trim();
-  const prio     = document.getElementById('edit-priority').value;
-  const assignee = document.getElementById('edit-assignee').value;
-  const notes    = document.getElementById('edit-notes').value.trim();
-  if (!title) { toast('Title required'); return; }
-  const btn = document.querySelector('#edit-modal .btn-primary');
-  btn.textContent='Saving…'; btn.disabled=true;
-  try {
-    const issue = await ghFetch(`/repos/${REPO}/issues/${n}`);
-    const body = notes || issue.body || '';
-    await ghFetch(`/repos/${REPO}/issues/${n}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ title, assignees: assignee?[assignee]:[], body }) });
-    for (let i=1;i<=5;i++) await removeLabel(n,`priority-${i}`);
-    if (prio) await addLabel(n,`priority-${prio}`);
-    document.getElementById('edit-modal').classList.remove('open');
-    editIssueNumber=null;
-    toast(`#${n} updated`);
-    await loadAll();
-  } finally { btn.textContent='Save'; btn.disabled=false; }
+/* ═════════ onboarding writes ═════════ */
+let saveTimer=null, saving=false;
+function queueSave(msg){ if(saveTimer)clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{ if(saving)return;saving=true;
+    try{await Staff.save(msg);toast('Saved ✓');}catch(e){toast('Save failed: '+e.message+' — reloading');await loadStaff();render();}
+    saving=false;
+  },600);
 }
+function cycleItem(provId,itemKey){ if(!requireAuth()||!Staff.doc)return;
+  const fp=findProv(provId);if(!fp)return;const cur=fp.pr.items[itemKey]||'not_started';
+  fp.pr.items[itemKey]=ST_NEXT[cur]; render(); queueSave('Update '+fp.pr.name); }
+function completePhase(provId,phaseKey){ if(!requireAuth()||!Staff.doc)return;
+  const fp=findProv(provId);if(!fp)return;const ph=PH().find(p=>p.key===phaseKey);
+  const anyOpen=ph.items.some(it=>fp.pr.items[it.key]!=='complete'&&fp.pr.items[it.key]!=='na');
+  ph.items.forEach(it=>{ if(fp.pr.items[it.key]!=='na') fp.pr.items[it.key]=anyOpen?'complete':'not_started'; });
+  render(); queueSave((anyOpen?'Complete':'Reset')+' phase '+ph.label+' — '+fp.pr.name); }
+let facSaveTimer=null, facSaving=false;
+function queueFacSave(msg){ if(facSaveTimer)clearTimeout(facSaveTimer);
+  facSaveTimer=setTimeout(async()=>{ if(facSaving)return;facSaving=true;
+    try{await FacOnb.save(msg);toast('Saved ✓');}catch(e){toast('Save failed: '+e.message);await FacOnb.load();render();}facSaving=false;},600); }
+function cycleFacItem(fid,itemKey){ if(!requireAuth()||!FacOnb.doc)return;const f=facOnb(fid);if(!f)return;
+  f.items[itemKey]=ST_NEXT[f.items[itemKey]||'not_started']; render(); queueFacSave('Facility onboarding — '+fid); }
+function completeFacChecklist(fid){ if(!requireAuth()||!FacOnb.doc)return;const f=facOnb(fid);if(!f)return;
+  const anyOpen=FCL().some(it=>f.items[it.key]!=='complete'&&f.items[it.key]!=='na');
+  FCL().forEach(it=>{ if(f.items[it.key]!=='na') f.items[it.key]=anyOpen?'complete':'not_started'; });
+  render(); queueFacSave('Facility onboarding — '+fid); }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
+/* ── issue writes ── */
+async function addLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({labels:[l]})});}
+async function rmLabel(n,l){await gh(`/repos/${REPO}/issues/${n}/labels/${encodeURIComponent(l)}`,{method:'DELETE'}).catch(()=>{});}
+async function busy(n,fn){const btns=document.querySelectorAll('#r'+n+' button');btns.forEach(b=>b.disabled=true);
+  try{await fn();await loadAll();}catch(e){toast('Error: '+e.message);btns.forEach(b=>b.disabled=false);}}
+function claim(n){if(!requireAuth())return;if(!me){toast('Reconnect your token');return;}busy(n,async()=>{await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({assignees:[me.login]})});await addLabel(n,'status:in-progress');await rmLabel(n,'status:not-started');toast('Claimed #'+n);});}
+function block(n){if(!requireAuth())return;busy(n,async()=>{await addLabel(n,'status:blocked');await rmLabel(n,'status:in-progress');toast('Marked blocked');});}
+function done(n){if(!requireAuth())return;if(!confirm('Mark #'+n+' done?'))return;busy(n,async()=>{await addLabel(n,'status:done');await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'closed'})});toast('#'+n+' done ✓');});}
+function reopen(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${REPO}/issues/${n}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'open'})});await rmLabel(n,'status:done');await addLabel(n,'status:in-progress');toast('#'+n+' reopened');});}
 
-let toastTimer;
-function toast(msg, err=false) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.style.background=err?'#dc2626':'#1f2937';
-  el.classList.add('show'); clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
-}
+/* ── modals ── */
+function openConnect(){$('#connect').classList.add('on');$('#pat').focus();}
+function closeConnect(){$('#connect').classList.remove('on');}
+async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem('sege-command-pat',v);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
+function openAdd(){if(!requireAuth())return;const s=$('#a_who');s.innerHTML='<option value="">— Unassigned —</option>'+Object.keys(TEAM).map(l=>`<option value="${l}">${TEAM[l].name}</option>`).join('');$('#add').classList.add('on');$('#a_title').focus();}
+function closeAdd(){$('#add').classList.remove('on');}
+async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast('Title required');return;}
+  const cat=$('#a_cat').value,prio=$('#a_prio').value,who=$('#a_who').value,notes=$('#a_notes').value.trim();
+  try{const iss=await gh(`/repos/${REPO}/issues`,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({title,body:notes,labels:[cat,'priority-'+prio,'status:'+(who?'in-progress':'not-started')],assignees:who?[who]:[]})});
+    closeAdd();$('#a_title').value='';$('#a_notes').value='';toast('Created #'+iss.number);loadAll();
+  }catch(e){toast('Error: '+e.message);}}
+
+let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600);}
+
+setConn();loadAll();
+setInterval(()=>{if(document.visibilityState==='visible'&&!saving&&route.v!=='provider')loadAll();},300000);
 </script>
 </body>
 </html>
