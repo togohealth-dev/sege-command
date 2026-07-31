@@ -8,13 +8,15 @@
   var BASE='/sege-tracker/';
   var p=location.pathname;
   if(p.indexOf(BASE)===0){
-    var sub=p.slice(BASE.length).replace(/\/+$/,'');
-    var seg=sub.split('/')[0];
-    var known=['home','accounts','providers','business','bottleneck','facility','provider','person'];
-    if(known.indexOf(seg)>=0){
-      try{ sessionStorage.setItem('spa-route', sub); }catch(e){}
-      location.replace(BASE+'command.html');
-      return;
+    var sub=p.slice(BASE.length).replace(/\/+$/,'');       // e.g. command/accounts
+    if(sub.indexOf('command/')===0){
+      var seg=sub.slice('command/'.length).split('/')[0];
+      var known=['home','accounts','providers','business','bottleneck','facility','provider','person'];
+      if(known.indexOf(seg)>=0){
+        try{ sessionStorage.setItem('spa-route', sub); }catch(e){}
+        location.replace(BASE+'command.html');
+        return;
+      }
     }
   }
   document.documentElement.setAttribute('data-nf','1');

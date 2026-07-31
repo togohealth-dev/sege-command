@@ -568,16 +568,19 @@ function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8
 
 /* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
 const BASE='/sege-tracker/';
+// routes namespaced under /command/ so they never collide with real files (business.html etc.)
 function pathFor(r){
-  if(!r||r.v==='home') return BASE+'command.html';
-  if(r.v==='facility') return BASE+'facility/'+encodeURIComponent(r.id);
-  if(r.v==='provider') return BASE+'provider/'+encodeURIComponent(r.id);
-  if(r.v==='person')   return BASE+'person/'+encodeURIComponent(r.login||'unassigned');
-  return BASE+r.v;                         // /sege-tracker/accounts | providers | business | bottleneck
+  if(!r||r.v==='home') return BASE+'command';
+  if(r.v==='facility') return BASE+'command/facility/'+encodeURIComponent(r.id);
+  if(r.v==='provider') return BASE+'command/provider/'+encodeURIComponent(r.id);
+  if(r.v==='person')   return BASE+'command/person/'+encodeURIComponent(r.login||'unassigned');
+  return BASE+'command/'+r.v;              // /sege-tracker/command/accounts | providers | business | bottleneck
 }
 function routeFromPath(p){
-  let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'');
-  if(!sub||sub==='command.html'||sub==='index.html') return {v:'home'};
+  let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'').replace(/^command\.html$/,'command');
+  if(!sub||sub==='command'||sub==='index.html') return {v:'home'};
+  if(sub.indexOf('command/')!==0) return {v:'home'};
+  sub=sub.slice('command/'.length);
   const parts=sub.split('/'), seg=parts[0], id=decodeURIComponent(parts.slice(1).join('/'));
   if(seg==='facility'&&id) return {v:'facility',id};
   if(seg==='provider'&&id) return {v:'provider',id};
