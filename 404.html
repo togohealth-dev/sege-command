@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SEGE Command Center</title>
+<script>
+(function(){
+  var BASE='/sege-tracker/';
+  var p=location.pathname;
+  if(p.indexOf(BASE)===0){
+    var sub=p.slice(BASE.length).replace(/\/+$/,'');
+    var seg=sub.split('/')[0];
+    var known=['home','accounts','providers','business','bottleneck','facility','provider','person'];
+    if(known.indexOf(seg)>=0){
+      try{ sessionStorage.setItem('spa-route', sub); }catch(e){}
+      location.replace(BASE+'command.html');
+      return;
+    }
+  }
+  document.documentElement.setAttribute('data-nf','1');
+})();
+</script>
+<style>body{font-family:system-ui,-apple-system,sans-serif;background:#f6f8fa;color:#17212f;display:grid;place-items:center;height:100vh;margin:0}a{color:#0e7c86}</style>
+</head>
+<body>
+  <div style="text-align:center">
+    <h1 style="font-size:22px">Page not found</h1>
+    <p><a href="/sege-tracker/command.html">→ SEGE Command Center</a></p>
+  </div>
+</body>
+</html>

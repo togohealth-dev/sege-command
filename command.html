@@ -280,7 +280,7 @@ async function loadAll(){
     const seen=new Map(); for(const i of [...op,...cl]) if(!seen.has(i.number)) seen.set(i.number,i);
     issues=[...seen.values()].map(normalize).sort((a,b)=>b.prio-a.prio||a.n-b.n);
     await loadStaff();
-    loaded=true; setConn(); applyHash();
+    loaded=true; setConn(); if(!window.__routed){window.__routed=1; applyPath();} else render();
   }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load ('+e.message+'). If rate-limited, connect a token.</div>'; }
 }
 function normalize(i){
@@ -566,27 +566,33 @@ function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8
   if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','No active items.'));
   v.appendChild(c);return v;}
 
-/* ═════════ router ═════════ */
-// ── hash router: each view has its own URL (#accounts, #providers, #business, #facility/<id>, …) ──
-function routeToHash(r){
-  if(!r||r.v==='home') return '#home';
-  if(r.v==='facility') return '#facility/'+encodeURIComponent(r.id);
-  if(r.v==='provider') return '#provider/'+encodeURIComponent(r.id);
-  if(r.v==='person')   return '#person/'+encodeURIComponent(r.login||'unassigned');
-  return '#'+r.v;
+/* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
+const BASE='/sege-tracker/';
+function pathFor(r){
+  if(!r||r.v==='home') return BASE+'command.html';
+  if(r.v==='facility') return BASE+'facility/'+encodeURIComponent(r.id);
+  if(r.v==='provider') return BASE+'provider/'+encodeURIComponent(r.id);
+  if(r.v==='person')   return BASE+'person/'+encodeURIComponent(r.login||'unassigned');
+  return BASE+r.v;                         // /sege-tracker/accounts | providers | business | bottleneck
 }
-function hashToRoute(){
-  const raw=decodeURIComponent(location.hash.replace(/^#/,''));
-  const [seg,rest]=[raw.split('/')[0], raw.split('/').slice(1).join('/')];
-  if(seg==='facility'&&rest) return {v:'facility',id:rest};
-  if(seg==='provider'&&rest) return {v:'provider',id:rest};
-  if(seg==='person')  return {v:'person',login: rest==='unassigned'?null:rest};
+function routeFromPath(p){
+  let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'');
+  if(!sub||sub==='command.html'||sub==='index.html') return {v:'home'};
+  const parts=sub.split('/'), seg=parts[0], id=decodeURIComponent(parts.slice(1).join('/'));
+  if(seg==='facility'&&id) return {v:'facility',id};
+  if(seg==='provider'&&id) return {v:'provider',id};
+  if(seg==='person')       return {v:'person',login:(id&&id!=='unassigned')?id:null};
   if(['accounts','providers','business','bottleneck'].includes(seg)) return {v:seg};
   return {v:'home'};
 }
-function applyHash(){ route=hashToRoute(); window.scrollTo(0,0); render(); }
-function go(r){ const h=routeToHash(r); if(location.hash===h){applyHash();} else {location.hash=h;} }
-window.addEventListener('hashchange',applyHash);
+function applyPath(){
+  let sub=null; try{sub=sessionStorage.getItem('spa-route'); if(sub)sessionStorage.removeItem('spa-route');}catch(e){}
+  route = sub ? routeFromPath(BASE+sub) : routeFromPath(location.pathname);
+  try{ history.replaceState(route,'',pathFor(route)); }catch(e){}
+  render();
+}
+function go(r){ try{history.pushState(r,'',pathFor(r));}catch(e){} route=r; window.scrollTo(0,0); render(); }
+window.addEventListener('popstate',()=>{ route=routeFromPath(location.pathname); render(); });
 function render(){
   const view=$('#view'); view.innerHTML=''; let node;
   const needStaff=['accounts','providers','facility','provider','bottleneck'].includes(route.v);
