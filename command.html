@@ -280,7 +280,7 @@ async function loadAll(){
     const seen=new Map(); for(const i of [...op,...cl]) if(!seen.has(i.number)) seen.set(i.number,i);
     issues=[...seen.values()].map(normalize).sort((a,b)=>b.prio-a.prio||a.n-b.n);
     await loadStaff();
-    loaded=true; setConn(); render();
+    loaded=true; setConn(); applyHash();
   }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load ('+e.message+'). If rate-limited, connect a token.</div>'; }
 }
 function normalize(i){
@@ -567,7 +567,26 @@ function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8
   v.appendChild(c);return v;}
 
 /* ═════════ router ═════════ */
-function go(r){route=r;window.scrollTo(0,0);render();}
+// ── hash router: each view has its own URL (#accounts, #providers, #business, #facility/<id>, …) ──
+function routeToHash(r){
+  if(!r||r.v==='home') return '#home';
+  if(r.v==='facility') return '#facility/'+encodeURIComponent(r.id);
+  if(r.v==='provider') return '#provider/'+encodeURIComponent(r.id);
+  if(r.v==='person')   return '#person/'+encodeURIComponent(r.login||'unassigned');
+  return '#'+r.v;
+}
+function hashToRoute(){
+  const raw=decodeURIComponent(location.hash.replace(/^#/,''));
+  const [seg,rest]=[raw.split('/')[0], raw.split('/').slice(1).join('/')];
+  if(seg==='facility'&&rest) return {v:'facility',id:rest};
+  if(seg==='provider'&&rest) return {v:'provider',id:rest};
+  if(seg==='person')  return {v:'person',login: rest==='unassigned'?null:rest};
+  if(['accounts','providers','business','bottleneck'].includes(seg)) return {v:seg};
+  return {v:'home'};
+}
+function applyHash(){ route=hashToRoute(); window.scrollTo(0,0); render(); }
+function go(r){ const h=routeToHash(r); if(location.hash===h){applyHash();} else {location.hash=h;} }
+window.addEventListener('hashchange',applyHash);
 function render(){
   const view=$('#view'); view.innerHTML=''; let node;
   const needStaff=['accounts','providers','facility','provider','bottleneck'].includes(route.v);
