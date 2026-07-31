@@ -543,7 +543,11 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business')
   v.appendChild(el('div','sect','Business workspace — entities · contracts · compliance · marketing'));
   const frame=el('iframe');frame.className='bizframe';frame.src='./business.html';frame.title='Business workspace';
   frame.onload=()=>{try{const d=frame.contentDocument;const s=d.createElement('style');
-    s.textContent='header.top,.foot{display:none!important}html,body{background:transparent!important}.wrap{padding:2px 0 10px!important;max-width:100%!important}';
+    s.textContent='header.top,.foot{display:none!important}html,body{background:transparent!important}.wrap{padding:2px 0 10px!important;max-width:100%!important}'
+      +'#nav{display:flex!important;gap:6px!important;flex-wrap:wrap!important;align-items:center!important;padding:5px!important;margin:0 0 16px!important;border-radius:11px!important;background:rgba(128,128,128,.12)!important;border:1px solid rgba(128,128,128,.22)!important}'
+      +'#nav button{border:0!important;background:transparent!important;color:inherit!important;opacity:.65;font:inherit!important;font-size:13px!important;font-weight:600!important;padding:8px 14px!important;border-radius:8px!important;cursor:pointer!important;white-space:nowrap!important;box-shadow:none!important}'
+      +'#nav button:hover{opacity:1}'
+      +'#nav button.on{background:rgba(128,128,128,.28)!important;opacity:1!important;box-shadow:0 1px 3px rgba(0,0,0,.18)!important}';
     d.head.appendChild(s);
     const fit=()=>{try{frame.style.height=Math.max(420,(d.body.scrollHeight||600)+16)+'px';}catch(e){}};
     fit();clearInterval(frame._t);frame._t=setInterval(fit,700);}catch(e){}};
