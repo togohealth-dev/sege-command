@@ -96,9 +96,7 @@ window.sendLink=async()=>{const e=$('#em').value.trim();if(!e)return;
   $('#gm').textContent=error?('Error: '+error.message+' — ask an admin to invite you'):'Check your email for the sign-in link.';};
 window.signOut=async()=>{await sb.auth.signOut();location.reload();};
 function show(a){$('#gate').style.display=a?'none':'grid';$('#app').style.visibility=a?'visible':'hidden';}
-const {data:{session}}=await sb.auth.getSession();
-if(session){me=session.user.email;$('#who').textContent=me;show(true);loadTab();}else show(false);
-sb.auth.onAuthStateChange((_e,s)=>{if(s){me=s.user.email;$('#who').textContent=me;show(true);loadTab();}});
+// boot moved to the end of the module (loadTab must be defined first)
 
 $('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
   document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
@@ -330,8 +328,15 @@ window.approve=async(id)=>{
   const {error}=await sb.from('campaign').update({approved_by:me,approved_at:new Date().toISOString(),status:'queued'}).eq('id',id);
   if(error){toast('Error: '+error.message);return;} toast('Approved');tCampaigns();
 };
+window.onerror=(m)=>{const v=document.getElementById('view');if(v&&/Loading/.test(v.textContent))v.innerHTML='<div class="msg">Script error: '+String(m)+'</div>';};
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){me=session.user.email;$('#who').textContent=me;show(true);loadTab();}else show(false);
+  sb.auth.onAuthStateChange((_e,s)=>{if(s){me=s.user.email;$('#who').textContent=me;show(true);loadTab();}});
+}
 let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600);}
 window.toast=toast;
+boot();   // last: everything is defined by now
 </script>
 </body>
 </html>
