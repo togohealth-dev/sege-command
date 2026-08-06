@@ -123,7 +123,17 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<div id="authgate" style="display:none;position:fixed;inset:0;background:var(--ground);z-index:9999;display:grid;place-items:center;padding:20px">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center">
+    <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+    <h1 style="font-size:19px;font-weight:750">SEGE Command Center</h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in required. Enter your work email for a magic link.</p>
+    <input id="ag_email" type="email" placeholder="you@togohealth.com" autocomplete="email" style="width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:10px 0">
+    <button class="btn pri" style="width:100%" onclick="agSend()">Send magic link</button>
+    <p id="ag_msg" style="color:var(--muted);font-size:12px;margin-top:10px"></p>
+  </div>
+</div>
+<div class="wrap" id="appwrap" style="visibility:hidden">
   <header class="top">
     <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
     <div class="title"><h1>SEGE Command Center</h1><p>Who's doing what — live over your GitHub project tracker</p></div>
@@ -687,6 +697,18 @@ let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('sh
 
 setConn();loadAll();
 setInterval(()=>{if(document.visibilityState==='visible'&&!saving&&route.v!=='provider')loadAll();},300000);
+</script>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+const gate=document.getElementById('authgate'), app=document.getElementById('appwrap');
+function show(authed){ gate.style.display=authed?'none':'grid'; app.style.visibility=authed?'visible':'hidden'; }
+window.agSend=async()=>{const e=document.getElementById('ag_email').value.trim();if(!e)return;
+  const {error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});
+  document.getElementById('ag_msg').textContent=error?('Error: '+error.message+' — ask an admin to invite you'):'Check your email for the sign-in link.';};
+window.agSignOut=async()=>{await sb.auth.signOut();location.reload();};
+const {data:{session}}=await sb.auth.getSession(); show(!!session);
+sb.auth.onAuthStateChange((_e,s)=>show(!!s));
 </script>
 </body>
 </html>
