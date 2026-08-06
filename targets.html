@@ -330,6 +330,8 @@ window.approve=async(id)=>{
 };
 window.onerror=(m)=>{const v=document.getElementById('view');if(v&&/Loading/.test(v.textContent))v.innerHTML='<div class="msg">Script error: '+String(m)+'</div>';};
 async function boot(){
+  const h=new URLSearchParams(location.hash.replace(/^#/,''));   // deep link from Business tile: #state=UT
+  if(h.get('state')) f.state=h.get('state');
   const {data:{session}}=await sb.auth.getSession();
   if(session){me=session.user.email;$('#who').textContent=me;show(true);loadTab();}else show(false);
   sb.auth.onAuthStateChange((_e,s)=>{if(s){me=s.user.email;$('#who').textContent=me;show(true);loadTab();}});

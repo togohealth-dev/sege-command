@@ -590,6 +590,12 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business')
     const fit=()=>{try{frame.style.height=Math.max(420,(d.body.scrollHeight||600)+16)+'px';}catch(e){}};
     fit();clearInterval(frame._t);frame._t=setInterval(fit,700);}catch(e){}};
   v.appendChild(frame);
+  // Marketing & targeting, grouped BY ORGANIZATION (day/night groups per state)
+  v.appendChild(el('div','sect','Marketing & targeting — by organization'));
+  const oc=el('div','card');oc.id='orgmkt';
+  oc.innerHTML='<h3>🏢 Organizations <span class="count">loading…</span></h3>';
+  v.appendChild(oc);
+  renderOrgMarketing();
   v.appendChild(el('div','sect','Business projects (tracker)'));
   const list=active().filter(i=>i.cat==='business');const c=el('div','card');
   c.appendChild(el('h3',null,`Active <span class="count">${list.length}</span>`));
@@ -603,6 +609,33 @@ function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8
   const c=el('div','card');c.appendChild(el('h3',null,`Active projects <span class="count">${list.length}</span>`));
   if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','No active items.'));
   v.appendChild(c);return v;}
+
+async function renderOrgMarketing(){
+  const card=document.getElementById('orgmkt'); if(!card) return;
+  if(!window.sb){ card.innerHTML='<h3>🏢 Organizations</h3><div class="msg">Sign in to load organizations.</div>'; return; }
+  const {data,error}=await window.sb.from('v_org_summary').select('*').order('avg_jv_score',{ascending:false,nullsFirst:false});
+  if(error){ card.innerHTML='<h3>🏢 Organizations</h3><div class="msg">Couldn\'t load: '+esc(error.message)+'</div>'; return; }
+  const rows=(data||[]);
+  const ROLE={days:'☀️ Days',night:'🌙 Night',mso:'🏛 MSO',tele:'💻 Tele',wound:'🩹 Wound',billing:'🧾 Billing',holding:'🏦 Holding',other:'•'};
+  card.innerHTML='<h3>🏢 Organizations <span class="count">'+rows.length+' entities · targets scoped by state</span></h3>';
+  if(!rows.length){ card.insertAdjacentHTML('beforeend','<div class="msg">No organizations synced yet.</div>'); return; }
+  const byState={}; rows.forEach(r=>{(byState[r.state||'—']=byState[r.state||'—']||[]).push(r);});
+  Object.keys(byState).sort().forEach(st=>{
+    const list=byState[st];
+    card.insertAdjacentHTML('beforeend','<div class="row" style="background:var(--surface-2)"><div class="main"><div class="name">'+esc(st)+
+      '</div><div class="sub">'+list.length+' entit'+(list.length===1?'y':'ies')+' · '+(list[0].targets||0)+' SNF targets · '+(list[0].alf_prospects||0)+' ALF prospects in state</div></div>'+
+      '<a class="mini" href="./targets.html#state='+encodeURIComponent(st)+'" style="text-decoration:none">Open targets →</a></div>');
+    list.forEach(o=>{
+      const dead=/dissolv/i.test(o.lifecycle_status||'');
+      card.insertAdjacentHTML('beforeend','<div class="row"><div class="main" style="padding-left:14px"><div class="name">'+
+        (ROLE[o.role]||'•')+' '+esc(o.legal_name)+(dead?' <span class="pill p-bad">'+esc(o.lifecycle_status)+'</span>':
+          (o.lifecycle_status==='active'?' <span class="pill p-ok">active</span>':' <span class="pill p-warn">'+esc(o.lifecycle_status||'')+'</span>'))+
+        '</div><div class="sub">'+esc(o.entity_type||'')+(o.use_label?' · '+esc(o.use_label):'')+
+        ' · '+(o.targets||0)+' targets · '+Number(o.target_beds||0).toLocaleString()+' beds'+
+        (o.hot_targets?' · <b>'+o.hot_targets+' hot</b>':'')+(o.avg_jv_score?' · avg JV '+o.avg_jv_score:'')+'</div></div></div>');
+    });
+  });
+}
 
 /* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
 const BASE='/sege-command/';
@@ -710,6 +743,7 @@ setInterval(()=>{if(document.visibilityState==='visible'&&!saving&&route.v!=='pr
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+window.sb=sb;   // main app script reads Supabase (orgs/targets) through this
 const gate=document.getElementById('authgate'), app=document.getElementById('appwrap');
 function show(authed){ gate.style.display=authed?'none':'grid'; app.style.visibility=authed?'visible':'hidden'; }
 window.ghLogin=async()=>{const {error}=await sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.href.split('#')[0]}});
