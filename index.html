@@ -192,16 +192,14 @@
 <div id="toast"></div>
 
 <script>
-const REPO='togohealth-dev/sege-command', API='https://api.github.com';
+const REPO='togohealth-dev/sege-projects', API='https://api.github.com';   // issues live in the PRIVATE repo
+const PROJ_REPO='togohealth-dev/sege-projects';
 const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json', FACONB_PATH='facility_onboarding.json';
 const BIZ_REPO='togohealth-dev/sege-business';  // read-only mirror (Business lane owns this)
-const TEAM={
-  gregbaird11:{name:'Greg Baird',role:'Owner · Togo Health',c:'#c0603a'},
-  riley870:{name:'Riley Moore',role:'COO · SEGE',c:'#c07708'},
-  morgan477:{name:'Morgan Rawlings',role:'CCO · SEGE',c:'#2f8f4e'},
-  'Jordan-togoclaude':{name:'Jordan Anderson',role:'COO · Togo Health',c:'#7a5cc0'},
-  msdrigg:{name:'Scott',role:'Engineering',c:'#3f6fb0'},
-};
+let TEAM={};   // loaded at runtime from the PRIVATE repo (no staff names in this public shell)
+async function loadTeam(){ try{ const r=await gh(`/repos/${PROJ_REPO}/contents/team.json`);
+    const d=JSON.parse(b64d(r.content)); TEAM={}; for(const [k,v] of Object.entries(d.team||{})) TEAM[k]={name:v.name,role:v.role,c:v.color};
+  }catch(e){ TEAM={}; } }
 const FSTATUS={live:['p-ok','✅ Live'],go_live_soon:['p-warn','🟡 Go-Live Soon'],scheduled:['p-prog','🔵 Scheduled'],unknown:['p-idle','— TBD']};
 const ST_NEXT={not_started:'in_progress',in_progress:'complete',complete:'na',na:'not_started'};
 const ST_ICON={complete:'✓',in_progress:'⋯',not_started:'',na:'–'};
@@ -295,6 +293,7 @@ async function loadAll(){
   if(!loaded) $('#view').innerHTML='<div class="msg">Loading live data…</div>';
   try{
     if(pat()&&!me){ try{me=await gh('/user');}catch(e){} }
+    if(pat()&&!Object.keys(TEAM).length) await loadTeam();
     const [op,cl]=await Promise.all([
       gh(`/repos/${REPO}/issues?state=open&per_page=100`),
       gh(`/repos/${REPO}/issues?state=closed&per_page=100`)]);
