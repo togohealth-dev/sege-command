@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/sege-command/">
+<title>SEGE Targets</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 16px 60px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:16px;position:sticky;top:0;background:var(--ground);padding:12px 0;z-index:20;border-bottom:1px solid var(--border)}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}.logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{margin-right:auto;min-width:150px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  nav.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:11px;margin-bottom:16px;overflow-x:auto;border:1px solid var(--border)}
+  nav.tabs button{flex:1;min-width:max-content;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:13px;padding:8px 14px;border-radius:8px;cursor:pointer}
+  nav.tabs button[aria-selected=true]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+  .fg{display:flex;flex-direction:column;gap:3px}.fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  .fg select,.fg input{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:130px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}.card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
+  .row{display:flex;align-items:center;gap:11px;padding:10px 16px;border-bottom:1px solid var(--border)}.row:last-child{border-bottom:0}.row .main{flex:1;min-width:0}
+  .row.clk{cursor:pointer}.row.clk:hover{background:var(--surface-2)}.row .name{font-weight:600}.row .sub{color:var(--muted);font-size:12px;margin-top:1px}
+  .pill{font-size:11px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .p-ok{background:var(--ok-bg);color:var(--ok)}.p-warn{background:var(--warn-bg);color:var(--warn)}.p-bad{background:var(--bad-bg);color:var(--bad)}.p-idle{background:var(--idle-bg);color:var(--faint)}.p-prog{background:var(--accent-soft);color:var(--accent-ink)}
+  .score{font-weight:800;font-variant-numeric:tabular-nums;font-size:16px;min-width:34px;text-align:center;padding:4px 6px;border-radius:8px}
+  .s-hi{background:var(--ok);color:#fff}.s-md{background:var(--warn);color:#fff}.s-lo{background:var(--idle-bg);color:var(--faint)}
+  .spark{display:flex;gap:2px;align-items:flex-end;height:20px}.spark i{width:7px;background:var(--accent);border-radius:2px;display:block}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}.stat b{font-size:19px;font-weight:750;display:block}.stat span{font-size:11px;color:var(--muted)}
+  .msg{padding:40px;text-align:center;color:var(--muted)}
+  .gate{position:fixed;inset:0;background:var(--ground);z-index:9999;display:grid;place-items:center;padding:20px}
+  .gate .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center}
+  .gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:10px 0}
+  .intel{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.intel{grid-template-columns:1fr}}
+  .kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed var(--border);font-size:13px}.kv:last-child{border-bottom:0}.kv b{font-weight:650}
+  .sugg{background:var(--accent-soft);color:var(--accent-ink);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.55;margin-bottom:12px}
+  .sugg h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="gate" class="gate" style="display:none"><div class="box">
+  <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+  <h1 style="font-size:19px;font-weight:750">SEGE Targets</h1>
+  <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in required.</p>
+  <input id="em" type="email" placeholder="you@togohealth.com" autocomplete="email">
+  <button class="btn pri" style="width:100%" onclick="sendLink()">Send magic link</button>
+  <p id="gm" style="color:var(--muted);font-size:12px;margin-top:10px"></p>
+</div></div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>SEGE Targets</h1><p>Who to call next — scored from CMS + PCC + NPPES</p></div>
+    <div class="right">
+      <a class="btn" href="./">🏠 Command Center</a>
+      <button class="btn" onclick="loadTab()">↻ Refresh</button>
+      <span id="who" style="font-size:12px;color:var(--muted)"></span>
+      <button class="btn" onclick="signOut()">Sign out</button>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs">
+    <button aria-selected="true"  data-t="targets">🎯 SNF Targets</button>
+    <button aria-selected="false" data-t="owners">👤 Owners / JV</button>
+    <button aria-selected="false" data-t="alf">🏘 ALF &amp; Other</button>
+    <button aria-selected="false" data-t="vendors">🧩 PCC Ecosystem</button>
+    <button aria-selected="false" data-t="campaigns">📣 Campaigns</button>
+  </nav>
+  <div id="view"><div class="msg">Loading…</div></div>
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const STATES=['UT','KY','TN','CO','NV','NE','ID','TX'];
+let tab='targets', me=null, f={};
+
+window.sendLink=async()=>{const e=$('#em').value.trim();if(!e)return;
+  const {error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});
+  $('#gm').textContent=error?('Error: '+error.message+' — ask an admin to invite you'):'Check your email for the sign-in link.';};
+window.signOut=async()=>{await sb.auth.signOut();location.reload();};
+function show(a){$('#gate').style.display=a?'none':'grid';$('#app').style.visibility=a?'visible':'hidden';}
+const {data:{session}}=await sb.auth.getSession();
+if(session){me=session.user.email;$('#who').textContent=me;show(true);loadTab();}else show(false);
+sb.auth.onAuthStateChange((_e,s)=>{if(s){me=s.user.email;$('#who').textContent=me;show(true);loadTab();}});
+
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  tab=b.dataset.t;f={};loadTab();});
+
+const scoreCls=n=>n>=75?'s-hi':n>=55?'s-md':'s-lo';
+const bars=(...vals)=>`<div class="spark">${vals.map(v=>`<i style="height:${Math.max(3,Math.round(v))}%"></i>`).join('')}</div>`;
+window.loadTab=()=>({targets:tTargets,owners:tOwners,alf:tAlf,vendors:tVendors,campaigns:tCampaigns}[tab])();
+
+function filterBar(dims){
+  const el=document.createElement('div');el.className='filters';
+  dims.forEach(d=>{
+    const g=document.createElement('div');g.className='fg';g.innerHTML=`<label>${d.label}</label>`;
+    if(d.type==='select'){const s=document.createElement('select');
+      s.innerHTML=d.opts.map(o=>`<option value="${o[0]}"${f[d.key]===o[0]?' selected':''}>${o[1]}</option>`).join('');
+      s.onchange=()=>{f[d.key]=s.value;loadTab();};g.appendChild(s);}
+    else{const i=document.createElement('input');i.placeholder=d.ph||'';i.value=f[d.key]||'';
+      i.oninput=()=>{f[d.key]=i.value;clearTimeout(window._d);window._d=setTimeout(loadTab,400);};g.appendChild(i);}
+    el.appendChild(g);});
+  return el;
+}
+
+/* ── 🎯 SNF TARGETS ── */
+async function tTargets(){
+  const v=$('#view');v.innerHTML='<div class="msg">Scoring…</div>';
+  let q=sb.from('v_snf_target').select('*').eq('is_customer',false).order('jv_score',{ascending:false}).limit(150);
+  if(f.state) q=q.eq('state',f.state);
+  if(f.pcc==='y') q=q.not('tenant_id','is',null);
+  if(f.pcc==='n') q=q.is('tenant_id',null);
+  if(f.min) q=q.gte('jv_score',Number(f.min));
+  if(f.q) q=q.ilike('facility_name','%'+f.q+'%');
+  const {data,error}=await q;
+  v.innerHTML='';
+  v.appendChild(filterBar([
+    {key:'state',label:'State',type:'select',opts:[['','All states'],...STATES.map(s=>[s,s])]},
+    {key:'min',label:'Min score',type:'select',opts:[['','Any'],['75','75+ (hot)'],['60','60+'],['45','45+']]},
+    {key:'pcc',label:'On PCC',type:'select',opts:[['','Either'],['y','On PCC'],['n','Not on PCC']]},
+    {key:'q',label:'Search',type:'text',ph:'facility…'}]));
+  if(error){v.insertAdjacentHTML('beforeend',`<div class="msg">Error: ${esc(error.message)}</div>`);return;}
+  const hot=data.filter(d=>d.jv_score>=75).length, beds=data.reduce((a,b)=>a+(b.certified_beds||0),0);
+  v.insertAdjacentHTML('beforeend',`<div class="stats">
+    <div class="stat"><b>${data.length}</b><span>targets shown</span></div>
+    <div class="stat"><b>${hot}</b><span>hot (75+)</span></div>
+    <div class="stat"><b>${beds.toLocaleString()}</b><span>total beds</span></div>
+    <div class="stat"><b>${data.filter(d=>d.tenant_id).length}</b><span>on PCC</span></div></div>`);
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<h3>🎯 Ranked JV targets <span class="count">pain + volume + scale + access</span></h3>`;
+  data.forEach(d=>{
+    const r=document.createElement('div');r.className='row clk';r.onclick=()=>intel(d.ccn);
+    r.innerHTML=`<div class="score ${scoreCls(d.jv_score)}">${d.jv_score}</div>
+      <div class="main"><div class="name">${esc(d.facility_name)} <span class="pill p-idle">${esc(d.state||'')}</span>${d.tenant_id?' <span class="pill p-prog">PCC</span>':''}</div>
+      <div class="sub">${d.certified_beds||'?'} beds · census ${d.avg_daily_census??'?'} · ★${d.overall_rating??'?'} overall / ★${d.staffing_rating??'?'} staffing${d.nurse_turnover?' · '+Math.round(d.nurse_turnover)+'% turnover':''}${d.facilities_in_chain>1?' · chain of '+d.facilities_in_chain:''}</div></div>
+      ${bars(d.pain_score/40*100,d.volume_score/30*100,d.scale_score/20*100,d.access_score/10*100)}`;
+    c.appendChild(r);});
+  if(!data.length)c.insertAdjacentHTML('beforeend','<div class="msg">No targets match.</div>');
+  v.appendChild(c);
+}
+
+/* ── intel card (pre-contact brief) ── */
+window.intel=async(ccn)=>{
+  const v=$('#view');v.innerHTML='<div class="msg">Building brief…</div>';
+  const [{data:t},{data:snf}]=await Promise.all([
+    sb.from('v_snf_target').select('*').eq('ccn',ccn).limit(1),
+    sb.from('snf').select('*').eq('ccn',ccn).limit(1)]);
+  const d=(t||[])[0], s=(snf||[])[0]||{};
+  if(!d){v.innerHTML='<div class="msg">Not found</div>';return;}
+  const [{data:sib},{data:near},{count:provs}]=await Promise.all([
+    sb.from('v_snf_target').select('ccn,facility_name,city,state,jv_score').eq('primary_owner',d.primary_owner||'~none~').neq('ccn',ccn).order('jv_score',{ascending:false}).limit(8),
+    sb.from('v_alf_prospect').select('name,facility_type,city').eq('zip',d.zip||'~').limit(8),
+    sb.from('provider').select('npi',{count:'exact',head:true}).eq('state',d.state||'~').eq('zip',(d.zip||'').slice(0,5))]);
+  const why=[];
+  if(d.staffing_rating<=2) why.push(`staffing is ★${d.staffing_rating} — they are almost certainly struggling to cover shifts`);
+  if(d.nurse_turnover>=45) why.push(`${Math.round(d.nurse_turnover)}% nurse turnover`);
+  if(d.deficiencies>=6) why.push(`${d.deficiencies} health deficiencies on the last survey`);
+  if(d.fine_dollars>0) why.push(`$${Number(d.fine_dollars).toLocaleString()} in fines`);
+  if((d.facilities_in_chain||0)>1) why.push(`part of a ${d.facilities_in_chain}-facility group — one JV can cover many buildings`);
+  if(d.tenant_id) why.push('already on PointClickCare, so our data integration path is known');
+  if((near||[]).length) why.push(`${near.length} other senior-living building(s) in ZIP ${d.zip} — a provider could cover several in one trip`);
+  const openers=[
+    `Ask for the Administrator or DON. Lead with coverage relief, not software: "We place day and night providers so your nurses aren't holding the pager at 2am."`,
+    d.staffing_rating<=2?`Their ★${d.staffing_rating} staffing rating is public — reference "help covering nights and weekends," never the rating itself.`:'',
+    (d.facilities_in_chain||0)>3?`Escalate to ${esc(d.primary_owner||d.chain_name||'the owner group')} for a multi-building JV rather than a single-site deal.`:'',
+    `Bring the mobile-care math: ${(near||[]).length+1} buildings within this ZIP = less provider travel, more visits/day.`
+  ].filter(Boolean);
+  v.innerHTML=`<div class="filters"><button class="btn" onclick="loadTab()">← Back to targets</button></div>
+    <div class="card"><h3>${esc(d.facility_name)} <span class="count">CCN ${esc(ccn)} · ${esc(d.city||'')}, ${esc(d.state||'')} ${esc(d.zip||'')}</span></h3>
+      <div style="padding:14px 16px">
+        <div class="stats" style="margin-bottom:12px">
+          <div class="stat"><b>${d.jv_score}</b><span>JV score</span></div>
+          <div class="stat"><b>${d.pain_score}/40</b><span>pain</span></div>
+          <div class="stat"><b>${d.volume_score}/30</b><span>volume</span></div>
+          <div class="stat"><b>${d.scale_score}/20</b><span>scale</span></div>
+          <div class="stat"><b>${d.access_score}/10</b><span>access</span></div></div>
+        <div class="sugg"><h4>Why now</h4>${why.length?'• '+why.map(esc).join('<br>• '):'No acute pain signals — treat as relationship-building.'}</div>
+        <div class="sugg" style="background:var(--warn-bg);color:var(--warn)"><h4>Suggested approach</h4>• ${openers.map(esc).join('<br>• ')}</div>
+        <div class="intel">
+          <div><h4 style="font-size:12px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Facility</h4>
+            <div class="kv"><span>Phone</span><b>${esc(s.phone||'—')}</b></div>
+            <div class="kv"><span>Address</span><b>${esc(s.address||'—')}</b></div>
+            <div class="kv"><span>Owner</span><b>${esc(d.primary_owner||'—')}</b></div>
+            <div class="kv"><span>Chain</span><b>${esc(d.chain_name||'—')} ${d.facilities_in_chain?'('+d.facilities_in_chain+')':''}</b></div>
+            <div class="kv"><span>Ownership</span><b>${esc(d.ownership_type||'—')}</b></div>
+            <div class="kv"><span>Beds / census</span><b>${d.certified_beds??'?'} / ${d.avg_daily_census??'?'}</b></div>
+          </div>
+          <div><h4 style="font-size:12px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">Quality &amp; risk (CMS)</h4>
+            <div class="kv"><span>Overall / staffing</span><b>★${d.overall_rating??'?'} / ★${d.staffing_rating??'?'}</b></div>
+            <div class="kv"><span>QM rating</span><b>★${d.qm_rating??'?'}</b></div>
+            <div class="kv"><span>Nurse turnover</span><b>${d.nurse_turnover?Math.round(d.nurse_turnover)+'%':'—'}</b></div>
+            <div class="kv"><span>Deficiencies</span><b>${d.deficiencies??'—'}</b></div>
+            <div class="kv"><span>Fines</span><b>${d.fine_dollars?'$'+Number(d.fine_dollars).toLocaleString():'—'}</b></div>
+            <div class="kv"><span>Special focus</span><b>${esc(s.special_focus_status||'—')}</b></div>
+            <div class="kv"><span>PCC tenant</span><b>${d.tenant_id?'yes':'no'}</b></div>
+            <div class="kv"><span>Providers in ZIP (NPPES)</span><b>${provs??'—'}</b></div>
+          </div>
+        </div>
+        ${(sib||[]).length?`<h4 style="font-size:12px;text-transform:uppercase;color:var(--faint);margin:14px 0 4px">Same owner — expand the JV (${sib.length})</h4>
+          ${sib.map(x=>`<div class="kv"><span>${esc(x.facility_name)} · ${esc(x.city||'')}, ${esc(x.state||'')}</span><b>${x.jv_score}</b></div>`).join('')}`:''}
+        ${(near||[]).length?`<h4 style="font-size:12px;text-transform:uppercase;color:var(--faint);margin:14px 0 4px">Other senior living in ZIP ${esc(d.zip)} — travel efficiency (${near.length})</h4>
+          ${near.map(x=>`<div class="kv"><span>${esc(x.name)}</span><b>${esc(x.facility_type||'')}</b></div>`).join('')}`:''}
+      </div></div>`;
+};
+
+/* ── 👤 OWNERS / JV ── */
+async function tOwners(){
+  const v=$('#view');v.innerHTML='<div class="msg">Rolling up owners…</div>';
+  let q=sb.from('v_owner_target').select('*').gte('facilities',2).order('avg_jv_score',{ascending:false}).limit(120);
+  if(f.q) q=q.ilike('owner_name','%'+f.q+'%');
+  const {data,error}=await q;
+  v.innerHTML='';v.appendChild(filterBar([{key:'q',label:'Search owner',type:'text',ph:'owner / chain…'}]));
+  if(error){v.insertAdjacentHTML('beforeend',`<div class="msg">Error: ${esc(error.message)}</div>`);return;}
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<h3>👤 Owner / chain JV opportunities <span class="count">${data.length} groups · ranked by avg JV score</span></h3>`;
+  data.forEach(o=>{
+    const r=document.createElement('div');r.className='row';
+    r.innerHTML=`<div class="score ${scoreCls(o.avg_jv_score)}">${Math.round(o.avg_jv_score)}</div>
+      <div class="main"><div class="name">${esc(o.owner_name)}</div>
+      <div class="sub">${o.facilities} facilities · ${(o.total_beds||0).toLocaleString()} beds · ★${o.avg_rating} overall / ★${o.avg_staffing} staffing · ${o.on_pcc} on PCC${o.already_ours?' · <b>'+o.already_ours+' already ours</b>':''} · ${(o.states||[]).slice(0,6).join(' ')}</div></div>
+      <span class="pill ${o.avg_staffing<=2?'p-bad':o.avg_staffing<=3?'p-warn':'p-ok'}">${o.avg_staffing<=2?'acute staffing pain':o.avg_staffing<=3?'some pain':'stable'}</span>`;
+    c.appendChild(r);});
+  v.appendChild(c);
+}
+
+/* ── 🏘 ALF & OTHER ── */
+async function tAlf(){
+  const v=$('#view');v.innerHTML='<div class="msg">Loading prospects…</div>';
+  let q=sb.from('v_alf_prospect').select('*').order('cluster_in_zip',{ascending:false}).limit(200);
+  if(f.state) q=q.eq('state',f.state);
+  if(f.type) q=q.eq('facility_type',f.type);
+  if(f.q) q=q.ilike('name','%'+f.q+'%');
+  const {data,error}=await q;
+  v.innerHTML='';
+  v.appendChild(filterBar([
+    {key:'state',label:'State',type:'select',opts:[['','All states'],...STATES.map(s=>[s,s])]},
+    {key:'type',label:'Type',type:'select',opts:[['','All types'],['assisted_living','Assisted living'],['memory_care','Memory care'],['independent_living','Independent living'],['ccrc','CCRC'],['senior_housing','Senior housing'],['behavioral','Behavioral'],['unknown','Unclassified']]},
+    {key:'q',label:'Search',type:'text',ph:'name…'}]));
+  if(error){v.insertAdjacentHTML('beforeend',`<div class="msg">Error: ${esc(error.message)}</div>`);return;}
+  v.insertAdjacentHTML('beforeend',`<div class="sugg"><h4>Why these matter</h4>
+    These are PointClickCare tenants with <b>no CMS certification number</b> — i.e. not SNFs. They're assisted living, memory care, independent living and other congregate settings: <b>every one is a place a group of people live</b>, which is a mobile-care opportunity (less travel per visit). They're also paying SNF-grade software prices — the wedge for an ALF-level product.</div>`);
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<h3>🏘 ALF &amp; other facility prospects <span class="count">${data.length} shown · densest ZIP clusters first</span></h3>`;
+  data.forEach(p=>{
+    const r=document.createElement('div');r.className='row';
+    r.innerHTML=`<div class="main"><div class="name">${esc(p.name)} <span class="pill p-idle">${esc(p.state||'')}</span> <span class="pill p-prog">${esc((p.facility_type||'').replace(/_/g,' '))}</span></div>
+      <div class="sub">${esc(p.address||'')} ${esc(p.city||'')} ${esc(p.zip||'')}${p.cluster_in_zip>1?` · <b>${p.cluster_in_zip} buildings in this ZIP</b>`:''}</div></div>
+      ${p.cluster_in_zip>1?`<span class="pill p-ok">cluster ×${p.cluster_in_zip}</span>`:''}`;
+    c.appendChild(r);});
+  if(!data.length)c.insertAdjacentHTML('beforeend','<div class="msg">No prospects match.</div>');
+  v.appendChild(c);
+}
+
+/* ── 🧩 PCC ECOSYSTEM ── */
+async function tVendors(){
+  const v=$('#view');v.innerHTML='<div class="msg">Loading ecosystem…</div>';
+  let q=sb.from('pcc_marketplace').select('*').limit(200);
+  if(f.cls) q=q.eq('class',f.cls);
+  if(f.q) q=q.or(`app.ilike.%${f.q}%,partner.ilike.%${f.q}%`);
+  const {data,error}=await q;
+  v.innerHTML='';
+  v.appendChild(filterBar([
+    {key:'cls',label:'Class',type:'select',opts:[['','All'],['partner','Partner'],['competition','Competition']]},
+    {key:'q',label:'Search',type:'text',ph:'app or partner…'}]));
+  if(error){v.insertAdjacentHTML('beforeend',`<div class="msg">Error: ${esc(error.message)}</div>`);return;}
+  v.insertAdjacentHTML('beforeend',`<div class="sugg"><h4>How to use this</h4>PointClickCare's marketplace catalog — who already sells into these operators. Use it to spot <b>partner</b> channels (labs, pharmacy, billing that already have the relationship) and <b>competitors</b> occupying the workflow you want. Note: this is a global catalog, not a per-facility vendor list.</div>`);
+  const c=document.createElement('div');c.className='card';c.innerHTML=`<h3>🧩 PCC ecosystem <span class="count">${data.length} of 1,373</span></h3>`;
+  data.forEach(m=>{const r=document.createElement('div');r.className='row';
+    r.innerHTML=`<div class="main"><div class="name">${esc(m.app||m.partner)}</div>
+      <div class="sub">${esc(m.partner||'')}${m.cats?' · '+esc(String(m.cats).replace(/[\[\]']/g,'')):''}</div></div>
+      ${m.class?`<span class="pill ${m.class==='competition'?'p-bad':'p-ok'}">${esc(m.class)}</span>`:''}`;
+    c.appendChild(r);});
+  v.appendChild(c);
+}
+
+/* ── 📣 CAMPAIGNS ── */
+async function tCampaigns(){
+  const v=$('#view');v.innerHTML='<div class="msg">Loading campaigns…</div>';
+  const {data,error}=await sb.from('campaign').select('*').order('created_at',{ascending:false}).limit(50);
+  v.innerHTML=`<div class="sugg"><h4>Safety</h4>Campaigns are <b>queued only</b>. Nothing sends until a campaign is explicitly <b>approved</b>, and sending runs server-side on the Mac mini using the <b>marketing</b> Twilio account (never the EMR one), honoring opt-outs and quiet hours.</div>
+    <div class="card"><h3>📣 New campaign</h3><div style="padding:14px 16px;display:grid;gap:10px;grid-template-columns:1fr 1fr">
+      <div class="fg"><label>Name</label><input id="c_name" placeholder="UT low-staffing SNFs — Sept"></div>
+      <div class="fg"><label>Audience</label><select id="c_seg">
+        <option value="snf_hot">SNF targets, score 75+</option><option value="snf_state">SNF targets in a state</option>
+        <option value="owner">Owner / chain group</option><option value="alf">ALF &amp; other prospects</option></select></div>
+      <div class="fg"><label>State (if used)</label><select id="c_state">${['',...STATES].map(s=>`<option>${s}</option>`).join('')}</select></div>
+      <div class="fg"><label>Channel</label><select id="c_ch"><option value="sms">SMS</option><option value="email">Email</option></select></div>
+      <div class="fg" style="grid-column:1/-1"><label>Message template</label><input id="c_tpl" placeholder="Hi {name} — we place day &amp; night providers so your nurses aren't holding the pager at 2am…"></div>
+    </div><div style="padding:0 16px 14px"><button class="btn pri" onclick="createCampaign()">Queue campaign (needs approval to send)</button></div></div>`;
+  const c=document.createElement('div');c.className='card';c.innerHTML=`<h3>Campaigns <span class="count">${(data||[]).length}</span></h3>`;
+  if(error)c.insertAdjacentHTML('beforeend',`<div class="msg">Error: ${esc(error.message)}</div>`);
+  (data||[]).forEach(x=>{const r=document.createElement('div');r.className='row';
+    r.innerHTML=`<div class="main"><div class="name">${esc(x.name)}</div>
+      <div class="sub">${esc(x.channel)} · ${esc(x.target_type)} · ${esc(JSON.stringify(x.segment||{}))}${x.approved_by?' · approved by '+esc(x.approved_by):''}</div></div>
+      <span class="pill ${x.status==='sent'?'p-ok':x.approved_by?'p-warn':'p-idle'}">${esc(x.status)}</span>
+      ${x.approved_by?'':`<button class="btn" onclick="approve('${x.id}')">Approve</button>`}`;
+    c.appendChild(r);});
+  if(!(data||[]).length)c.insertAdjacentHTML('beforeend','<div class="msg">No campaigns yet.</div>');
+  $('#view').appendChild(c);
+}
+window.createCampaign=async()=>{
+  const name=$('#c_name').value.trim();if(!name){toast('Name required');return;}
+  const seg=$('#c_seg').value, st=$('#c_state').value, tpl=$('#c_tpl').value.trim(), ch=$('#c_ch').value;
+  const target_type = seg==='alf'?'alf':seg==='owner'?'owner':'snf';
+  const segment={kind:seg, state:st||null, min_score: seg==='snf_hot'?75:null};
+  const {error}=await sb.from('campaign').insert({name,channel:ch,target_type,segment,template:tpl,status:'draft',created_by:me});
+  if(error){toast('Error: '+error.message);return;}
+  toast('Campaign queued — approve it to allow sending');tCampaigns();
+};
+window.approve=async(id)=>{
+  if(!confirm('Approve this campaign for sending? The mini will send it on its next run.'))return;
+  const {error}=await sb.from('campaign').update({approved_by:me,approved_at:new Date().toISOString(),status:'queued'}).eq('id',id);
+  if(error){toast('Error: '+error.message);return;} toast('Approved');tCampaigns();
+};
+let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2600);}
+window.toast=toast;
+</script>
+</body>
+</html>
