@@ -127,9 +127,18 @@
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center">
     <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
     <h1 style="font-size:19px;font-weight:750">SEGE Command Center</h1>
-    <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in required. Enter your work email for a magic link.</p>
-    <input id="ag_email" type="email" placeholder="you@togohealth.com" autocomplete="email" style="width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:10px 0">
-    <button class="btn pri" style="width:100%" onclick="agSend()">Send magic link</button>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in.</p>
+    <button class="btn" style="width:100%;margin-bottom:8px;justify-content:center;font-weight:700" onclick="ghLogin()">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="margin-right:7px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A7.995 7.995 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      Sign in with GitHub</button>
+    <div style="display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--faint);font-size:11px"><span style="flex:1;height:1px;background:var(--border)"></span>OR<span style="flex:1;height:1px;background:var(--border)"></span></div>
+    <input id="ag_email" type="email" placeholder="you@togohealth.com" autocomplete="username" style="width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:10px 0 8px">
+    <input id="ag_pw" type="password" placeholder="password" autocomplete="current-password" style="width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:0 0 10px">
+    <button class="btn pri" style="width:100%" onclick="agLogin()">Sign in</button>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;font-size:12px">
+      <a href="#" onclick="agSend();return false" style="color:var(--accent)">Email me a link instead</a>
+      <a href="#" onclick="agSetPw();return false" style="color:var(--muted)">Set / change password</a>
+    </div>
     <p id="ag_msg" style="color:var(--muted);font-size:12px;margin-top:10px"></p>
   </div>
 </div>
@@ -704,6 +713,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
 const gate=document.getElementById('authgate'), app=document.getElementById('appwrap');
 function show(authed){ gate.style.display=authed?'none':'grid'; app.style.visibility=authed?'visible':'hidden'; }
+window.ghLogin=async()=>{const {error}=await sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.href.split('#')[0]}});
+  if(error){const m=document.querySelector('#ag_msg,#gm,#gatemsg');if(m)m.textContent='GitHub sign-in not enabled yet: '+error.message;}};
+window.agLogin=async()=>{const e=document.getElementById('ag_email').value.trim(),p=document.getElementById('ag_pw').value;
+  if(!e||!p){document.getElementById('ag_msg').textContent='Enter email and password.';return;}
+  const {error}=await sb.auth.signInWithPassword({email:e,password:p});
+  if(error)document.getElementById('ag_msg').textContent='Error: '+error.message;};
+window.agSetPw=async()=>{const {data:{session}}=await sb.auth.getSession();
+  if(!session){document.getElementById('ag_msg').textContent='Sign in with an emailed link first, then set a password.';return;}
+  const np=prompt('New password (min 8 chars):'); if(!np||np.length<8)return;
+  const {error}=await sb.auth.updateUser({password:np});
+  document.getElementById('ag_msg').textContent=error?('Error: '+error.message):'Password set — use it next time.';};
 window.agSend=async()=>{const e=document.getElementById('ag_email').value.trim();if(!e)return;
   const {error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});
   document.getElementById('ag_msg').textContent=error?('Error: '+error.message+' — ask an admin to invite you'):'Check your email for the sign-in link.';};
