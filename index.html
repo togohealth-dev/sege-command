@@ -131,7 +131,7 @@
       <button class="btn" onclick="loadAll()">↻ Refresh</button>
       <button class="btn pri" onclick="openAdd()">+ Add</button>
       <a class="btn pri" href="./checklist.html">✓ Checklists</a>
-      <a class="btn" href="./classic.html">Classic board</a>
+      
       <span id="conn" class="conn off">● View only</span>
       <button class="btn" id="connectBtn" onclick="openConnect()">Connect to edit</button>
       <span id="meChip"></span>
@@ -349,6 +349,11 @@ function homeView(){
   if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
     v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
   // People (issues)
+  // secondary nav — keeps Follow-ups / Done / Bottlenecks reachable (no orphaned views)
+  const sn=el('div','acts');sn.style.cssText='margin:-8px 0 4px;flex-wrap:wrap';
+  [['⏳ Email follow-ups',{v:'followups'}],['✓ Done',{v:'done'}],['🚧 Bottlenecks',{v:'bottleneck'}]].forEach(([lab,r])=>{
+    const b=el('button','btn',lab);b.onclick=()=>go(r);sn.appendChild(b);});
+  v.appendChild(sn);
   v.appendChild(el('div','sect','People — tap for their project list'));
   const grid=el('div','ppl');
   const people=Object.keys(TEAM).map(l=>({l,items:active().filter(i=>i.who.includes(l))}));
@@ -539,6 +544,19 @@ function openEmail(){
 }
 
 /* ═════════ issue views (Business / People / Done) ═════════ */
+/* Follow-ups (Ops Assistant) + Done — carried over from Riley's original tabs so they aren't orphaned */
+function followupsView(){const v=el('div');v.appendChild(backCrumb('','⏳ Email follow-ups'));
+  v.appendChild(el('div','card',
+    `<h3>⏳ Email follow-ups</h3><div class="msg" style="text-align:left;padding:18px 16px">
+     This pulls from each teammate's <b>Ops Assistant</b> (the Gmail + Google Tasks nagger already live in your Workspace —
+     see <code>automation/ops-assistant/</code> in this repo): emails awaiting a reply and unanswered inbox mail.
+     Wiring the two together is the next build — for now each person gets their own daily escalating digest by email.</div>`));
+  return v;}
+function doneView(){const v=el('div');v.appendChild(backCrumb('','✓ Done'));
+  const d=issues.filter(i=>i.done);const c=el('div','card');
+  c.appendChild(el('h3',null,`✓ Done <span class="count">${d.length}</span>`));
+  if(d.length)d.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing completed yet.'));
+  v.appendChild(c);return v;}
 function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business'));
   // Business workspace embedded inline (entities, contracts, compliance & marketing) — no extra click.
   v.appendChild(el('div','sect','Business workspace — entities · contracts · compliance · marketing'));
@@ -585,7 +603,7 @@ function routeFromPath(p){
   if(seg==='facility'&&id) return {v:'facility',id};
   if(seg==='provider'&&id) return {v:'provider',id};
   if(seg==='person')       return {v:'person',login:(id&&id!=='unassigned')?id:null};
-  if(['accounts','providers','business','bottleneck'].includes(seg)) return {v:seg};
+  if(['accounts','providers','business','bottleneck','followups','done'].includes(seg)) return {v:seg};
   return {v:'home'};
 }
 function applyPath(){
@@ -609,6 +627,8 @@ function render(){
   else if(route.v==='bottleneck')node=bottleneckView();
   else if(route.v==='business')node=bizView();
   else if(route.v==='person')node=personView(route.login);
+  else if(route.v==='followups')node=followupsView();
+  else if(route.v==='done')node=doneView();
   else node=homeView();
   view.appendChild(node);
 }
