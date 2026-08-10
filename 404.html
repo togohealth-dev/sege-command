@@ -7,7 +7,7 @@
   if(p.indexOf(BASE)===0){
     var sub=p.slice(BASE.length).replace(/\/+$/,'');           // e.g. accounts | facility/xyz
     var seg=sub.split('/')[0];
-    var known=['accounts','providers','business','bottleneck','facility','provider','person','home'];
+    var known=['accounts','providers','business','compliance','bottleneck','followups','done','facility','provider','person','home'];
     if(known.indexOf(seg)>=0){
       try{ sessionStorage.setItem('spa-route', sub); }catch(e){}
       location.replace(BASE);                                    // root = Command Center

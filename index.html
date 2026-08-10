@@ -44,7 +44,8 @@
   .me{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 13px 4px 4px;cursor:pointer;font:inherit;font-weight:650;font-size:12.5px;color:inherit}
   .me:hover{border-color:var(--accent)}
   .me .avatar{width:26px;height:26px;font-size:11px;border-radius:50%}
-  .hero{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+  .hero{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  @media(max-width:1000px){.hero{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:720px){.hero{grid-template-columns:1fr}}
   .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 18px 15px;box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:5px;transition:transform .12s,border-color .12s}
   .tile:hover{border-color:var(--accent);transform:translateY(-2px)}
@@ -341,8 +342,8 @@ function issueRow(i){
 }
 
 /* ═════════ HOME ═════════ */
-function tileLocked(mark,label){const b=el('button','tile');b.onclick=openConnect;
-  b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">token needed for staffing</div>`;return b;}
+function tileLocked(mark,label,note){const b=el('button','tile');b.onclick=openConnect;
+  b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">${esc(note||'token needed for staffing')}</div>`;return b;}
 function homeView(){
   const v=el('div'); const hero=el('div','hero');
   // Accounts (facilities / onboarding)
@@ -358,12 +359,21 @@ function homeView(){
       <div class="ts"><span>${Math.round(prov.reduce((s,pr)=>s+provPct(pr),0)/(prov.length||1))}% onboarded</span><span>${prov.filter(pr=>provPct(pr)>=100).length} live</span></div>`;
     hero.appendChild(p);
   } else { hero.appendChild(tileLocked('🟢','Accounts')); hero.appendChild(tileLocked('🟣','Providers')); }
-  // Business (issues)
+  // Business workspace (issues)
   const biz=active().filter(i=>i.cat==='business');
   const b=el('button','tile');b.onclick=()=>go({v:'business'});
-  b.innerHTML=`<div class="tl">🔵 Business<span class="arrow">→</span></div><div class="tn tnum">${biz.length}</div>
+  b.innerHTML=`<div class="tl">🔵 Business workspace<span class="arrow">→</span></div><div class="tn tnum">${biz.length}</div>
     <div class="ts"><span>${biz.filter(i=>i.status==='in-progress').length} in progress</span>${biz.filter(i=>i.status==='blocked').length?`<span style="color:var(--bad)">${biz.filter(i=>i.status==='blocked').length} blocked</span>`:''}</div>`;
   hero.appendChild(b);
+  // Compliance — state regulatory reference, read-only mirror from the Business lane
+  if(Biz.states){
+    const banned=Biz.states.filter(s=>s.cpom_status&&!/not banned/i.test(s.cpom_status)).length;
+    const risky=Biz.states.filter(s=>s.malpractice_risk==='High').length;
+    const cp=el('button','tile');cp.onclick=()=>go({v:'compliance'});
+    cp.innerHTML=`<div class="tl">📋 Compliance<span class="arrow">→</span></div><div class="tn tnum">${Biz.states.length}</div>
+      <div class="ts"><span>${banned} CPOM-banned</span>${risky?`<span style="color:var(--bad)">${risky} high malpractice risk</span>`:''}</div>`;
+    hero.appendChild(cp);
+  } else hero.appendChild(tileLocked('📋','Compliance','token needed for business data'));
   v.appendChild(hero);
   if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
     v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
@@ -576,10 +586,11 @@ function doneView(){const v=el('div');v.appendChild(backCrumb('','✓ Done'));
   c.appendChild(el('h3',null,`✓ Done <span class="count">${d.length}</span>`));
   if(d.length)d.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing completed yet.'));
   v.appendChild(c);return v;}
-function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business'));
-  // Business workspace embedded inline (entities, contracts, compliance & marketing) — no extra click.
-  v.appendChild(el('div','sect','Business workspace — entities · contracts · compliance · marketing'));
-  const frame=el('iframe');frame.className='bizframe';frame.src='./bizworkspace.html';frame.title='Business workspace';
+/* Shared embed of the Business lane's workspace. `tab` deep-links a nav view
+   (entities | compliance | marketing | renewals) via the iframe URL hash. */
+function bizFrame(tab){
+  const frame=el('iframe');frame.className='bizframe';
+  frame.src='./bizworkspace.html'+(tab?'#'+tab:'');frame.title='Business workspace';
   frame.onload=()=>{try{const d=frame.contentDocument;const s=d.createElement('style');
     s.textContent='header.top,.foot{display:none!important}html,body{background:transparent!important}.wrap{padding:2px 0 10px!important;max-width:100%!important}'
       +'#nav{display:flex!important;gap:6px!important;flex-wrap:wrap!important;align-items:center!important;padding:5px!important;margin:0 0 16px!important;border-radius:11px!important;background:rgba(128,128,128,.12)!important;border:1px solid rgba(128,128,128,.22)!important}'
@@ -589,7 +600,11 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business')
     d.head.appendChild(s);
     const fit=()=>{try{frame.style.height=Math.max(420,(d.body.scrollHeight||600)+16)+'px';}catch(e){}};
     fit();clearInterval(frame._t);frame._t=setInterval(fit,700);}catch(e){}};
-  v.appendChild(frame);
+  return frame;}
+function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business workspace'));
+  // Workspace embedded inline (entities, contracts, marketing, renewals) — no extra click.
+  v.appendChild(el('div','sect','Business workspace — entities · contracts · marketing · renewals'));
+  v.appendChild(bizFrame());
   // Marketing & targeting, grouped BY ORGANIZATION (day/night groups per state)
   v.appendChild(el('div','sect','Marketing & targeting — by organization'));
   const oc=el('div','card');oc.id='orgmkt';
@@ -602,6 +617,10 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business')
   if(list.length)list.forEach(i=>c.insertAdjacentHTML('beforeend',issueRow(i)));else c.appendChild(el('div','msg','Nothing active.'));
   v.appendChild(c);
   const dn=issues.filter(i=>i.done&&i.cat==='business');if(dn.length){v.appendChild(el('div','sect','Done'));const d=el('div','card');dn.forEach(i=>d.insertAdjacentHTML('beforeend',issueRow(i)));v.appendChild(d);}
+  return v;}
+function complianceView(){const v=el('div');v.appendChild(backCrumb('','📋 Compliance'));
+  v.appendChild(el('div','sect','State compliance — CPOM · required entity · IMLC · malpractice · NP/PA scope'));
+  v.appendChild(bizFrame('compliance'));
   return v;}
 function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8a97a6'}):{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
   const v=el('div');v.appendChild(backCrumb('',esc(t.name)));
@@ -646,7 +665,7 @@ function pathFor(r){
   if(r.v==='facility') return BASE+'facility/'+encodeURIComponent(r.id);
   if(r.v==='provider') return BASE+'provider/'+encodeURIComponent(r.id);
   if(r.v==='person')   return BASE+'person/'+encodeURIComponent(r.login||'unassigned');
-  return BASE+r.v;                         // /sege-command/accounts | providers | business | bottleneck
+  return BASE+r.v;                         // /sege-command/accounts | providers | business | compliance | bottleneck
 }
 function routeFromPath(p){
   let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'');
@@ -655,7 +674,7 @@ function routeFromPath(p){
   if(seg==='facility'&&id) return {v:'facility',id};
   if(seg==='provider'&&id) return {v:'provider',id};
   if(seg==='person')       return {v:'person',login:(id&&id!=='unassigned')?id:null};
-  if(['accounts','providers','business','bottleneck','followups','done'].includes(seg)) return {v:seg};
+  if(['accounts','providers','business','compliance','bottleneck','followups','done'].includes(seg)) return {v:seg};
   return {v:'home'};
 }
 function applyPath(){
@@ -678,6 +697,7 @@ function render(){
   else if(route.v==='provider')node=providerView(route.id);
   else if(route.v==='bottleneck')node=bottleneckView();
   else if(route.v==='business')node=bizView();
+  else if(route.v==='compliance')node=complianceView();
   else if(route.v==='person')node=personView(route.login);
   else if(route.v==='followups')node=followupsView();
   else if(route.v==='done')node=doneView();
