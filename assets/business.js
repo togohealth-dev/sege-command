@@ -12,7 +12,10 @@ const FILES = {
 };
 const DATA = {};            // entities, templates, tasks, compliance, domains, phones
 let me = null;
-let view = 'entities';      // entities | compliance | marketing | renewals
+const VIEWS = ['entities','compliance','marketing','renewals'];
+// Initial view is deep-linkable via the URL hash so the Command Center can embed
+// this workspace pre-opened on a tab (e.g. bizworkspace.html#compliance).
+let view = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'entities';
 let entityId = null;        // when drilled into an entity
 let mktTab = 'phones';      // phones | domains
 let filt = {};
