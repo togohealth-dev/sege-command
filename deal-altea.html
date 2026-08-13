@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/sege-command/">
+<title>GrabHC · Altea Offer</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.55}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 16px 70px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:16px;position:sticky;top:0;background:var(--ground);padding:12px 0;z-index:20;border-bottom:1px solid var(--border)}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}.logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{margin-right:auto;min-width:170px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+  .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
+  .pad{padding:14px 16px}
+  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px}
+  .disc{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
+  .stat b{font-size:21px;font-weight:780;display:block;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted)}
+  label.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);display:block;margin-bottom:5px}
+  input[type=range]{width:100%}
+  input[type=number]{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--border)}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700}
+  td.tnum{font-variant-numeric:tabular-nums}
+  tr.win td{background:var(--ok-bg)} tr.lose td{background:var(--bad-bg)}
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:0}@media(max-width:760px){.pc{grid-template-columns:1fr}}
+  .pc>div{padding:14px 16px}
+  .pc .pro{border-right:1px solid var(--border)}
+  .pc h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+  .pro h4{color:var(--ok)} .con h4{color:var(--bad)}
+  .pc li{margin:0 0 8px 18px;font-size:13px}
+  .both{background:var(--accent-soft);color:var(--accent-ink);border-radius:10px;padding:13px 15px;margin:0 16px 14px;font-size:13px}
+  .both h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .q{margin:0 0 9px 18px;font-size:13px}
+  .bar{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex;margin:6px 0 2px}
+  .bar i{display:block;height:100%}.bar .c{background:var(--accent)}.bar .s{background:var(--warn)}
+  .gate{position:fixed;inset:0;background:var(--ground);z-index:999;display:grid;place-items:center;padding:20px}
+  .gate .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center}
+  .gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:8px 0}
+  .src{font-size:11.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="gate" class="gate" style="display:none"><div class="box">
+  <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+  <h1 style="font-size:19px;font-weight:750">GrabHC · Altea Offer</h1>
+  <p style="color:var(--muted);font-size:13px">Confidential — staff sign-in required.</p>
+  <button class="btn" style="width:100%;justify-content:center;margin:10px 0 6px" onclick="ghLogin()">Sign in with GitHub</button>
+  <input id="em" type="email" placeholder="you@togohealth.com" autocomplete="username">
+  <input id="pw" type="password" placeholder="password" autocomplete="current-password">
+  <button class="btn pri" style="width:100%" onclick="pwLogin()">Sign in</button>
+  <p><a href="#" onclick="sendLink();return false" style="color:var(--accent);font-size:12px">Email me a link instead</a></p>
+  <p id="gm" style="color:var(--muted);font-size:12px"></p>
+</div></div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>GrabHC → Altea Health</h1><p>$3M offer · cash vs. equity decision model</p></div>
+    <a class="btn" href="./business">← Business</a>
+    <a class="btn" href="./">🏠 Command Center</a>
+    <button class="btn" onclick="signOut()">Sign out</button>
+  </header>
+
+  <div class="disc"><b>Not investment or tax advice.</b> This is a decision-support model built from assumptions you control — it is not a recommendation, and I'm not a licensed financial, tax, or legal advisor. Before signing, have a healthcare M&A attorney and a CPA review the structure (asset vs. stock sale, share class, tax treatment). The valuation and equity figures below are <b>Altea's representations</b>, not verified facts.</div>
+
+  <!-- ── DEAL MODEL ── -->
+  <div class="card"><h3>💰 Consideration mix <span class="count">drag to model cash vs. stock</span></h3>
+    <div class="pad">
+      <div class="grid2">
+        <div>
+          <label class="fl">Stock portion — <span id="pctLbl">50%</span></label>
+          <input id="pct" type="range" min="0" max="100" step="5" value="50" oninput="calc()">
+          <div class="bar"><i class="c" id="barC" style="width:50%"></i><i class="s" id="barS" style="width:50%"></i></div>
+          <div class="src"><span style="color:var(--accent)">■</span> cash &nbsp; <span style="color:var(--warn)">■</span> stock</div>
+        </div>
+        <div class="grid2" style="gap:10px">
+          <div><label class="fl">Deal value ($)</label><input id="deal" type="number" value="3000000" oninput="calc()"></div>
+          <div><label class="fl">Altea valuation ($)</label><input id="val" type="number" value="500000000" oninput="calc()"></div>
+        </div>
+      </div>
+      <div class="stats" style="margin-top:14px">
+        <div class="stat"><b id="oCash">—</b><span>cash at close</span></div>
+        <div class="stat"><b id="oStock">—</b><span>stock value (at their mark)</span></div>
+        <div class="stat"><b id="oPct">—</b><span>equity stake</span></div>
+        <div class="stat"><b id="oBreak">—</b><span>exit needed to beat all-cash</span></div>
+      </div>
+      <p class="src" style="margin-top:10px">Sanity check on the owner's figure: $3M ÷ $500M = <b>0.006 = 0.6%</b>. So "0.006 equity" and "$3M of stock" describe the same thing — the decimal is 0.6 percent, not 0.006 percent.</p>
+    </div>
+  </div>
+
+  <!-- ── SCENARIOS ── -->
+  <div class="card"><h3>📈 What the stock is worth at exit <span class="count">assumes dilution below</span></h3>
+    <div class="pad">
+      <div class="grid2" style="margin-bottom:12px">
+        <div><label class="fl">Future dilution — <span id="dilLbl">25%</span> (new rounds shrink your %)</label>
+          <input id="dil" type="range" min="0" max="70" step="5" value="25" oninput="calc()"></div>
+        <div><label class="fl">Years to exit — <span id="yrLbl">5</span></label>
+          <input id="yrs" type="range" min="1" max="10" step="1" value="5" oninput="calc()"></div>
+      </div>
+      <table><thead><tr><th>Exit scenario</th><th>Altea value</th><th>Your stock</th><th>Total vs all-cash</th><th>Annualized</th></tr></thead>
+        <tbody id="scen"></tbody></table>
+      <p class="src" style="margin-top:10px">"Total" = cash at close + diluted stock proceeds. Annualized compares the total to taking $3M cash today, over the years-to-exit. Ignores taxes, escrow/holdback, and any liquidation preference ahead of you — all of which reduce the stock column in practice.</p>
+    </div>
+  </div>
+
+  <!-- ── THE EMR DILEMMA ── -->
+  <div class="card"><h3>🖥 The EMR question — the crux</h3>
+    <div class="both"><h4>Why this cuts both ways</h4>
+      Altea is <b>not</b> a neutral acquirer: it sells post-acute technology <i>and</i> provider services. If GrabHC's SNF care moves onto Altea's EMR, you gain a working platform you don't have to build — but Togo Health's own EMR loses the very SNF footprint it would use as its reference customer, and a competitor gains visibility into your clinical operations. Taking <b>stock</b> makes their EMR's success partly your upside; taking <b>cash</b> keeps you free to sell Togo's EMR against them.</div>
+    <div class="pc">
+      <div class="pro"><h4>✅ Pro — using their EMR</h4><ul>
+        <li>A post-acute EMR you don't have to build, staff, or certify — immediate relief for GrabHC's SNF documentation.</li>
+        <li>They carry the ONC certification, uptime, and support burden.</li>
+        <li>If you hold stock, every dollar their platform earns is partly yours.</li>
+        <li>Integration/interop work becomes their problem, not Scott's roadmap.</li>
+      </ul></div>
+      <div class="con"><h4>⛔ Con — using their EMR</h4><ul>
+        <li><b>Strategic conflict:</b> Togo Health is building an EMR to sell to provider groups. Adopting a competitor's EMR for your own SNF care undercuts that pitch.</li>
+        <li><b>Lost reference customer:</b> GrabHC is the natural proof-of-concept for Togo's EMR. Hand it over and you lose the showcase.</li>
+        <li><b>Data & visibility:</b> your clinical/operational data runs through a company that competes with Togo.</li>
+        <li><b>Switching cost & lock-in:</b> migrating off later is expensive; your workflows get shaped by their roadmap.</li>
+        <li><b>ALF wedge weakens:</b> our PCC analysis says the opening is software for facilities priced out of PCC — harder to pursue while standardized on Altea.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- ── CASH vs STOCK ── -->
+  <div class="card"><h3>⚖️ Cash vs. stock — the real tradeoffs</h3>
+    <div class="pc">
+      <div class="pro"><h4>✅ Why more CASH</h4><ul>
+        <li><b>Certain and liquid today.</b> $3M in hand beats $3M of paper that may never convert.</li>
+        <li><b>No dilution, no preference stack.</b> Private-company common stock usually sits <i>behind</i> investor preferred — in a modest exit you can get little or nothing.</li>
+        <li><b>Funds your own roadmap</b> — Togo's EMR, the ALF product, more day/night groups — instead of funding theirs.</li>
+        <li><b>Keeps you a free agent</b> to compete, partner, or sell elsewhere.</li>
+        <li>No dependence on Altea's $500M mark being real.</li>
+      </ul></div>
+      <div class="con"><h4>📈 Why more STOCK</h4><ul>
+        <li><b>Upside participation</b> if Altea grows — the only way this becomes worth more than $3M.</li>
+        <li><b>Alignment</b> — if you must use their EMR anyway, owning a slice turns a dependency into a shared interest.</li>
+        <li><b>Possible tax deferral</b> if structured as rollover equity (CPA must confirm — cash is generally taxable at close).</li>
+        <li><b>Relationship & optionality</b> — a seat at the table, information rights, future partnership.</li>
+        <li>Signals confidence, which can improve the rest of the terms.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- ── DILIGENCE ── -->
+  <div class="card"><h3>❓ Questions to get answered before you choose a mix</h3>
+    <div class="pad">
+      <div class="sect" style="margin-top:0">On the equity itself</div>
+      <p class="q">1. Is the $500M a <b>priced round by outside investors</b>, or an internal/founder mark? Pre- or post-money? Who led it and when?</p>
+      <p class="q">2. What <b>class of shares</b> do we receive — common, or the same preferred as investors? What is the <b>liquidation preference stack</b> ahead of us (and is it participating)?</p>
+      <p class="q">3. Fully-diluted share count, option pool, outstanding SAFEs/notes — so 0.6% is 0.6% of what, exactly?</p>
+      <p class="q">4. <b>Information rights</b>, tag-along/drag-along, ROFR, and any transfer restrictions or lock-up.</p>
+      <p class="q">5. Revenue, burn, and runway. A $500M mark on modest revenue is a very different risk than on large revenue.</p>
+      <div class="sect">On the EMR</div>
+      <p class="q">6. <b>Are we contractually required to use their EMR</b> for GrabHC SNF care — and for how long? Is that in the purchase agreement or just expected?</p>
+      <p class="q">7. What <i>is</i> the EMR — built in-house or licensed? Is it ONC-certified? (See research note below.)</p>
+      <p class="q">8. Does any term restrict Togo Health from <b>selling its own EMR</b> to other provider groups (non-compete / exclusivity)? This is the one that could quietly kill a core business line.</p>
+      <p class="q">9. Who owns the clinical data, and can we export it if we exit?</p>
+      <div class="sect">On the deal shape</div>
+      <p class="q">10. Asset or stock sale? Escrow/holdback size? Earn-out tied to what metrics? Employment/non-compete for providers? Which entity is actually being sold — and does it carry the SNF contracts?</p>
+    </div>
+  </div>
+
+  <!-- ── RESEARCH ── -->
+  <div class="card"><h3>🔎 Research: what is Altea's EMR?</h3>
+    <div class="pad">
+      <p><b>Confirmed:</b> Altea Healthcare (CEO/founder <b>Jodhvir Sarai</b>) markets itself as post-acute <i>technology + provider services</i>, and its own materials say it offers "electronic health record (EHR) systems," telehealth, analytics, and patient-engagement apps. So they do run their own EHR rather than reselling PointClickCare.</p>
+      <p style="margin-top:8px"><b>Not confirmed — treat as a diligence question:</b> the product's name is <b>not publicly disclosed</b> on their site. A closely-adjacent post-acute EHR, <b>Aarista</b> (founded 2023; AI engine branded "Aari"; Bellingham, WA), keeps surfacing alongside Altea, and our own PointClickCare marketplace pull lists <b>"Aarista Technologies"</b> twice — once as AI clinical software, once as <b>"Aarista Legacy — physician services and medical directorship."</b> That software-plus-provider-group shape mirrors Altea's, but <b>no public source confirms a corporate link</b>, so do not assume Aarista is Altea's EMR. Ask them directly.</p>
+      <p style="margin-top:8px"><b>Why it matters:</b> if their EMR is proprietary and young, you're betting GrabHC's documentation on an immature platform. If it's certified and mature, the "pro" side of the EMR argument gets much stronger. Ask for a live demo, the ONC certification ID, uptime history, and a reference customer.</p>
+      <p class="src" style="margin-top:8px">Sources: alteahc.com/product · alteahc.com/about-us · aarista.com · crunchbase/cbinsights profiles · our PCC marketplace dataset.</p>
+    </div>
+  </div>
+
+  <div class="card"><h3>🧭 How to think about the mix</h3><div class="pad">
+    <p>The honest framing: <b>cash is a known quantity; stock is a bet on Altea's execution</b> that you cannot control, cannot easily sell, and that sits behind their investors in a payout. A common approach is to take enough cash to cover what you actually need (fund Togo's EMR, the ALF product, reserves, taxes) and treat any stock as venture-risk money you can afford to see go to zero — then size the stock to whatever passes that test. But the right number depends on facts this page can't know: your tax position, cash needs, and the answers to the ten questions above.</p>
+    <p style="margin-top:8px">The strategic question is arguably bigger than the mix: <b>if any term restricts Togo Health from selling its EMR, that cost may dwarf the difference between cash and stock.</b> Settle that before optimizing percentages.</p>
+  </div></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+const $=s=>document.querySelector(s);
+function show(a){$('#gate').style.display=a?'none':'grid';$('#app').style.visibility=a?'visible':'hidden';}
+window.ghLogin=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.href.split('#')[0]}});if(error)$('#gm').textContent=error.message;};
+window.pwLogin=async()=>{const{error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(error)$('#gm').textContent='Error: '+error.message;};
+window.sendLink=async()=>{const{error}=await sb.auth.signInWithOtp({email:$('#em').value.trim(),options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});$('#gm').textContent=error?('Error: '+error.message):'Check your email.';};
+window.signOut=async()=>{await sb.auth.signOut();location.reload();};
+
+const fmt=n=>'$'+Math.round(n).toLocaleString();
+const fmtM=n=>n>=1e9?'$'+(n/1e9).toFixed(2)+'B':n>=1e6?'$'+(n/1e6).toFixed(1)+'M':fmt(n);
+window.calc=function(){
+  const pct=+$('#pct').value, deal=+$('#deal').value||0, val=+$('#val').value||1;
+  const dil=+$('#dil').value/100, yrs=+$('#yrs').value;
+  const stock=deal*pct/100, cash=deal-stock, eq=stock/val;
+  $('#pctLbl').textContent=pct+'%'; $('#dilLbl').textContent=$('#dil').value+'%'; $('#yrLbl').textContent=yrs;
+  $('#barC').style.width=(100-pct)+'%'; $('#barS').style.width=pct+'%';
+  $('#oCash').textContent=fmt(cash); $('#oStock').textContent=fmt(stock);
+  $('#oPct').textContent=(eq*100).toFixed(3)+'%';
+  // exit valuation at which cash+stock equals the all-cash alternative
+  const effEq=eq*(1-dil);
+  $('#oBreak').textContent = pct===0 ? 'n/a (all cash)' : fmtM(stock/effEq);
+  const rows=[['Wipeout / no exit',0],['Down round (0.5×)',0.5],['Flat ('+fmtM(val)+')',1],['2×',2],['3×',3],['5×',5],['10×',10]];
+  $('#scen').innerHTML=rows.map(([lab,m])=>{
+    const exit=val*m, sv=exit*effEq, tot=cash+sv, base=deal;
+    const ann = yrs>0 && base>0 && tot>0 ? (Math.pow(tot/base,1/yrs)-1)*100 : null;
+    const cls = tot>base*1.02?'win':tot<base*0.98?'lose':'';
+    return `<tr class="${cls}"><td>${lab}</td><td class="tnum">${fmtM(exit)}</td><td class="tnum">${fmt(sv)}</td>
+      <td class="tnum">${fmt(tot)} <span style="color:var(--muted)">(${tot>=base?'+':''}${fmt(tot-base)})</span></td>
+      <td class="tnum">${ann===null?'—':(ann>=0?'+':'')+ann.toFixed(1)+'%/yr'}</td></tr>`;}).join('');
+};
+const {data:{session}}=await sb.auth.getSession();
+show(!!session); if(session) calc();
+sb.auth.onAuthStateChange((_e,s)=>{if(s){show(true);calc();}});
+</script>
+</body>
+</html>

@@ -605,6 +605,16 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business w
   // Workspace embedded inline (entities, contracts, marketing, renewals) — no extra click.
   v.appendChild(el('div','sect','Business workspace — entities · contracts · marketing · renewals'));
   v.appendChild(bizFrame());
+  // Corporate development / M&A — its own spot per Greg
+  v.appendChild(el('div','sect','Corporate development — offers & decisions'));
+  const mna=el('div','card');
+  mna.innerHTML='<h3>🤝 Live offers</h3>'+
+    '<a class="row clk" href="./deal-altea.html" style="text-decoration:none;color:inherit">'+
+    '<div class="main"><div class="name">Altea Health → acquire <b>GrabHC</b> <span class="pill p-warn">decision open</span></div>'+
+    '<div class="sub">$3M · cash vs. equity mix (0.6% at their $500M mark) · EMR dependency is the crux</div></div>'+
+    '<span class="pill p-prog">Open model →</span></a>';
+  v.appendChild(mna);
+
   // Marketing & targeting, grouped BY ORGANIZATION (day/night groups per state)
   v.appendChild(el('div','sect','Marketing & targeting — by organization'));
   const oc=el('div','card');oc.id='orgmkt';
