@@ -86,14 +86,20 @@
           <div class="bar"><i class="c" id="barC" style="width:50%"></i><i class="s" id="barS" style="width:50%"></i></div>
           <div class="src"><span style="color:var(--accent)">■</span> cash &nbsp; <span style="color:var(--warn)">■</span> stock</div>
         </div>
-        <div class="grid2" style="gap:10px">
-          <div><label class="fl">Deal value ($)</label><input id="deal" type="number" value="3000000" oninput="calc()"></div>
-          <div><label class="fl">Altea valuation ($)</label><input id="val" type="number" value="500000000" oninput="calc()"></div>
+        <div>
+          <div class="grid2" style="gap:10px">
+            <div><label class="fl">Deal value ($)</label><input id="deal" type="number" value="3000000" oninput="calc()"></div>
+            <div><label class="fl">Altea's claimed valuation ($)</label><input id="val" type="number" value="500000000" oninput="calc()"></div>
+          </div>
+          <label class="fl" style="margin-top:10px">Haircut on their claim — believe <span id="hcLbl">100%</span> of the $500M</label>
+          <input id="hc" type="range" min="20" max="100" step="5" value="100" oninput="calc()">
+          <div class="src">The $500M is <b>self-reported and unvalidated</b>. Stock is priced off that number, so if it's inflated you receive less real value. Cash is immune to this.</div>
         </div>
       </div>
       <div class="stats" style="margin-top:14px">
         <div class="stat"><b id="oCash">—</b><span>cash at close</span></div>
         <div class="stat"><b id="oStock">—</b><span>stock value (at their mark)</span></div>
+        <div class="stat"><b id="oReal">—</b><span>stock value after haircut</span></div>
         <div class="stat"><b id="oPct">—</b><span>equity stake</span></div>
         <div class="stat"><b id="oBreak">—</b><span>exit needed to beat all-cash</span></div>
       </div>
@@ -110,7 +116,7 @@
         <div><label class="fl">Years to exit — <span id="yrLbl">5</span></label>
           <input id="yrs" type="range" min="1" max="10" step="1" value="5" oninput="calc()"></div>
       </div>
-      <table><thead><tr><th>Exit scenario</th><th>Altea value</th><th>Your stock</th><th>Total vs all-cash</th><th>Annualized</th></tr></thead>
+      <table><thead><tr><th>Exit scenario</th><th>Altea value (after haircut)</th><th>Your stock</th><th>Total vs all-cash</th><th>Annualized</th></tr></thead>
         <tbody id="scen"></tbody></table>
       <p class="src" style="margin-top:10px">"Total" = cash at close + diluted stock proceeds. Annualized compares the total to taking $3M cash today, over the years-to-exit. Ignores taxes, escrow/holdback, and any liquidation preference ahead of you — all of which reduce the stock column in practice.</p>
     </div>
@@ -189,10 +195,54 @@
     </div>
   </div>
 
-  <div class="card"><h3>🧭 How to think about the mix</h3><div class="pad">
-    <p>The honest framing: <b>cash is a known quantity; stock is a bet on Altea's execution</b> that you cannot control, cannot easily sell, and that sits behind their investors in a payout. A common approach is to take enough cash to cover what you actually need (fund Togo's EMR, the ALF product, reserves, taxes) and treat any stock as venture-risk money you can afford to see go to zero — then size the stock to whatever passes that test. But the right number depends on facts this page can't know: your tax position, cash needs, and the answers to the ten questions above.</p>
-    <p style="margin-top:8px">The strategic question is arguably bigger than the mix: <b>if any term restricts Togo Health from selling its EMR, that cost may dwarf the difference between cash and stock.</b> Settle that before optimizing percentages.</p>
+  <div class="card"><h3>🧾 Claims ledger — everything unvalidated</h3>
+    <div class="pad">
+      <p class="src" style="margin-bottom:10px">All figures below are <b>Jodh Sarai's own statements</b>. None is independently verified. Each row is a diligence request.</p>
+      <table><thead><tr><th>Claim</th><th>Ask for</th></tr></thead><tbody>
+        <tr><td><b>$500M valuation</b> — "based on a recent valuation"</td><td style="text-align:left">The term sheet / 409A / cap table from that round. Who priced it, when, pre- or post-money, and was it outside money or internal?</td></tr>
+        <tr><td><b>"Will pass $1B soon"</b></td><td style="text-align:left">Forward projection with assumptions. Treat as aspiration, not value.</td></tr>
+        <tr><td><b>750 SNFs</b> (provider services)</td><td style="text-align:left">Facility list or count by state, with contract dates. Cross-check against our CMS SNF registry.</td></tr>
+        <tr><td><b>~$100k profit per facility / year</b></td><td style="text-align:left">Is that <i>net profit</i> or gross/potential? Audited or management figures? Per-facility P&amp;L for a sample.</td></tr>
+        <tr><td><b>EMR in 3,000 SNFs</b> (Aarista)</td><td style="text-align:left">Active vs contracted seats. Note: PCC's public registry lists ~4,000 PCC-FHIR operators total — 3,000 SNFs on Aarista would be a very large share of the market, so define "in."</td></tr>
+      </tbody></table>
+      <div class="both" style="margin-top:14px"><h4>🔍 The internal inconsistency worth pressing on</h4>
+        750 facilities × $100k = <b>$75M/year of profit</b>. Against a $500M valuation that is only <b>6.7× profit</b> — implausibly cheap for a fast-growing healthcare technology company (comparables run far higher). Either the $100k is <b>potential/gross rather than realized net profit</b>, the 750-facility count is aspirational, or he is deliberately underpricing himself — and the last is unlikely from someone forecasting $1B. <b>The most probable read: the per-facility profit figure is not actual net profit.</b> Ask him to reconcile the two numbers; his answer tells you a lot about every other figure.</div>
+    </div>
+  </div>
+
+  <div class="card"><h3>🔀 Strategic scenarios — what Togo/SEGE become</h3>
+    <div class="pad">
+      <div class="sect" style="margin-top:0">A · Sell GrabHC, pivot Togo to home-based care</div>
+      <p>Adopt Aarista for SNF work and redirect Togo's EMR effort into a <b>home-based app connecting doctors to patients with mobile MAs/staff — the "Uber of medicine."</b> This reframes the EMR "loss" as a deliberate exit from a crowded market into a bigger one. <b>Upside:</b> stops competing with Aarista head-on; the mobile-staff logistics layer is genuinely differentiated and nobody owns it. <b>Cost:</b> likely closing <b>PMG, SEGE, and the day groups</b>; a consumer/home model is a different business (payer mix, patient acquisition, unit economics) than facility contracts, and the $3M becomes the seed for it. <b>InstaMobile can likely continue.</b></p>
+
+      <div class="sect">B · Hybrid partnership — InstaMobile + Altea telemedicine</div>
+      <p>Run InstaMobile in Altea facilities, with Altea's telemedicine covering on-call after the provider leaves. Genuinely complementary on paper. <b>Blocker: Sarai says he doesn't need InstaMobile.</b> Don't spend negotiating capital here until he sees a gap he cares about — and he currently doesn't.</p>
+
+      <div class="sect">C · Togo as the clinical-quality layer inside Aarista</div>
+      <p>Togo surfaces <b>preventive-medicine and chronic-care-management guidelines inside his EMR</b>, and schedules preventive visits for his providers. <b>Blocker: Sarai believes Aarista already does this.</b> But you have something better than an argument — <b>you have access to physicians using Aarista today who perform poorly on preventive care versus Togo.</b> That makes this the one partnership you can prove rather than pitch. <b>Recommendation: bring evidence, not claims</b> — a small blinded comparison (preventive-service completion, CCM enrollment, gap closure) on his own users. If the gap is real, it reframes you from vendor to necessary capability, and it's leverage in the deal itself. If he still won't look, that's useful information about partnering with him at all.</p>
+
+      <div class="sect">D · Stay independent and out-grow him via owners</div>
+      <p>Your own counter-thesis, and it deserves weight: <b>partnering with SNF owners is stickier than selling to facilities.</b> Owner relationships compound — our own targeting data ranks owner groups (e.g. one group with 66 facilities / 8,839 beds and acute staffing pain), and reaching enough owners could eventually displace his provider group regardless of who has the better EMR. <b>Cost:</b> you're racing a much faster-growing, better-capitalized competitor, and SEGE keeps carrying the day/night-group overhead.</p>
+
+      <div class="sect">On ALF — be honest about the edge</div>
+      <p>Altea is in ALF and <b>not strong there; Togo is weaker still.</b> So ALF is not a reason to do or avoid this deal today. It's an open market neither of you has won — which is an argument for the ALF-software wedge as a <i>later</i> play, not a differentiator you can claim now.</p>
+    </div>
+  </div>
+
+  <div class="card"><h3>🚫 The non-compete trap</h3>
+    <div class="pad">
+      <p>Structure is an <b>asset sale with stock transfer</b>: GrabHC sells the medical-director and provider contracts and folds under Altea. You intend to keep <b>no non-compete in the sale</b> — correct, and essential, since SEGE must keep running Venza, Sweetwater, and InstaMobile growth.</p>
+      <div class="both"><h4>⚠️ These two goals are in direct conflict</h4>
+        You also want <b>marketing, clinical-consulting, and EMR-consulting roles</b> — and those almost always carry their own non-compete/non-solicit. So a clean sale agreement can be quietly undone by the consulting contracts attached to it. <b>Treat them as one negotiation, not two.</b> Concretely: (1) keep any consulting non-compete <b>narrowly scoped</b> to the specific services delivered, never to post-acute or EMR generally; (2) <b>carve out by name</b> SEGE, Venza, Sweetwater, InstaMobile, Togo's EMR, and the home-based/mobile-staff business; (3) cap duration and geography; (4) make sure non-solicit doesn't stop you recruiting providers for SEGE's own groups. Price the consulting income against what it restricts — if a role pays $150k/yr but blocks a business line worth multiples of that, decline the role and keep the freedom.</p>
+    </div>
+  </div>
+
+  <div class="card"><h3>🧭 How to think about it</h3><div class="pad">
+    <p><b>On the mix.</b> Cash is a known quantity; stock is a bet on Altea's execution priced off <i>his own unvalidated mark</i>. That asymmetry is the whole game: if the $500M is inflated 2–3×, stock quietly delivers a fraction of $3M in real value, while cash delivers exactly $3M. Move the haircut slider above to see it. A common approach is to take enough cash to cover what you actually need — funding the Togo pivot, reserves, taxes — and size stock only to what you could watch go to zero. But your tax position and cash needs decide that, and this page can't know them.</p>
+    <p style="margin-top:8px"><b>On the strategy — the bigger question.</b> The mix matters less than which future you're buying. Selling GrabHC is coherent <i>if</i> it funds a real pivot (scenario A) or buys a provable partnership (scenario C). It's much weaker if it just removes your SNF footprint while you keep competing in the same market with less. The strongest asset you hold isn't GrabHC — it's the <b>documented preventive-care gap in Aarista's own physician base</b>. That's leverage in the deal, the basis for partnership C, and evidence for scenario D.</p>
+    <p style="margin-top:8px"><b>Sequence I'd suggest:</b> (1) get the claims ledger answered, especially the $75M-profit-vs-$500M-valuation reconciliation; (2) settle the non-compete across sale <i>and</i> consulting together; (3) only then choose a cash/stock split. Optimizing percentages before 1 and 2 is optimizing the wrong variable.</p>
   </div></div>
+</div>
 </div>
 
 <script type="module">
@@ -209,18 +259,22 @@ const fmt=n=>'$'+Math.round(n).toLocaleString();
 const fmtM=n=>n>=1e9?'$'+(n/1e9).toFixed(2)+'B':n>=1e6?'$'+(n/1e6).toFixed(1)+'M':fmt(n);
 window.calc=function(){
   const pct=+$('#pct').value, deal=+$('#deal').value||0, val=+$('#val').value||1;
-  const dil=+$('#dil').value/100, yrs=+$('#yrs').value;
-  const stock=deal*pct/100, cash=deal-stock, eq=stock/val;
-  $('#pctLbl').textContent=pct+'%'; $('#dilLbl').textContent=$('#dil').value+'%'; $('#yrLbl').textContent=yrs;
+  const dil=+$('#dil').value/100, yrs=+$('#yrs').value, hc=+$('#hc').value/100;
+  const stock=deal*pct/100, cash=deal-stock, eq=stock/val;   // % bought at THEIR mark
+  const trueVal=val*hc;                                       // what it may really be worth
+  $('#pctLbl').textContent=pct+'%'; $('#dilLbl').textContent=$('#dil').value+'%';
+  $('#yrLbl').textContent=yrs; $('#hcLbl').textContent=$('#hc').value+'%';
   $('#barC').style.width=(100-pct)+'%'; $('#barS').style.width=pct+'%';
   $('#oCash').textContent=fmt(cash); $('#oStock').textContent=fmt(stock);
+  $('#oReal').textContent=fmt(eq*trueVal)+(hc<1?' ('+Math.round(hc*100)+'%)':'');
   $('#oPct').textContent=(eq*100).toFixed(3)+'%';
   // exit valuation at which cash+stock equals the all-cash alternative
   const effEq=eq*(1-dil);
   $('#oBreak').textContent = pct===0 ? 'n/a (all cash)' : fmtM(stock/effEq);
+  const base0=trueVal;
   const rows=[['Wipeout / no exit',0],['Down round (0.5×)',0.5],['Flat ('+fmtM(val)+')',1],['2×',2],['3×',3],['5×',5],['10×',10]];
   $('#scen').innerHTML=rows.map(([lab,m])=>{
-    const exit=val*m, sv=exit*effEq, tot=cash+sv, base=deal;
+    const exit=base0*m, sv=exit*effEq, tot=cash+sv, base=deal;
     const ann = yrs>0 && base>0 && tot>0 ? (Math.pow(tot/base,1/yrs)-1)*100 : null;
     const cls = tot>base*1.02?'win':tot<base*0.98?'lose':'';
     return `<tr class="${cls}"><td>${lab}</td><td class="tnum">${fmtM(exit)}</td><td class="tnum">${fmt(sv)}</td>
