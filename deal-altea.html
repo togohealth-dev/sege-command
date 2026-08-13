@@ -3,59 +3,65 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="/sege-command/">
-<title>GrabHC · Altea Offer</title>
+<title>GrabHC · With Altea vs Without</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <style>
-  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
-  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);--A:#7a5cc0;--A-bg:#f0ebfa;--B:#0e7c86;--B-bg:#e0f2f3;}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);--A:#a98ae0;--A-bg:#221b33;--B:#26b3bd;--B-bg:#0f2b2e;}}
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.55}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 16px 70px}
-  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:16px;position:sticky;top:0;background:var(--ground);padding:12px 0;z-index:20;border-bottom:1px solid var(--border)}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 16px 70px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:14px;position:sticky;top:0;background:var(--ground);padding:12px 0;z-index:30;border-bottom:1px solid var(--border)}
   .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}.logo img{width:100%;height:100%;object-fit:cover;display:block}
-  .title{margin-right:auto;min-width:170px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .title{margin-right:auto;min-width:180px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
   .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
   .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .disc{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
+  /* two-column compare */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  @media(max-width:960px){.vs{grid-template-columns:1fr}}
+  .col{border:2px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+  .col.a{border-color:var(--A)} .col.b{border-color:var(--B)}
+  .colhead{padding:13px 16px;font-weight:750;font-size:15px;display:flex;align-items:center;gap:9px}
+  .col.a .colhead{background:var(--A-bg);color:var(--A)} .col.b .colhead{background:var(--B-bg);color:var(--B)}
+  .colhead small{display:block;font-weight:600;font-size:11.5px;opacity:.85}
+  .blk{padding:13px 16px;border-top:1px solid var(--border)}
+  .blk h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:7px}
+  .blk ul{margin-left:17px}.blk li{margin-bottom:7px;font-size:13px}
+  .good{color:var(--ok);font-weight:650}.bad{color:var(--bad);font-weight:650}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
   .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
   .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
   .pad{padding:14px 16px}
-  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px}
-  .disc{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:16px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:860px){.grid2{grid-template-columns:1fr}}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-  .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:11px 13px}
-  .stat b{font-size:21px;font-weight:780;display:block;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted)}
-  label.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);display:block;margin-bottom:5px}
+  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:20px 2px 8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px}
+  .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+  .stat b{font-size:20px;font-weight:780;display:block;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted)}
+  label.fl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);display:block;margin-bottom:4px}
   input[type=range]{width:100%}
   input[type=number]{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit}
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--border)}
+  th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--border)}
   th:first-child,td:first-child{text-align:left}
   th{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700}
   td.tnum{font-variant-numeric:tabular-nums}
-  tr.win td{background:var(--ok-bg)} tr.lose td{background:var(--bad-bg)}
-  .pc{display:grid;grid-template-columns:1fr 1fr;gap:0}@media(max-width:760px){.pc{grid-template-columns:1fr}}
-  .pc>div{padding:14px 16px}
-  .pc .pro{border-right:1px solid var(--border)}
-  .pc h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-  .pro h4{color:var(--ok)} .con h4{color:var(--bad)}
-  .pc li{margin:0 0 8px 18px;font-size:13px}
-  .both{background:var(--accent-soft);color:var(--accent-ink);border-radius:10px;padding:13px 15px;margin:0 16px 14px;font-size:13px}
-  .both h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-  .q{margin:0 0 9px 18px;font-size:13px}
+  tr.win td{background:var(--ok-bg)}tr.lose td{background:var(--bad-bg)}
+  .key{background:var(--accent-soft);color:var(--accent-ink);border-radius:10px;padding:13px 15px;font-size:13px;margin-bottom:12px}
+  .key h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
   .bar{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex;margin:6px 0 2px}
   .bar i{display:block;height:100%}.bar .c{background:var(--accent)}.bar .s{background:var(--warn)}
+  .q{margin:0 0 8px 18px;font-size:13px}
+  .src{font-size:11.5px;color:var(--muted)}
   .gate{position:fixed;inset:0;background:var(--ground);z-index:999;display:grid;place-items:center;padding:20px}
   .gate .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center}
   .gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:8px 0}
-  .src{font-size:11.5px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div id="gate" class="gate" style="display:none"><div class="box">
   <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
-  <h1 style="font-size:19px;font-weight:750">GrabHC · Altea Offer</h1>
+  <h1 style="font-size:19px;font-weight:750">GrabHC · Altea decision</h1>
   <p style="color:var(--muted);font-size:13px">Confidential — staff sign-in required.</p>
   <button class="btn" style="width:100%;justify-content:center;margin:10px 0 6px" onclick="ghLogin()">Sign in with GitHub</button>
   <input id="em" type="email" placeholder="you@togohealth.com" autocomplete="username">
@@ -68,16 +74,84 @@
 <div class="wrap" id="app" style="visibility:hidden">
   <header class="top">
     <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
-    <div class="title"><h1>GrabHC → Altea Health</h1><p>$3M offer · cash vs. equity decision model</p></div>
+    <div class="title"><h1>GrabHC: with Altea vs. without</h1><p>$3M asset sale + stock transfer — or run his playbook ourselves</p></div>
     <a class="btn" href="./business">← Business</a>
     <a class="btn" href="./">🏠 Command Center</a>
     <button class="btn" onclick="signOut()">Sign out</button>
   </header>
 
-  <div class="disc"><b>Not investment or tax advice.</b> This is a decision-support model built from assumptions you control — it is not a recommendation, and I'm not a licensed financial, tax, or legal advisor. Before signing, have a healthcare M&A attorney and a CPA review the structure (asset vs. stock sale, share class, tax treatment). The valuation and equity figures below are <b>Altea's representations</b>, not verified facts.</div>
+  <div class="disc"><b>Not investment, tax, or legal advice.</b> Decision-support model from assumptions you control — not a recommendation. Have a healthcare M&amp;A attorney and CPA review any structure. <b>Every Altea figure below is Jodh Sarai's own unvalidated claim</b>, not verified fact.</div>
 
-  <!-- ── DEAL MODEL ── -->
-  <div class="card"><h3>💰 Consideration mix <span class="count">drag to model cash vs. stock</span></h3>
+  <div class="key"><h4>🎯 The reframe that matters</h4>
+    Altea offering <b>$3M</b> for GrabHC's medical-director and provider contracts is not just an offer — it's a <b>price signal for what a book like this is worth</b>. Sarai's whole playbook is rolling up small physician groups and putting them on his own EMR. <b>We can run that playbook too</b> — and unlike him when he started, we already own the three hard pieces: an EMR (Togo), the management machinery (SEGE onboarding/credentialing/checklists), and a scored acquisition pipeline (14,700 CMS-rated SNFs, owner rollups, 258k NPPES providers). What we lack is his capital and speed. So the real question isn't cash-vs-stock — it's <b>sell the book, or use it as the first block of our own roll-up.</b></div>
+
+  <!-- ══ SIDE BY SIDE ══ -->
+  <div class="vs">
+    <!-- WITH -->
+    <div class="col a">
+      <div class="colhead">🤝 WITH Altea <small>Sell GrabHC · $3M · asset sale + stock transfer</small></div>
+      <div class="blk"><h4>What we get</h4><ul>
+        <li><b>$3M</b> in cash and/or stock, mix our choice.</li>
+        <li>A working post-acute EMR (<b>Aarista</b>) we don't build, staff, or certify.</li>
+        <li>Exit from the day/night-group operating burden — PMG and the day groups can wind down.</li>
+        <li>Capital to fund the <b>Togo pivot to home-based care</b> — mobile MAs + staff, the "Uber of medicine."</li>
+        <li>Optional consulting income (marketing / clinical / EMR) — <span class="bad">but see the non-compete trap</span>.</li>
+        <li>If we take stock, upside participation in a company growing faster than us.</li>
+      </ul></div>
+      <div class="blk"><h4>What we give up</h4><ul>
+        <li><b>The SNF footprint</b> — and with it Togo's natural reference customer for its own EMR.</li>
+        <li>The medical-director relationships, which are the stickiest asset in this business.</li>
+        <li><span class="bad">Strategic independence</span> — we hand a physician group to a company that competes with Togo (EMR) <i>and</i> SEGE ("Aarista Legacy — physician services and medical directorship").</li>
+        <li>Clinical/operational data visibility flows to a competitor.</li>
+        <li>Likely closure of <b>PMG, SEGE, and the day groups</b> (SEGE could survive to run Venza/Sweetwater/InstaMobile).</li>
+      </ul></div>
+      <div class="blk"><h4>Partnership upside — and the blockers</h4><ul>
+        <li><b>Hybrid on-call:</b> InstaMobile in his facilities + Altea telemedicine after the provider leaves. <span class="bad">Blocker: Sarai says he doesn't need InstaMobile.</span></li>
+        <li><b>Clinical-quality layer:</b> Togo surfaces preventive-care + CCM guidance inside Aarista, schedules preventive visits. <span class="bad">Blocker: he believes Aarista already does this.</span> <span class="good">But you can prove otherwise — you have access to his own physicians who underperform Togo on preventive care.</span> This is the one partnership backed by evidence, not argument.</li>
+      </ul></div>
+      <div class="blk"><h4>Honest risks</h4><ul>
+        <li>Stock is priced off <b>his own unvalidated $500M</b>. If inflated, the stock quietly delivers a fraction of $3M.</li>
+        <li>Aarista was <b>founded 2023</b> — betting GrabHC's documentation on a ~3-year-old platform.</li>
+        <li>Consulting roles likely carry non-competes that can undo a clean sale.</li>
+        <li>He grows faster; if we stay in the market we're now competing against our own former book.</li>
+      </ul></div>
+    </div>
+
+    <!-- WITHOUT -->
+    <div class="col b">
+      <div class="colhead">🛠 WITHOUT Altea <small>Keep GrabHC · run his playbook · roll up practices ourselves</small></div>
+      <div class="blk"><h4>What we do instead</h4><ul>
+        <li><b>Buy small practices and medical-director books — exactly what he does.</b> Fragmented market, motivated sellers, and we know the price ($3M is his mark for a book like ours).</li>
+        <li><b>Target SNF <u>owners</u>, not facilities</b> — your own thesis, and the stickier motion. Our data already ranks owner groups (one has 66 facilities / 8,839 beds with acute staffing pain).</li>
+        <li>Put every acquired group on <b>Togo's EMR</b> — each acquisition makes our own product stronger instead of his.</li>
+        <li>Keep <b>InstaMobile</b> growth (Venza, Sweetwater) under SEGE.</li>
+        <li>Sell the <b>preventive-care/CCM advantage</b> as our wedge — the gap we can document in his physicians is a market-wide gap.</li>
+        <li>ALF later, honestly: <span class="bad">he's weak there, we're weaker</span> — an open market, not a current edge.</li>
+      </ul></div>
+      <div class="blk"><h4>What we already own that he had to build</h4><ul>
+        <li><b>An EMR</b> (Togo) — he needed Aarista; we have ours.</li>
+        <li><b>The ops machine</b> — SEGE onboarding, 8-phase credentialing, facility go-live checklists, AI file verification. Real infrastructure, already running.</li>
+        <li><b>A targeting engine</b> — 14,700 scored SNFs, owner rollups, 3,005 ALF prospects, 258k providers for staffing. This <i>is</i> an acquisition pipeline.</li>
+        <li><b>Entity scaffolding</b> — 28 MSO/PC entities across 9 states, day/night groups already formed.</li>
+      </ul></div>
+      <div class="blk"><h4>What it costs us</h4><ul>
+        <li><span class="bad">No $3M.</span> The roll-up is self- or debt-funded, and slower.</li>
+        <li>We keep the operating burden: recruiting, credentialing, coverage, turnover.</li>
+        <li>We must finish and certify our own EMR — real engineering cost and time.</li>
+        <li><span class="bad">We race a better-capitalized competitor</span> who is compounding while we build.</li>
+        <li>Execution risk sits entirely with us; no partner de-risks it.</li>
+      </ul></div>
+      <div class="blk"><h4>Why this can win</h4><ul>
+        <li><b>Owner relationships compound.</b> Reach enough SNF owners and we can displace his group in those buildings regardless of whose EMR is better.</li>
+        <li><b>Every acquisition is worth more to us than to him</b> — it adds contracts <i>and</i> a reference customer for Togo's EMR.</li>
+        <li>No non-compete, no dependency, no counterparty risk.</li>
+        <li>If GrabHC's book is worth $3M to him, a portfolio of similar books is worth multiples — <b>to us, not to his cap table.</b></li>
+      </ul></div>
+    </div>
+  </div>
+
+  <!-- ══ MODEL A ══ -->
+  <div class="card" style="margin-top:14px"><h3>💰 WITH Altea — what the $3M actually delivers <span class="count">stock is priced off an unvalidated mark</span></h3>
     <div class="pad">
       <div class="grid2">
         <div>
@@ -85,164 +159,101 @@
           <input id="pct" type="range" min="0" max="100" step="5" value="50" oninput="calc()">
           <div class="bar"><i class="c" id="barC" style="width:50%"></i><i class="s" id="barS" style="width:50%"></i></div>
           <div class="src"><span style="color:var(--accent)">■</span> cash &nbsp; <span style="color:var(--warn)">■</span> stock</div>
-        </div>
-        <div>
-          <div class="grid2" style="gap:10px">
-            <div><label class="fl">Deal value ($)</label><input id="deal" type="number" value="3000000" oninput="calc()"></div>
-            <div><label class="fl">Altea's claimed valuation ($)</label><input id="val" type="number" value="500000000" oninput="calc()"></div>
-          </div>
-          <label class="fl" style="margin-top:10px">Haircut on their claim — believe <span id="hcLbl">100%</span> of the $500M</label>
+          <label class="fl" style="margin-top:12px">Believe <span id="hcLbl">100%</span> of his $500M claim</label>
           <input id="hc" type="range" min="20" max="100" step="5" value="100" oninput="calc()">
-          <div class="src">The $500M is <b>self-reported and unvalidated</b>. Stock is priced off that number, so if it's inflated you receive less real value. Cash is immune to this.</div>
+          <div class="src">Cash is immune to an inflated mark. Stock is not.</div>
+        </div>
+        <div class="grid2" style="gap:10px">
+          <div><label class="fl">Deal value ($)</label><input id="deal" type="number" value="3000000" oninput="calc()"></div>
+          <div><label class="fl">Claimed valuation ($)</label><input id="val" type="number" value="500000000" oninput="calc()"></div>
+          <div><label class="fl">Future dilution — <span id="dilLbl">25%</span></label><input id="dil" type="range" min="0" max="70" step="5" value="25" oninput="calc()"></div>
+          <div><label class="fl">Years to exit — <span id="yrLbl">5</span></label><input id="yrs" type="range" min="1" max="10" step="1" value="5" oninput="calc()"></div>
         </div>
       </div>
       <div class="stats" style="margin-top:14px">
         <div class="stat"><b id="oCash">—</b><span>cash at close</span></div>
-        <div class="stat"><b id="oStock">—</b><span>stock value (at their mark)</span></div>
-        <div class="stat"><b id="oReal">—</b><span>stock value after haircut</span></div>
+        <div class="stat"><b id="oStock">—</b><span>stock at his mark</span></div>
+        <div class="stat"><b id="oReal">—</b><span>stock after haircut</span></div>
         <div class="stat"><b id="oPct">—</b><span>equity stake</span></div>
         <div class="stat"><b id="oBreak">—</b><span>exit needed to beat all-cash</span></div>
       </div>
-      <p class="src" style="margin-top:10px">Sanity check on the owner's figure: $3M ÷ $500M = <b>0.006 = 0.6%</b>. So "0.006 equity" and "$3M of stock" describe the same thing — the decimal is 0.6 percent, not 0.006 percent.</p>
+      <table style="margin-top:12px"><thead><tr><th>Exit scenario</th><th>Altea value</th><th>Our stock</th><th>Total vs $3M cash</th><th>Annualized</th></tr></thead><tbody id="scen"></tbody></table>
+      <p class="src" style="margin-top:9px">$3M ÷ $500M = <b>0.006 = 0.6%</b> — the owner's "0.006 equity" and "$3M of stock" are the same thing. Excludes taxes, escrow/holdback, and any liquidation preference ahead of us (all reduce the stock column in practice).</p>
     </div>
   </div>
 
-  <!-- ── SCENARIOS ── -->
-  <div class="card"><h3>📈 What the stock is worth at exit <span class="count">assumes dilution below</span></h3>
+  <!-- ══ MODEL B ══ -->
+  <div class="card"><h3>🛠 WITHOUT Altea — the roll-up math <span class="count">buy small practices, like he does</span></h3>
     <div class="pad">
-      <div class="grid2" style="margin-bottom:12px">
-        <div><label class="fl">Future dilution — <span id="dilLbl">25%</span> (new rounds shrink your %)</label>
-          <input id="dil" type="range" min="0" max="70" step="5" value="25" oninput="calc()"></div>
-        <div><label class="fl">Years to exit — <span id="yrLbl">5</span></label>
-          <input id="yrs" type="range" min="1" max="10" step="1" value="5" oninput="calc()"></div>
+      <div class="grid2">
+        <div class="grid2" style="gap:10px">
+          <div><label class="fl">Capital available ($)</label><input id="cap" type="number" value="3000000" oninput="calc()"></div>
+          <div><label class="fl">Cost per practice ($)</label><input id="cost" type="number" value="600000" oninput="calc()"></div>
+          <div><label class="fl">Annual profit per practice ($)</label><input id="prof" type="number" value="180000" oninput="calc()"></div>
+          <div><label class="fl">Years modeled — <span id="ryLbl">5</span></label><input id="ry" type="range" min="1" max="10" value="5" oninput="calc()"></div>
+        </div>
+        <div>
+          <label class="fl">Reinvest profits into more practices — <span id="riLbl">100%</span></label>
+          <input id="ri" type="range" min="0" max="100" step="10" value="100" oninput="calc()">
+          <div class="src">Compounding is the whole thesis: each acquired book funds the next. This is how he got to his claimed scale.</div>
+          <div class="stats" style="margin-top:12px">
+            <div class="stat"><b id="rBuy">—</b><span>practices bought now</span></div>
+            <div class="stat"><b id="rEnd">—</b><span>practices by year <span id="rEndY">5</span></span></div>
+            <div class="stat"><b id="rProf">—</b><span>annual profit then</span></div>
+            <div class="stat"><b id="rVal">—</b><span>portfolio value @ <span id="rMultL">5</span>× profit</span></div>
+          </div>
+          <label class="fl" style="margin-top:10px">Exit multiple on profit — <span id="rMult2">5</span>×</label>
+          <input id="rmult" type="range" min="2" max="12" step="1" value="5" oninput="calc()">
+        </div>
       </div>
-      <table><thead><tr><th>Exit scenario</th><th>Altea value (after haircut)</th><th>Your stock</th><th>Total vs all-cash</th><th>Annualized</th></tr></thead>
-        <tbody id="scen"></tbody></table>
-      <p class="src" style="margin-top:10px">"Total" = cash at close + diluted stock proceeds. Annualized compares the total to taking $3M cash today, over the years-to-exit. Ignores taxes, escrow/holdback, and any liquidation preference ahead of you — all of which reduce the stock column in practice.</p>
+      <table style="margin-top:12px"><thead><tr><th>Year</th><th>Practices</th><th>Annual profit</th><th>Cash reinvested</th><th>Portfolio value</th></tr></thead><tbody id="roll"></tbody></table>
+      <p class="src" style="margin-top:9px">Defaults are placeholders — <b>replace them with real numbers</b>. Anchors you already have: Altea values GrabHC's book at <b>$3M</b>, and Sarai claims <b>~$100k profit per facility/year</b>. A small practice or medical-director book is typically bought on a low single-digit multiple of earnings; that is the number to validate before trusting any of this.</p>
     </div>
   </div>
 
-  <!-- ── THE EMR DILEMMA ── -->
-  <div class="card"><h3>🖥 The EMR question — the crux</h3>
-    <div class="both"><h4>Why this cuts both ways</h4>
-      Altea is <b>not</b> a neutral acquirer — it is a <b>direct competitor on both fronts</b>: its EMR (Aarista) competes with Togo Health, and its "Aarista Legacy" physician-services/medical-directorship arm competes with SEGE. If GrabHC's SNF care moves onto Altea's EMR, you gain a working platform you don't have to build — but Togo Health's own EMR loses the very SNF footprint it would use as its reference customer, and a competitor gains visibility into your clinical operations. Taking <b>stock</b> makes their EMR's success partly your upside; taking <b>cash</b> keeps you free to sell Togo's EMR against them.</div>
-    <div class="pc">
-      <div class="pro"><h4>✅ Pro — using their EMR</h4><ul>
-        <li>A post-acute EMR you don't have to build, staff, or certify — immediate relief for GrabHC's SNF documentation.</li>
-        <li>They carry the ONC certification, uptime, and support burden.</li>
-        <li>If you hold stock, every dollar their platform earns is partly yours.</li>
-        <li>Integration/interop work becomes their problem, not Scott's roadmap.</li>
-      </ul></div>
-      <div class="con"><h4>⛔ Con — using their EMR</h4><ul>
-        <li><b>Strategic conflict:</b> Togo Health is building an EMR to sell to provider groups. Adopting a competitor's EMR for your own SNF care undercuts that pitch.</li>
-        <li><b>Lost reference customer:</b> GrabHC is the natural proof-of-concept for Togo's EMR. Hand it over and you lose the showcase.</li>
-        <li><b>Data & visibility:</b> your clinical/operational data runs through a company that competes with Togo.</li>
-        <li><b>Switching cost & lock-in:</b> migrating off later is expensive; your workflows get shaped by their roadmap.</li>
-        <li><b>ALF wedge weakens:</b> our PCC analysis says the opening is software for facilities priced out of PCC — harder to pursue while standardized on Altea.</li>
-      </ul></div>
+  <!-- ══ HEAD TO HEAD ══ -->
+  <div class="card"><h3>⚖️ Head to head <span class="count">same capital, five years</span></h3>
+    <div class="pad"><div id="h2h" class="stats"></div>
+      <p class="src" style="margin-top:10px">Left: sell, then hold cash/stock. Right: keep GrabHC and compound acquisitions. This is the comparison that actually decides it — and it turns entirely on the roll-up inputs above, which is why validating cost-per-practice and profit-per-practice matters more than negotiating the cash/stock split.</p>
     </div>
   </div>
 
-  <!-- ── CASH vs STOCK ── -->
-  <div class="card"><h3>⚖️ Cash vs. stock — the real tradeoffs</h3>
-    <div class="pc">
-      <div class="pro"><h4>✅ Why more CASH</h4><ul>
-        <li><b>Certain and liquid today.</b> $3M in hand beats $3M of paper that may never convert.</li>
-        <li><b>No dilution, no preference stack.</b> Private-company common stock usually sits <i>behind</i> investor preferred — in a modest exit you can get little or nothing.</li>
-        <li><b>Funds your own roadmap</b> — Togo's EMR, the ALF product, more day/night groups — instead of funding theirs.</li>
-        <li><b>Keeps you a free agent</b> to compete, partner, or sell elsewhere.</li>
-        <li>No dependence on Altea's $500M mark being real.</li>
-      </ul></div>
-      <div class="con"><h4>📈 Why more STOCK</h4><ul>
-        <li><b>Upside participation</b> if Altea grows — the only way this becomes worth more than $3M.</li>
-        <li><b>Alignment</b> — if you must use their EMR anyway, owning a slice turns a dependency into a shared interest.</li>
-        <li><b>Possible tax deferral</b> if structured as rollover equity (CPA must confirm — cash is generally taxable at close).</li>
-        <li><b>Relationship & optionality</b> — a seat at the table, information rights, future partnership.</li>
-        <li>Signals confidence, which can improve the rest of the terms.</li>
-      </ul></div>
-    </div>
-  </div>
-
-  <!-- ── DILIGENCE ── -->
-  <div class="card"><h3>❓ Questions to get answered before you choose a mix</h3>
-    <div class="pad">
-      <div class="sect" style="margin-top:0">On the equity itself</div>
-      <p class="q">1. Is the $500M a <b>priced round by outside investors</b>, or an internal/founder mark? Pre- or post-money? Who led it and when?</p>
-      <p class="q">2. What <b>class of shares</b> do we receive — common, or the same preferred as investors? What is the <b>liquidation preference stack</b> ahead of us (and is it participating)?</p>
-      <p class="q">3. Fully-diluted share count, option pool, outstanding SAFEs/notes — so 0.6% is 0.6% of what, exactly?</p>
-      <p class="q">4. <b>Information rights</b>, tag-along/drag-along, ROFR, and any transfer restrictions or lock-up.</p>
-      <p class="q">5. Revenue, burn, and runway. A $500M mark on modest revenue is a very different risk than on large revenue.</p>
-      <div class="sect">On the EMR</div>
-      <p class="q">6. <b>Are we contractually required to use their EMR</b> for GrabHC SNF care — and for how long? Is that in the purchase agreement or just expected?</p>
-      <p class="q">7. What <i>is</i> the EMR — built in-house or licensed? Is it ONC-certified? (See research note below.)</p>
-      <p class="q">8. Does any term restrict Togo Health from <b>selling its own EMR</b> to other provider groups (non-compete / exclusivity)? This is the one that could quietly kill a core business line.</p>
-      <p class="q">9. Who owns the clinical data, and can we export it if we exit?</p>
-      <div class="sect">On the deal shape</div>
-      <p class="q">10. Asset or stock sale? Escrow/holdback size? Earn-out tied to what metrics? Employment/non-compete for providers? Which entity is actually being sold — and does it carry the SNF contracts?</p>
-    </div>
-  </div>
-
-  <!-- ── RESEARCH ── -->
-  <div class="card"><h3>🔎 Altea's EMR = <b>Aarista</b> (confirmed by Greg)</h3>
-    <div class="pad">
-      <p><b>What it is.</b> Aarista is an AI-first EHR for outpatient/post-acute care — AI engine branded <b>"Aari"</b> (clinical decision support, real-time condition alerts, risk prediction), <b>founded 2023</b>, offices Bellingham WA / San Diego. Altea Healthcare (founder/CEO <b>Jodhvir Sarai</b>) sells post-acute technology <i>and</i> provider services; Aarista is the technology half.</p>
-      <div class="both" style="margin:12px 0"><h4>⚠️ Three things this confirmation changes</h4>
-        <b>1. Aarista is already in our own competitive dataset — as competition.</b> Our PointClickCare marketplace pull lists <b>Aarista Technologies</b> and our EMR-ownership rule classifies it <i>competition</i> for exactly the reason that matters here: it owns an EMR. You would be selling a physician group to a company Togo competes with, and adopting its software.<br><br>
-        <b>2. They compete with SEGE too, not just Togo.</b> The second Aarista listing is <b>"Aarista Legacy — Legacy physician services and medical directorship."</b> That is SEGE's business. So the overlap is double: EMR (vs Togo Health) <i>and</i> provider-group management/medical directorship (vs SEGE).<br><br>
-        <b>3. It's a young platform.</b> Founded 2023 — roughly three years old. Betting GrabHC's SNF documentation on it is a genuine operational risk until you see the ONC certification ID, uptime history, and a live reference customer.</div>
-      <p><b>Important nuance to verify:</b> Aarista appears in the PCC marketplace as an <i>integration</i>, which suggests it sits on the <b>provider side</b> and syncs with PointClickCare rather than replacing the facility's chart. If so, "we'd have to use their EMR" likely means provider documentation/billing — while the facilities keep charting in PCC. That's a much smaller commitment than replacing facility systems, and it's worth pinning down precisely, because it changes how much the EMR "con" actually costs you.</p>
-      <p class="src" style="margin-top:8px">Sources: aarista.com · alteahc.com · Crunchbase/CB Insights profiles · our own PCC marketplace dataset (<code>pcc_marketplace</code>, <code>v_pcc_stance</code>). Company relationship confirmed by Greg.</p>
-    </div>
-  </div>
-
-  <div class="card"><h3>🧾 Claims ledger — everything unvalidated</h3>
-    <div class="pad">
-      <p class="src" style="margin-bottom:10px">All figures below are <b>Jodh Sarai's own statements</b>. None is independently verified. Each row is a diligence request.</p>
-      <table><thead><tr><th>Claim</th><th>Ask for</th></tr></thead><tbody>
-        <tr><td><b>$500M valuation</b> — "based on a recent valuation"</td><td style="text-align:left">The term sheet / 409A / cap table from that round. Who priced it, when, pre- or post-money, and was it outside money or internal?</td></tr>
-        <tr><td><b>"Will pass $1B soon"</b></td><td style="text-align:left">Forward projection with assumptions. Treat as aspiration, not value.</td></tr>
-        <tr><td><b>750 SNFs</b> (provider services)</td><td style="text-align:left">Facility list or count by state, with contract dates. Cross-check against our CMS SNF registry.</td></tr>
-        <tr><td><b>~$100k profit per facility / year</b></td><td style="text-align:left">Is that <i>net profit</i> or gross/potential? Audited or management figures? Per-facility P&amp;L for a sample.</td></tr>
-        <tr><td><b>EMR in 3,000 SNFs</b> (Aarista)</td><td style="text-align:left">Active vs contracted seats. Note: PCC's public registry lists ~4,000 PCC-FHIR operators total — 3,000 SNFs on Aarista would be a very large share of the market, so define "in."</td></tr>
-      </tbody></table>
-      <div class="both" style="margin-top:14px"><h4>🔍 The internal inconsistency worth pressing on</h4>
-        750 facilities × $100k = <b>$75M/year of profit</b>. Against a $500M valuation that is only <b>6.7× profit</b> — implausibly cheap for a fast-growing healthcare technology company (comparables run far higher). Either the $100k is <b>potential/gross rather than realized net profit</b>, the 750-facility count is aspirational, or he is deliberately underpricing himself — and the last is unlikely from someone forecasting $1B. <b>The most probable read: the per-facility profit figure is not actual net profit.</b> Ask him to reconcile the two numbers; his answer tells you a lot about every other figure.</div>
-    </div>
-  </div>
-
-  <div class="card"><h3>🔀 Strategic scenarios — what Togo/SEGE become</h3>
-    <div class="pad">
-      <div class="sect" style="margin-top:0">A · Sell GrabHC, pivot Togo to home-based care</div>
-      <p>Adopt Aarista for SNF work and redirect Togo's EMR effort into a <b>home-based app connecting doctors to patients with mobile MAs/staff — the "Uber of medicine."</b> This reframes the EMR "loss" as a deliberate exit from a crowded market into a bigger one. <b>Upside:</b> stops competing with Aarista head-on; the mobile-staff logistics layer is genuinely differentiated and nobody owns it. <b>Cost:</b> likely closing <b>PMG, SEGE, and the day groups</b>; a consumer/home model is a different business (payer mix, patient acquisition, unit economics) than facility contracts, and the $3M becomes the seed for it. <b>InstaMobile can likely continue.</b></p>
-
-      <div class="sect">B · Hybrid partnership — InstaMobile + Altea telemedicine</div>
-      <p>Run InstaMobile in Altea facilities, with Altea's telemedicine covering on-call after the provider leaves. Genuinely complementary on paper. <b>Blocker: Sarai says he doesn't need InstaMobile.</b> Don't spend negotiating capital here until he sees a gap he cares about — and he currently doesn't.</p>
-
-      <div class="sect">C · Togo as the clinical-quality layer inside Aarista</div>
-      <p>Togo surfaces <b>preventive-medicine and chronic-care-management guidelines inside his EMR</b>, and schedules preventive visits for his providers. <b>Blocker: Sarai believes Aarista already does this.</b> But you have something better than an argument — <b>you have access to physicians using Aarista today who perform poorly on preventive care versus Togo.</b> That makes this the one partnership you can prove rather than pitch. <b>Recommendation: bring evidence, not claims</b> — a small blinded comparison (preventive-service completion, CCM enrollment, gap closure) on his own users. If the gap is real, it reframes you from vendor to necessary capability, and it's leverage in the deal itself. If he still won't look, that's useful information about partnering with him at all.</p>
-
-      <div class="sect">D · Stay independent and out-grow him via owners</div>
-      <p>Your own counter-thesis, and it deserves weight: <b>partnering with SNF owners is stickier than selling to facilities.</b> Owner relationships compound — our own targeting data ranks owner groups (e.g. one group with 66 facilities / 8,839 beds and acute staffing pain), and reaching enough owners could eventually displace his provider group regardless of who has the better EMR. <b>Cost:</b> you're racing a much faster-growing, better-capitalized competitor, and SEGE keeps carrying the day/night-group overhead.</p>
-
-      <div class="sect">On ALF — be honest about the edge</div>
-      <p>Altea is in ALF and <b>not strong there; Togo is weaker still.</b> So ALF is not a reason to do or avoid this deal today. It's an open market neither of you has won — which is an argument for the ALF-software wedge as a <i>later</i> play, not a differentiator you can claim now.</p>
-    </div>
-  </div>
-
-  <div class="card"><h3>🚫 The non-compete trap</h3>
-    <div class="pad">
-      <p>Structure is an <b>asset sale with stock transfer</b>: GrabHC sells the medical-director and provider contracts and folds under Altea. You intend to keep <b>no non-compete in the sale</b> — correct, and essential, since SEGE must keep running Venza, Sweetwater, and InstaMobile growth.</p>
-      <div class="both"><h4>⚠️ These two goals are in direct conflict</h4>
-        You also want <b>marketing, clinical-consulting, and EMR-consulting roles</b> — and those almost always carry their own non-compete/non-solicit. So a clean sale agreement can be quietly undone by the consulting contracts attached to it. <b>Treat them as one negotiation, not two.</b> Concretely: (1) keep any consulting non-compete <b>narrowly scoped</b> to the specific services delivered, never to post-acute or EMR generally; (2) <b>carve out by name</b> SEGE, Venza, Sweetwater, InstaMobile, Togo's EMR, and the home-based/mobile-staff business; (3) cap duration and geography; (4) make sure non-solicit doesn't stop you recruiting providers for SEGE's own groups. Price the consulting income against what it restricts — if a role pays $150k/yr but blocks a business line worth multiples of that, decline the role and keep the freedom.</p>
-    </div>
-  </div>
-
-  <div class="card"><h3>🧭 How to think about it</h3><div class="pad">
-    <p><b>On the mix.</b> Cash is a known quantity; stock is a bet on Altea's execution priced off <i>his own unvalidated mark</i>. That asymmetry is the whole game: if the $500M is inflated 2–3×, stock quietly delivers a fraction of $3M in real value, while cash delivers exactly $3M. Move the haircut slider above to see it. A common approach is to take enough cash to cover what you actually need — funding the Togo pivot, reserves, taxes — and size stock only to what you could watch go to zero. But your tax position and cash needs decide that, and this page can't know them.</p>
-    <p style="margin-top:8px"><b>On the strategy — the bigger question.</b> The mix matters less than which future you're buying. Selling GrabHC is coherent <i>if</i> it funds a real pivot (scenario A) or buys a provable partnership (scenario C). It's much weaker if it just removes your SNF footprint while you keep competing in the same market with less. The strongest asset you hold isn't GrabHC — it's the <b>documented preventive-care gap in Aarista's own physician base</b>. That's leverage in the deal, the basis for partnership C, and evidence for scenario D.</p>
-    <p style="margin-top:8px"><b>Sequence I'd suggest:</b> (1) get the claims ledger answered, especially the $75M-profit-vs-$500M-valuation reconciliation; (2) settle the non-compete across sale <i>and</i> consulting together; (3) only then choose a cash/stock split. Optimizing percentages before 1 and 2 is optimizing the wrong variable.</p>
+  <!-- ══ CLAIMS ══ -->
+  <div class="card"><h3>🧾 His claims — all unvalidated</h3><div class="pad">
+    <table><thead><tr><th>Claim</th><th>What to demand</th></tr></thead><tbody>
+      <tr><td><b>$500M valuation</b>, "recent"</td><td style="text-align:left">Term sheet / 409A / cap table. Who priced it, when, pre- or post-money, outside money or internal?</td></tr>
+      <tr><td><b>"$1B soon"</b></td><td style="text-align:left">Projection + assumptions. Aspiration, not value.</td></tr>
+      <tr><td><b>750 SNFs</b></td><td style="text-align:left">Facility list with contract dates — cross-check our CMS registry.</td></tr>
+      <tr><td><b>~$100k profit/facility/yr</b></td><td style="text-align:left">Net or gross? Audited? Sample per-facility P&amp;L.</td></tr>
+      <tr><td><b>Aarista in 3,000 SNFs</b></td><td style="text-align:left">Active vs contracted. PCC's public registry lists ~4,000 operators total, so define "in."</td></tr>
+    </tbody></table>
+    <div class="key" style="margin-top:13px"><h4>⚠️ The inconsistency to press</h4>
+      750 × $100k = <b>$75M/yr profit</b>. At $500M that's just <b>6.7× profit</b> — implausibly cheap for a fast-growing health-tech company, and odd from someone forecasting $1B. Most likely the <b>$100k is potential/gross, not realized net profit</b>. Ask him to reconcile the two numbers; the answer calibrates every other claim — <i>and</i> tells you what a practice book really earns, which is the key input to the roll-up model above.</div>
   </div></div>
-</div>
+
+  <!-- ══ EMR ══ -->
+  <div class="card"><h3>🖥 Aarista — Altea's EMR <span class="count">confirmed</span></h3><div class="pad">
+    <p>AI-first post-acute EHR (AI engine "Aari"), <b>founded 2023</b>, Bellingham WA / San Diego. Altea = founder/CEO <b>Jodhvir Sarai</b>, selling post-acute technology <i>and</i> provider services.</p>
+    <div class="grid2" style="margin-top:12px">
+      <div class="key" style="margin:0"><h4>Why using it is a pro</h4>A functioning post-acute EMR we don't build, staff, or certify — plus their ONC/uptime/support burden. If we hold stock, its success is partly ours.</div>
+      <div class="key" style="margin:0;background:var(--bad-bg);color:var(--bad)"><h4>Why it's a con</h4>It competes with Togo's EMR, and <b>"Aarista Legacy — physician services and medical directorship"</b> competes with SEGE. Our own PCC dataset already classifies Aarista as <b>competition</b>. Adopting it costs us the reference customer Togo's EMR needs.</div>
+    </div>
+    <p style="margin-top:11px"><b>Nuance worth pinning down:</b> Aarista appears in the PCC marketplace as an <i>integration</i>, implying it's a <b>provider-side</b> chart syncing with PointClickCare rather than replacing the facility chart. If so, "we'd have to use their EMR" means provider documentation only — facilities keep PCC — and the EMR objection shrinks a lot. Ask for the ONC certification ID, uptime history, a live demo, and a reference customer.</p>
+  </div></div>
+
+  <!-- ══ NON-COMPETE ══ -->
+  <div class="card"><h3>🚫 The non-compete trap</h3><div class="pad">
+    <p>Structure is an <b>asset sale with stock transfer</b>: GrabHC sells the medical-director and provider contracts and folds under Altea. You intend <b>no non-compete in the sale</b> — correct and essential, since SEGE must keep running Venza, Sweetwater, and InstaMobile.</p>
+    <div class="key" style="background:var(--bad-bg);color:var(--bad);margin-top:12px"><h4>⚠️ Two goals in direct conflict</h4>
+      The <b>marketing / clinical / EMR consulting roles you'd want almost always carry their own non-compete</b> — quietly undoing the clean sale. Treat sale and consulting as <b>one negotiation</b>: (1) scope any restriction to the specific service only, never post-acute or EMR generally; (2) <b>carve out by name</b> SEGE, Venza, Sweetwater, InstaMobile, Togo's EMR, and the home-based business; (3) cap term + geography; (4) ensure non-solicit doesn't block recruiting providers for SEGE's own groups. If a role pays $150k but blocks a business line worth multiples of that, decline the role and keep the freedom. <b>A non-compete would also kill the entire WITHOUT-Altea column</b> — which is exactly why it must be settled first.</div>
+  </div></div>
+
+  <div class="card"><h3>🧭 How to decide</h3><div class="pad">
+    <p><b>Sequence, not simultaneity.</b> (1) Get the claims reconciled — especially $75M-profit-vs-$500M-valuation, which also gives you the real profit-per-book number. (2) Settle the non-compete across sale <i>and</i> consulting; without freedom to compete, the right column doesn't exist and you have no leverage. (3) Validate cost-per-practice and profit-per-practice with one real acquisition conversation. (4) <i>Only then</i> choose sell-vs-build, and if selling, the cash/stock split.</p>
+    <p style="margin-top:9px"><b>The asymmetry to keep in view:</b> cash is certain, stock is a bet on his execution priced at his own mark, and the roll-up is a bet on <i>our</i> execution priced at market. You control one of those three. </p>
+    <p style="margin-top:9px"><b>Our strongest card is not GrabHC</b> — it's the documented preventive-care gap in Aarista's own physician base. It's leverage in the sale, the basis for the one partnership he can't dismiss with data in hand, and proof the roll-up thesis has a real clinical wedge. Consider running that comparison <i>before</i> answering him.</p>
+    <p class="src" style="margin-top:9px">Sources: aarista.com · alteahc.com · Crunchbase/CB Insights · our own <code>pcc_marketplace</code> / <code>v_pcc_stance</code> / <code>v_snf_target</code> datasets. Altea relationship + Aarista identity confirmed by Greg.</p>
+  </div></div>
 </div>
 
 <script type="module">
@@ -258,28 +269,50 @@ window.signOut=async()=>{await sb.auth.signOut();location.reload();};
 const fmt=n=>'$'+Math.round(n).toLocaleString();
 const fmtM=n=>n>=1e9?'$'+(n/1e9).toFixed(2)+'B':n>=1e6?'$'+(n/1e6).toFixed(1)+'M':fmt(n);
 window.calc=function(){
+  /* ── A: sell ── */
   const pct=+$('#pct').value, deal=+$('#deal').value||0, val=+$('#val').value||1;
   const dil=+$('#dil').value/100, yrs=+$('#yrs').value, hc=+$('#hc').value/100;
-  const stock=deal*pct/100, cash=deal-stock, eq=stock/val;   // % bought at THEIR mark
-  const trueVal=val*hc;                                       // what it may really be worth
-  $('#pctLbl').textContent=pct+'%'; $('#dilLbl').textContent=$('#dil').value+'%';
-  $('#yrLbl').textContent=yrs; $('#hcLbl').textContent=$('#hc').value+'%';
+  const stock=deal*pct/100, cash=deal-stock, eq=stock/val, trueVal=val*hc, effEq=eq*(1-dil);
+  $('#pctLbl').textContent=pct+'%'; $('#hcLbl').textContent=$('#hc').value+'%';
+  $('#dilLbl').textContent=$('#dil').value+'%'; $('#yrLbl').textContent=yrs;
   $('#barC').style.width=(100-pct)+'%'; $('#barS').style.width=pct+'%';
   $('#oCash').textContent=fmt(cash); $('#oStock').textContent=fmt(stock);
-  $('#oReal').textContent=fmt(eq*trueVal)+(hc<1?' ('+Math.round(hc*100)+'%)':'');
-  $('#oPct').textContent=(eq*100).toFixed(3)+'%';
-  // exit valuation at which cash+stock equals the all-cash alternative
-  const effEq=eq*(1-dil);
-  $('#oBreak').textContent = pct===0 ? 'n/a (all cash)' : fmtM(stock/effEq);
-  const base0=trueVal;
-  const rows=[['Wipeout / no exit',0],['Down round (0.5×)',0.5],['Flat ('+fmtM(val)+')',1],['2×',2],['3×',3],['5×',5],['10×',10]];
+  $('#oReal').textContent=fmt(eq*trueVal); $('#oPct').textContent=(eq*100).toFixed(3)+'%';
+  $('#oBreak').textContent = pct===0?'n/a (all cash)':fmtM(stock/(effEq||1e-9));
+  const rows=[['Wipeout',0],['Down round (0.5×)',0.5],['Flat',1],['2×',2],['3×',3],['5×',5],['10×',10]];
+  let sellTotal5=cash;
   $('#scen').innerHTML=rows.map(([lab,m])=>{
-    const exit=base0*m, sv=exit*effEq, tot=cash+sv, base=deal;
-    const ann = yrs>0 && base>0 && tot>0 ? (Math.pow(tot/base,1/yrs)-1)*100 : null;
-    const cls = tot>base*1.02?'win':tot<base*0.98?'lose':'';
+    const exit=trueVal*m, sv=exit*effEq, tot=cash+sv;
+    if(m===1) sellTotal5=tot;
+    const ann=yrs>0&&tot>0?(Math.pow(tot/deal,1/yrs)-1)*100:null;
+    const cls=tot>deal*1.02?'win':tot<deal*0.98?'lose':'';
     return `<tr class="${cls}"><td>${lab}</td><td class="tnum">${fmtM(exit)}</td><td class="tnum">${fmt(sv)}</td>
-      <td class="tnum">${fmt(tot)} <span style="color:var(--muted)">(${tot>=base?'+':''}${fmt(tot-base)})</span></td>
+      <td class="tnum">${fmt(tot)} <span style="color:var(--muted)">(${tot>=deal?'+':''}${fmt(tot-deal)})</span></td>
       <td class="tnum">${ann===null?'—':(ann>=0?'+':'')+ann.toFixed(1)+'%/yr'}</td></tr>`;}).join('');
+
+  /* ── B: roll up ── */
+  const cap=+$('#cap').value||0, cost=+$('#cost').value||1, prof=+$('#prof').value||0;
+  const ry=+$('#ry').value, ri=+$('#ri').value/100, rmult=+$('#rmult').value;
+  $('#ryLbl').textContent=ry; $('#riLbl').textContent=$('#ri').value+'%';
+  $('#rEndY').textContent=ry; $('#rMultL').textContent=rmult; $('#rMult2').textContent=rmult;
+  let n=Math.floor(cap/cost), bank=cap-n*cost, out=[];
+  $('#rBuy').textContent=n;
+  for(let y=1;y<=ry;y++){
+    const annual=n*prof; bank+=annual*ri;
+    const add=Math.floor(bank/cost); bank-=add*cost; n+=add;
+    out.push(`<tr><td>Year ${y}</td><td class="tnum">${n}</td><td class="tnum">${fmt(n*prof)}</td><td class="tnum">${fmt(annual*ri)}</td><td class="tnum">${fmtM(n*prof*rmult)}</td></tr>`);
+  }
+  $('#roll').innerHTML=out.join('');
+  const endProf=n*prof, endVal=endProf*rmult+bank;
+  $('#rEnd').textContent=n; $('#rProf').textContent=fmt(endProf); $('#rVal').textContent=fmtM(endVal);
+
+  /* ── head to head ── */
+  $('#h2h').innerHTML=
+    `<div class="stat" style="border-color:var(--A)"><b>${fmt(sellTotal5)}</b><span>WITH Altea — cash + stock at a flat exit</span></div>
+     <div class="stat" style="border-color:var(--A)"><b>${fmt(cash)}</b><span>WITH — guaranteed floor (cash only)</span></div>
+     <div class="stat" style="border-color:var(--B)"><b>${fmtM(endVal)}</b><span>WITHOUT — portfolio value, year ${ry}</span></div>
+     <div class="stat" style="border-color:var(--B)"><b>${fmt(endProf)}</b><span>WITHOUT — annual profit, year ${ry}</span></div>
+     <div class="stat"><b>${endVal>sellTotal5?'Build':'Sell'}</b><span>higher on these inputs</span></div>`;
 };
 const {data:{session}}=await sb.auth.getSession();
 show(!!session); if(session) calc();
