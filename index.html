@@ -71,6 +71,10 @@
   .fg select,.fg input{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;font-weight:600;min-width:150px;cursor:pointer}
   .fg input{cursor:text;font-weight:500}
   .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:22px 2px 8px;display:flex;align-items:center;gap:8px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:5px;margin:0 0 16px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border)}
+  .tabs button{border:0;background:transparent;color:inherit;opacity:.65;font:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .tabs button:hover{opacity:1}
+  .tabs button.on{background:var(--surface);opacity:1;box-shadow:var(--shadow)}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
   .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
   .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
@@ -365,15 +369,11 @@ function homeView(){
   b.innerHTML=`<div class="tl">🔵 Business workspace<span class="arrow">→</span></div><div class="tn tnum">${biz.length}</div>
     <div class="ts"><span>${biz.filter(i=>i.status==='in-progress').length} in progress</span>${biz.filter(i=>i.status==='blocked').length?`<span style="color:var(--bad)">${biz.filter(i=>i.status==='blocked').length} blocked</span>`:''}</div>`;
   hero.appendChild(b);
-  // Compliance — state regulatory reference, read-only mirror from the Business lane
-  if(Biz.states){
-    const banned=Biz.states.filter(s=>s.cpom_status&&!/not banned/i.test(s.cpom_status)).length;
-    const risky=Biz.states.filter(s=>s.malpractice_risk==='High').length;
-    const cp=el('button','tile');cp.onclick=()=>go({v:'compliance'});
-    cp.innerHTML=`<div class="tl">📋 Compliance<span class="arrow">→</span></div><div class="tn tnum">${Biz.states.length}</div>
-      <div class="ts"><span>${banned} CPOM-banned</span>${risky?`<span style="color:var(--bad)">${risky} high malpractice risk</span>`:''}</div>`;
-    hero.appendChild(cp);
-  } else hero.appendChild(tileLocked('📋','Compliance','token needed for business data'));
+  // Compliance — physician clinical & billing compliance (no data source wired yet)
+  const cp=el('button','tile');cp.onclick=()=>go({v:'compliance'});
+  cp.innerHTML=`<div class="tl">📋 Compliance<span class="arrow">→</span></div><div class="tn tnum">${PHYS_AREAS.length}</div>
+    <div class="ts"><span>areas tracked</span><span>awaiting data</span></div>`;
+  hero.appendChild(cp);
   v.appendChild(hero);
   if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
     v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
@@ -628,9 +628,37 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business w
   v.appendChild(c);
   const dn=issues.filter(i=>i.done&&i.cat==='business');if(dn.length){v.appendChild(el('div','sect','Done'));const d=el('div','card');dn.forEach(i=>d.insertAdjacentHTML('beforeend',issueRow(i)));v.appendChild(d);}
   return v;}
-function complianceView(){const v=el('div');v.appendChild(backCrumb('','📋 Compliance'));
-  v.appendChild(el('div','sect','State compliance — CPOM · required entity · IMLC · malpractice · NP/PA scope'));
-  v.appendChild(bizFrame('compliance'));
+/* ═════════ PHYSICIAN COMPLIANCE ═════════
+   Clinical & billing compliance for providers. Deliberately NOT the Business
+   lane's STATE compliance (CPOM / required entity / IMLC) — that stays in the
+   Business workspace, where it drives which entity structure each state needs.
+
+   Add an area here and it shows up as a tab and a route automatically.
+   NOTE: this repo is PUBLIC and is a UI shell only. When these areas get real
+   data it must come from a private source (private repo or Supabase) at
+   runtime — never commit encounter-level or provider-identifying data here. */
+const PHYS_AREAS=[
+  {key:'medical-necessity',label:'Medical necessity',
+   blurb:'Does the documentation support the level of service billed — diagnosis, acuity, and plan of care.'},
+  {key:'coding',label:'Coding compliance',
+   blurb:'CPT / ICD-10 accuracy, upcoding and undercoding, modifier use.'},
+  {key:'visit-time-count',label:'Visit time & count',
+   blurb:'Time-based billing thresholds, visit frequency per patient, and per-provider volume.'},
+];
+const physArea=k=>PHYS_AREAS.find(a=>a.key===k)||PHYS_AREAS[0];
+function complianceView(areaKey){
+  const area=physArea(areaKey);
+  const v=el('div');v.appendChild(backCrumb('','📋 Compliance'));
+  v.appendChild(el('div','sect','Physician compliance — clinical & billing review'));
+  const tabs=el('div','tabs');
+  PHYS_AREAS.forEach(a=>{const b=el('button',a.key===area.key?'on':null,esc(a.label));
+    b.onclick=()=>go({v:'compliance',area:a.key});tabs.appendChild(b);});
+  v.appendChild(tabs);
+  const c=el('div','card');
+  c.appendChild(el('h3',null,`${esc(area.label)} <span class="count">no data yet</span>`));
+  c.appendChild(el('div','row',`<div class="main"><div class="sub">${esc(area.blurb)}</div></div>`));
+  c.appendChild(el('div','msg','Nothing wired up yet — this area is a placeholder until its data source is connected.'));
+  v.appendChild(c);
   return v;}
 function personView(login){const t=login?(TEAM[login]||{name:login,role:'',c:'#8a97a6'}):{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
   const v=el('div');v.appendChild(backCrumb('',esc(t.name)));
@@ -675,6 +703,7 @@ function pathFor(r){
   if(r.v==='facility') return BASE+'facility/'+encodeURIComponent(r.id);
   if(r.v==='provider') return BASE+'provider/'+encodeURIComponent(r.id);
   if(r.v==='person')   return BASE+'person/'+encodeURIComponent(r.login||'unassigned');
+  if(r.v==='compliance'&&r.area) return BASE+'compliance/'+encodeURIComponent(r.area);
   return BASE+r.v;                         // /sege-command/accounts | providers | business | compliance | bottleneck
 }
 function routeFromPath(p){
@@ -684,7 +713,8 @@ function routeFromPath(p){
   if(seg==='facility'&&id) return {v:'facility',id};
   if(seg==='provider'&&id) return {v:'provider',id};
   if(seg==='person')       return {v:'person',login:(id&&id!=='unassigned')?id:null};
-  if(['accounts','providers','business','compliance','bottleneck','followups','done'].includes(seg)) return {v:seg};
+  if(seg==='compliance')   return {v:'compliance',area:PHYS_AREAS.some(a=>a.key===id)?id:null};
+  if(['accounts','providers','business','bottleneck','followups','done'].includes(seg)) return {v:seg};
   return {v:'home'};
 }
 function applyPath(){
@@ -707,7 +737,7 @@ function render(){
   else if(route.v==='provider')node=providerView(route.id);
   else if(route.v==='bottleneck')node=bottleneckView();
   else if(route.v==='business')node=bizView();
-  else if(route.v==='compliance')node=complianceView();
+  else if(route.v==='compliance')node=complianceView(route.area);
   else if(route.v==='person')node=personView(route.login);
   else if(route.v==='followups')node=followupsView();
   else if(route.v==='done')node=doneView();
