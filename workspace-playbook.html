@@ -64,6 +64,13 @@
   .tag.decide{background:var(--warn-bg);color:var(--warn)}
   .tag.gotcha{background:var(--bad-bg);color:var(--bad)}
   .tag.dns{background:var(--accent-soft);color:var(--accent-ink)}
+  .tag.rec{background:var(--ok-bg);color:var(--ok)}
+  .tag.open{background:var(--warn-bg);color:var(--warn)}
+  .st .status{margin-top:7px;border-left:3px solid var(--ok);background:var(--ok-bg);border-radius:0 8px 8px 0;padding:8px 11px;font-size:12.5px;line-height:1.55}
+  .st .status .lbl{font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.05em;color:var(--ok);display:block;margin-bottom:2px}
+  .st .status.o{border-left-color:var(--warn);background:var(--warn-bg)}
+  .st .status.o .lbl{color:var(--warn)}
+  .st input[type=checkbox]:disabled{cursor:default}
   .foot{margin-top:26px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
   .srcs{font-size:12px;color:var(--muted);line-height:1.9}
   #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}#toast.show{opacity:1}
@@ -81,7 +88,8 @@
     <button class="btn" id="resetBtn">Reset</button>
   </header>
   <div id="view"><div class="msg">Loading…</div></div>
-  <div class="foot">Progress is stored in this browser only (<code>localStorage</code>) — it is not synced between devices or people.
+  <div class="foot">Steps with a green <b>done</b> chip are recorded in the repo — what we actually found in the SEGE tenant, the same for everyone.
+    Everything else you tick is stored in this browser only (<code>localStorage</code>) and is not synced.
     Console paths were accurate at time of writing; Google renames admin menus from time to time, so trust the breadcrumb over the deep link.</div>
 </div>
 <div id="toast"></div>
@@ -98,10 +106,20 @@ const SESSIONS=[
 {n:1,t:'Ground truth',min:45,fix:'Confirm edition, BAA + covered-services list, break-glass super admin, 2SV, OU per business — the step everything later leans on',steps:[
  {t:'Write down exactly which edition and how many seats you have',
   d:'Business Starter / Standard / Plus / Enterprise, seat count, renewal date, and whether any OU is already licensed differently. Every later session is gated by this answer.',
-  p:['Admin console → Billing → Subscriptions'],u:AC+'/ac/billing/subscriptions'},
+  p:['Admin console → Billing → Subscriptions'],u:AC+'/ac/billing/subscriptions',
+  done:'2026-08-19',
+  s:['Google Workspace Business Standard — Active. 253 active seats + 1 archived.',
+     'Plus one AI Expanded Access add-on, Active, 1 license assigned.',
+     'Google is already showing the "approaching the user limit" banner: Business Standard caps at 300 users, so we have roughly 47 seats of headroom.'],
+  open:['Renewal date and billing plan (flexible vs. annual) not yet captured.',
+        'Not yet confirmed whether any OU is licensed differently — as of today it looks like one flat edition across the tenant.']},
  {t:'Decide whether to license one OU higher than the rest',
   d:'Shared drives start at Business Standard. Vault — retention, legal hold, eDiscovery — starts at Business Plus. DLP and context-aware access are Enterprise. You can license a single OU up, so price upgrading just the healthcare entity instead of the whole tenant.',
-  p:['Admin console → Billing → Get more services → assign licenses by organizational unit'],tag:'decide'},
+  p:['Admin console → Billing → Get more services → assign licenses by organizational unit'],tag:'decide',
+  s:['We are on Business Standard, so shared drives are already in hand — that is most of session 5. Vault (retention, legal hold, eDiscovery) is what we do NOT have.',
+     'At 253 seats, upgrading the whole tenant to Business Plus is a 253-seat decision. Upgrading only the clinical OU is the version worth pricing.'],
+  open:['Which OU, and how many of the 253 seats sit in it, once the OU tree from step 7 exists.',
+        'Separate from Vault: the 300-user cap is an edition ceiling, not a per-OU one. Licensing one OU up to Business Plus does NOT raise it — only Enterprise does. Decide the growth path before we hit ~300.']},
  {t:'Confirm the HIPAA Business Associate Amendment is accepted, and record who accepted it and when',
   d:'The BAA is a self-serve amendment inside the admin console, not something Google sends you. If nobody has clicked accept, you do not have one.',
   p:['Admin console → Account → Account settings → Legal and compliance → Security and privacy additional terms'],u:AC+'/ac/companyprofile/legal'},
@@ -305,7 +323,8 @@ SESSIONS.push(
 
 /* ═════════ decisions worth making before you start ═════════ */
 const HEADS=[
- {t:'Your edition gates real things',b:'Business Standard gets you shared drives, which is most of session 5’s win. Vault — retention, legal hold, eDiscovery — starts at Business Plus. DLP and context-aware access are Enterprise. You can license one OU higher than the rest, so price upgrading just the healthcare entity rather than the whole tenant. Step 1 confirms what you actually have.'},
+ {t:'We are on Business Standard, 253 of 300 seats used',b:'Confirmed 2026-08-19. Shared drives are included, so most of session 5 is available today. Vault — retention, legal hold, eDiscovery — is not, and neither is DLP or context-aware access. Two consequences run through the rest of this playbook: anything below that leans on retention or legal hold has to be written as a house rule instead, and the 300-user cap is close enough that the growth path needs deciding before it bites.'},
+ {t:'The 300-seat ceiling is an edition limit, not an OU limit',b:'Business Starter, Standard and Plus all stop at 300 users. Licensing one OU up to Business Plus buys Vault for that OU but does not buy a single extra seat — only Enterprise raises the cap. So the Vault question and the headroom question are two separate decisions with two different answers.'},
  {t:'Email overload is mostly architecture, not discipline',b:'Business processes arriving at your personal address is why triage never sticks. Do session 3 before session 4 — habits laid over person-addressed queues do not hold.'},
  {t:'Alias vs. secondary domain is hard to reverse',b:'An alias is the same mailbox; a secondary domain has its own accounts. Converting later means export/import migrations. Decide it in session 2 with your eyes open.'}
 ];
@@ -327,8 +346,10 @@ const SOURCES=[
 ];
 /* ═════════ state ═════════ */
 let done={}, open={};
+const seedRecorded=()=>SESSIONS.forEach(s=>s.steps.forEach((st,i)=>{ if(st.done) done[sid(s,i)]=true; }));
 function loadState(){
   try{ done=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ done={}; }
+  seedRecorded();
   try{ open=JSON.parse(localStorage.getItem(UIKEY)||'null')||null; }catch(e){ open=null; }
   if(!open){ open={}; SESSIONS.forEach(s=>open[s.n]=true); }
 }
@@ -360,18 +381,31 @@ function pathHTML(st){
       : '<span class="pth">'+esc(p)+'</span>';
   }).join('')+'</div>';
 }
+/* A step carries `done` (the date we recorded it) and/or `s` (what we found).
+   Recorded steps are facts about our tenant committed to the repo, so the
+   checkbox is locked — localStorage is per-browser and would not reach anyone else. */
+function statusHTML(st){
+  let h='';
+  if(st.s) h+='<div class="status"><span class="lbl">Status · '+esc(st.done||'')+'</span>'+
+              [].concat(st.s).map(x=>esc(x)).join('<br>')+'</div>';
+  if(st.open) h+='<div class="status o"><span class="lbl">Still open</span>'+
+                 [].concat(st.open).map(x=>esc(x)).join('<br>')+'</div>';
+  return h;
+}
 function stepNode(s,i){
-  const st=s.steps[i], id=sid(s,i), on=!!done[id];
+  const st=s.steps[i], id=sid(s,i), rec=!!st.done, on=rec||!!done[id];
   const row=el('label','st'+(on?' on':''));
   row.id='step-'+GNUM[id];
-  const cb=el('input');cb.type='checkbox';cb.checked=on;
+  const cb=el('input');cb.type='checkbox';cb.checked=on;cb.disabled=rec;
   cb.onchange=()=>{ if(cb.checked)done[id]=true; else delete done[id]; saveDone();
     row.classList.toggle('on',cb.checked); refreshCounts(); };
   row.appendChild(cb);
-  const tag=st.tag?'<span class="tag '+st.tag+'">'+(st.tag==='decide'?'decide':st.tag==='gotcha'?'gotcha':'DNS')+'</span>':'';
+  let tag=st.tag?'<span class="tag '+st.tag+'">'+(st.tag==='decide'?'decide':st.tag==='gotcha'?'gotcha':'DNS')+'</span>':'';
+  if(rec) tag+='<span class="tag rec">done '+esc(st.done)+'</span>';
+  else if(st.s||st.open) tag+='<span class="tag open">in progress</span>';
   row.appendChild(el('div','body',
     '<div class="hd"><span class="sn">'+GNUM[id]+'</span><span class="tt">'+esc(st.t)+'</span>'+tag+'</div>'+
-    '<div class="dd">'+esc(st.d)+'</div>'+pathHTML(st)));
+    '<div class="dd">'+esc(st.d)+'</div>'+pathHTML(st)+statusHTML(st)));
   return row;
 }
 function sessionNode(s){
@@ -460,7 +494,7 @@ function nextOpen(){
 }
 function resetAll(){
   if(!confirm('Clear all 62 checkboxes in this browser? This cannot be undone.'))return;
-  done={}; saveDone(); render(); toast('Reset');
+  done={}; seedRecorded(); saveDone(); render(); toast('Reset — steps recorded in the repo stay done');
 }
 
 /* ═════════ boot (last thing in the module — nothing above may call a view fn) ═════════ */
