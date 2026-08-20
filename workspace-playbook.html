@@ -45,14 +45,23 @@
   .steps{border-bottom:1px solid var(--border)}
   .steps[hidden]{display:none}
   /* step */
-  .st{display:flex;gap:11px;padding:12px 15px;border-bottom:1px solid var(--border);align-items:flex-start}
+  .st{border-bottom:1px solid var(--border)}
   .st:last-child{border-bottom:0}
   .st:hover{background:var(--surface-2)}
   .st.on{background:var(--ok-bg)}
   @media (prefers-color-scheme:dark){.st.on{background:#12291f}}
+  .srow{display:flex;gap:11px;padding:12px 15px;align-items:flex-start}
+  .st.on .srow{cursor:pointer}
   .st input[type=checkbox]{width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--accent);cursor:pointer}
-  .st .body{flex:1;min-width:0}
-  .st .hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .sbody{padding:0 15px 13px 45px}
+  .sbody[hidden]{display:none}
+  .st .hd{flex:1;min-width:0;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .st .caret{color:var(--faint);font-weight:700;flex:none;transition:transform .15s;margin-top:1px}
+  /* the DONE badge — deliberately larger than the small tags beside it */
+  .donebig{display:inline-flex;align-items:baseline;gap:7px;font-size:12.5px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.08em;padding:4px 12px;border-radius:999px;
+    background:var(--ok-bg);color:var(--ok);box-shadow:inset 0 0 0 1.5px currentColor;white-space:nowrap;flex:none}
+  .donebig em{font-style:normal;font-weight:650;font-size:11px;letter-spacing:.02em;opacity:.8}
   .st .sn{font-size:11px;font-weight:750;color:var(--faint);font-variant-numeric:tabular-nums;flex:none}
   .st .tt{font-weight:650;font-size:13.5px}
   .st.on .tt{text-decoration:line-through;text-decoration-color:var(--faint);color:var(--muted)}
@@ -99,6 +108,7 @@ window.onerror=function(m,s,l){var v=document.getElementById('view');
 
 const KEY='sege-bp-workspace-v1';      // checkbox state
 const UIKEY='sege-bp-workspace-ui-v1'; // which sessions are open
+const DKEY='sege-bp-workspace-open-done-v1'; // which DONE steps the reader has expanded
 const AC='https://admin.google.com';
 
 /* ═════════ the playbook ═════════ */
@@ -409,16 +419,18 @@ const SOURCES=[
  ['NotebookLM help','https://support.google.com/notebooklm']
 ];
 /* ═════════ state ═════════ */
-let done={}, open={};
+let done={}, open={}, dopen={};
 const seedRecorded=()=>SESSIONS.forEach(s=>s.steps.forEach((st,i)=>{ if(st.done) done[sid(s,i)]=true; }));
 function loadState(){
   try{ done=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ done={}; }
   seedRecorded();
   try{ open=JSON.parse(localStorage.getItem(UIKEY)||'null')||null; }catch(e){ open=null; }
+  try{ dopen=JSON.parse(localStorage.getItem(DKEY)||'{}')||{}; }catch(e){ dopen={}; }
   if(!open){ open={}; SESSIONS.forEach(s=>open[s.n]=true); }
 }
 const saveDone=()=>{ try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){} };
 const saveOpen=()=>{ try{localStorage.setItem(UIKEY,JSON.stringify(open));}catch(e){} };
+const saveDOpen=()=>{ try{localStorage.setItem(DKEY,JSON.stringify(dopen));}catch(e){} };
 
 /* ═════════ helpers ═════════ */
 const $=s=>document.querySelector(s);
@@ -456,20 +468,46 @@ function statusHTML(st){
                  [].concat(st.open).map(x=>esc(x)).join('<br>')+'</div>';
   return h;
 }
+/* A done step collapses to its title and its DONE badge — the detail is still
+   there, one click away, but a finished step stops competing for the eye.
+   Steps you tick yourself collapse the same way; unticking reopens them. */
 function stepNode(s,i){
-  const st=s.steps[i], id=sid(s,i), rec=!!st.done, on=rec||!!done[id];
-  const row=el('label','st'+(on?' on':''));
+  const st=s.steps[i], id=sid(s,i), rec=!!st.done;
+  const row=el('div','st');
   row.id='step-'+GNUM[id];
-  const cb=el('input');cb.type='checkbox';cb.checked=on;cb.disabled=rec;
-  cb.onchange=()=>{ if(cb.checked)done[id]=true; else delete done[id]; saveDone();
-    row.classList.toggle('on',cb.checked); refreshCounts(); };
-  row.appendChild(cb);
+
+  const head=el('div','srow');
+  const cb=el('input');cb.type='checkbox';cb.checked=rec||!!done[id];cb.disabled=rec;
+  head.appendChild(cb);
   let tag=st.tag?'<span class="tag '+st.tag+'">'+(st.tag==='decide'?'decide':st.tag==='gotcha'?'gotcha':'DNS')+'</span>':'';
-  if(rec) tag+='<span class="tag rec">done '+esc(st.done)+'</span>';
+  if(rec) tag+='<span class="donebig">\u2713 Done<em>'+esc(st.done)+'</em></span>';
   else if(st.s||st.open) tag+='<span class="tag open">in progress</span>';
-  row.appendChild(el('div','body',
-    '<div class="hd"><span class="sn">'+GNUM[id]+'</span><span class="tt">'+esc(st.t)+'</span>'+tag+'</div>'+
-    '<div class="dd">'+esc(st.d)+'</div>'+pathHTML(st)+statusHTML(st)));
+  head.appendChild(el('div','hd',
+    '<span class="sn">'+GNUM[id]+'</span><span class="tt">'+esc(st.t)+'</span>'+tag));
+  const car=el('span','caret','\u25be');
+  head.appendChild(car);
+  row.appendChild(head);
+
+  const body=el('div','sbody','<div class="dd">'+esc(st.d)+'</div>'+pathHTML(st)+statusHTML(st));
+  row.appendChild(body);
+
+  const sync=()=>{
+    const on=cb.checked, shut=on&&!dopen[id];
+    row.classList.toggle('on',on);
+    car.style.display=on?'':'none';
+    car.style.transform=shut?'rotate(-90deg)':'';
+    body.hidden=shut;
+  };
+  cb.onchange=()=>{
+    if(cb.checked)done[id]=true; else { delete done[id]; delete dopen[id]; }
+    saveDone(); saveDOpen(); sync(); refreshCounts();
+  };
+  head.onclick=e=>{
+    if(e.target===cb||!cb.checked) return;      // the box is the box; open steps stay open
+    if(dopen[id]) delete dopen[id]; else dopen[id]=true;
+    saveDOpen(); sync();
+  };
+  sync();
   return row;
 }
 function sessionNode(s){
@@ -558,7 +596,7 @@ function nextOpen(){
 }
 function resetAll(){
   if(!confirm('Clear your checkboxes in this browser? Steps recorded in the repo stay done. This cannot be undone.'))return;
-  done={}; seedRecorded(); saveDone(); render(); toast('Reset — steps recorded in the repo stay done');
+  done={}; dopen={}; seedRecorded(); saveDone(); saveDOpen(); render(); toast('Reset — steps recorded in the repo stay done');
 }
 
 /* ═════════ boot (last thing in the module — nothing above may call a view fn) ═════════ */
