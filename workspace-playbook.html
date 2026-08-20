@@ -81,7 +81,7 @@
 <div class="wrap">
   <header class="top">
     <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
-    <div class="title"><h1>Google Workspace Optimization</h1><p>62 steps, in the order to do them · progress saved in this browser</p></div>
+    <div class="title"><h1>Google Workspace Optimization</h1><p id="subhead">in the order to do them · progress saved in this browser</p></div>
     <a class="btn" href="./best-practices.html">← Best practices</a>
     <button class="btn" id="expandBtn">Collapse all</button>
     <button class="btn" id="nextBtn">↓ Next open step</button>
@@ -107,12 +107,13 @@ const SESSIONS=[
  {t:'Write down exactly which edition and how many seats you have',
   d:'Business Starter / Standard / Plus / Enterprise, seat count, renewal date, and whether any OU is already licensed differently. Every later session is gated by this answer.',
   p:['Admin console → Billing → Subscriptions'],u:AC+'/ac/billing/subscriptions',
-  done:'2026-08-19',
+  done:'2026-08-20',
   s:['Google Workspace Business Standard — Active. 253 active seats + 1 archived.',
      'Plus one AI Expanded Access add-on, Active, 1 license assigned.',
-     'Google is already showing the "approaching the user limit" banner: Business Standard caps at 300 users, so we have roughly 47 seats of headroom.'],
-  open:['Renewal date and billing plan (flexible vs. annual) not yet captured.',
-        'Not yet confirmed whether any OU is licensed differently — as of today it looks like one flat edition across the tenant.']},
+     'Google is already showing the "approaching the user limit" banner: Business Standard caps at 300 users, so we have roughly 47 seats of headroom.',
+     'Payment plan is Flexible on both subscriptions — billed monthly per seat, no annual commitment and therefore no renewal date to diary. Seats can be dropped as well as added, which is what makes moving Ability off the tenant a real cost saving and not just headroom.',
+     'All 14 core services are ON for everyone across all four OUs — nothing is scoped per OU today.'],
+  open:['Not confirmed whether any OU is licensed differently. Given the flat ON-for-everyone posture, assume not until checked.']},
  {t:'Decide whether to license one OU higher than the rest',
   d:'Shared drives start at Business Standard. Vault — retention, legal hold, eDiscovery — starts at Business Plus. DLP and context-aware access are Enterprise. You can license a single OU up, so price upgrading just the healthcare entity instead of the whole tenant.',
   p:['Admin console → Billing → Get more services → assign licenses by organizational unit'],tag:'decide',
@@ -122,39 +123,85 @@ const SESSIONS=[
         'Separate from Vault: the 300-user cap is an edition ceiling, not a per-OU one. Licensing one OU up to Business Plus does NOT raise it — only Enterprise does. Decide the growth path before we hit ~300.']},
  {t:'Confirm the HIPAA Business Associate Amendment is accepted, and record who accepted it and when',
   d:'The BAA is a self-serve amendment inside the admin console, not something Google sends you. If nobody has clicked accept, you do not have one.',
-  p:['Admin console → Account → Account settings → Legal and compliance → Security and privacy additional terms'],u:AC+'/ac/companyprofile/legal'},
+  p:['Admin console → Account → Account settings → Legal and compliance → Security and privacy additional terms'],u:AC+'/ac/companyprofile/legal',
+  s:['We have the addendum text on file — "Google Workspace HIPAA Business Associate Addendum", last modified August 25, 2021, document stamp "Google Workspace HIPAA BAA (Google LLC) 09032020". Its terms are reflected in the steps around this one.',
+     'Terms that change what we do: Google sends breach notice within 60 days of discovery to the notification email on the account (§6) — see the next step but one. The BAA covers only the services in Attachment 1, and explicitly not third-party apps (§2). Keeping PHI inside those services is our job, not Google\'s (§4).',
+     'ACCEPTED — the console reads "Google Workspace/Cloud Identity HIPAA Business Associate Amendment: Accepted by eric@togohealth.com on Aug 07, 2024." Confirmed 2026-08-20. That is our BAA Effective Date.',
+     'Noted on the same screen: the Cloud Data Processing Addendum (CDPA) is NOT accepted, and the EU-Data-Protection-Law selection is NOT made. Neither is a HIPAA gate — they are GDPR/UK-GDPR/Swiss instruments — so this is a deliberate no, not an oversight, unless we take on EU data subjects.'],
+  done:'2026-08-20'},
  {t:'Print the covered-services list and mark every service as covered or not',
   d:'The BAA only covers the services Google names in its HIPAA Included Functionality list — not every service in the tenant. Anything outside it either gets turned off for the clinical OU or gets a written rule that PHI never goes there.',
-  p:['Google Workspace HIPAA Implementation Guide → Included Functionality','Admin console → Apps → Google Workspace → (per service) → service status by OU'],tag:'decide'},
+  p:['Google Workspace HIPAA Implementation Guide → Included Functionality','Admin console → Apps → Google Workspace → (per service) → service status by OU'],tag:'decide',
+  u:'https://workspace.google.com/terms/2015/1/hipaa_functionality.html',
+  s:['Attachment 1 of our BAA names the authoritative list: workspace.google.com/terms/2015/1/hipaa_functionality.html. That page, not anybody\'s memory of it, is what "covered" means.',
+     'Attachment 2 is the HIPAA Implementation Guide PDF (services.google.com/fh/files/misc/gsuite_cloud_identity_hipaa_implementation_guide.pdf). BAA §4 obliges us to actually use the controls it describes, so it is a checklist, not background reading.',
+     'Google may update that list with notice, and may only REMOVE a service on 12 months notice. So this is a standing quarterly check, not a one-time read — added to the session 9 cadence.',
+     'Tenant posture as of 2026-08-20: all 14 core Workspace services (Gmail, Drive and Docs, Chat, Meet, Calendar, Voice, Groups for Business, Sites, Tasks, Keep, Cloud Search, AppSheet, Migrate, Workspace Studio) are ON for everyone, in every OU. Nothing is currently restricted to a covered-services subset.'],
+  open:['Walk the list against our tenant and mark every service covered / not covered / turned off for the clinical OU. AppSheet, Workspace Studio and Cloud Search are the ones to check first — they are the least likely to be on the covered list and are on for all 253 users.']},
+ {t:'Point the breach-notification address at a monitored Group, not a person',
+  d:'BAA §6 says Google sends breach and security-incident notices to the notification email address on the account, within 60 days of discovery. If that is one person\'s mailbox, our entire breach clock depends on that person reading their mail that week. Make it a Group with at least two members — the session 3 pattern, applied to the one message we cannot afford to miss.',
+  p:['Admin console → Account → Account settings → Contact information','Admin console → Account → Admin roles → confirm who else receives admin alerts'],tag:'gotcha'},
+ {t:'Block unconfigured third-party apps — the BAA stops at the covered-services boundary',
+  d:'BAA §2 is explicit that the BAA does not apply to PHI created or transmitted outside the Covered Services, including third-party applications, and §4 puts the job of keeping PHI inside them on us. The lever is API access control: block unconfigured third-party apps by default, then allowlist each app you actually trust, per OU. Anything a user OAuths into on their own is outside the BAA the moment it touches PHI.',
+  p:['Admin console → Security → Access and data control → API controls → Settings','Admin console → Security → Access and data control → API controls → Manage third-party app access'],tag:'gotcha',
+  u:AC+'/ac/owl/list?tab=services',
+  s:['Checked 2026-08-20: all 18 Google service scopes are set to Unrestricted, and the Configured apps list is EMPTY. Meanwhile 174 apps have already accessed Google data through default settings.',
+     'The exposure by service: Google Sign-in 142 apps / 129 users · Drive 42 apps / 29 users · Gmail 18 apps / 59 users · Apps Script Runtime 18 apps / 8 users · Calendar 14 apps / 59 users · Contacts 6 apps / 47 users · Cloud Platform, Admin, Apps Script API and Tasks in low single digits.',
+     'Read against BAA §2, every one of those 174 apps sits outside the BAA the moment it touches PHI, and we have allowlisted exactly none of them deliberately.'],
+  open:['This is the single widest gap the whole review found. Triage the 174 accessed apps, allowlist what the business actually needs, then set Drive and Gmail to Restricted. Doing it in the other order locks people out.']},
  {t:'Create a dedicated break-glass super admin that nobody uses day to day',
   d:'A non-person account, its own long random password in the password manager, recovery codes printed and stored offline, no mail routing, no delegation. Your daily account gets a lower admin role. Two humans know the break-glass exists; one holds the credentials.',
   p:['Admin console → Directory → Users → Add new user','Admin console → Account → Admin roles → assign Super Admin'],u:AC+'/ac/users'},
  {t:'Turn on 2-step verification enforcement, with an enrollment window for new users',
   d:'Enforce for everyone; allow any method except SMS/voice codes; require security keys for the accounts holding admin roles. Set a new-user enrollment period so a new hire is not locked out on day one.',
-  p:['Admin console → Security → Authentication → 2-step verification'],tag:'gotcha'},
+  p:['Admin console → Security → Authentication → 2-step verification'],tag:'gotcha',u:AC+'/ac/security/2sv',
+  s:['Checked 2026-08-20 on the root OU (togohealth.com): Enforcement is set to "On from Aug 25, 2026" — scheduled, five days out, not yet biting. New-user enrollment period 1 week. "Allow user to trust the device" is on.'],
+  open:['Methods is set to "Any", which still permits verification codes by text and phone call — the weakest factor and the one the playbook says to exclude. Change to "Any except verification codes via text, phone call", and to "Only security key or passkey" for accounts holding admin roles.',
+        'The Aug 25 date is doing real work. Confirm before then that every one of the 253 users can actually enrol, or Monday is a helpdesk day.']},
  {t:'Create one organizational unit per business and move every user into the right one',
   d:'The OU is the lever for everything downstream — per-entity licensing, sharing policy, Chat history, Gemini availability, shared-drive rules. Getting the tree right now is what makes sessions 5 through 8 a settings change rather than a migration.',
-  p:['Admin console → Directory → Organizational units → Create organizational unit','Admin console → Directory → Users → select → More options → Change organizational unit'],u:AC+'/ac/orgunits'}
+  p:['Admin console → Directory → Organizational units → Create organizational unit','Admin console → Directory → Users → select → More options → Change organizational unit'],u:AC+'/ac/orgunits',
+  s:['Checked 2026-08-20: four OUs exist — togohealth.com (root), Workspace Guests (external guests), Ability HHH, and grabmd.com ("grab business"). So the idea is already started, but only two real businesses are separated out of the eleven domains on the tenant.'],
+  open:['No OU yet isolates the clinical entity, which is what every per-OU control below depends on — sharing policy, service status, Gemini, Chat history. Until that OU exists, the strict settings have nowhere to land.']}
 ]},
 {n:2,t:'Domains',min:40,fix:'Alias vs. secondary decision, DKIM per domain (the usual multi-domain miss), SPF, DMARC',steps:[
  {t:'Inventory every domain you own, including the parked ones you are not using',
   d:'List each domain, its registrar, where DNS is hosted, and whether it currently sends mail. Parked domains still need DMARC — an unprotected domain you own is a free spoofing target.',
-  p:['Admin console → Account → Domains → Manage domains'],u:AC+'/ac/domains/manage'},
+  p:['Admin console → Account → Domains → Manage domains'],u:AC+'/ac/domains/manage',
+  done:'2026-08-20',
+  s:['Inventoried 2026-08-20. Primary: togohealth.com — verified, email setup "All ok".',
+     'Ten secondary domains, all verified, every one showing "Action needed" on email setup: abilityhhh.com, billingpmg.com, biogl3.com, expertwound.com, grabhc.com, grabmd.com, instamobilecare.com, repsteps.com, suhhc.com, vitalitytogo.com.',
+     'Plus repsteps.net as a user alias domain for repsteps.com, two Google guest domains (togohealth.com.guest.google, repsteps.com.guest.google), and one test alias (repsteps.com.test-google-a.com, still Active).',
+     'Mail is live on nearly all of them: every domain except expertwound.com has Google MX records published.']},
  {t:'Decide alias vs. secondary domain for each one, and write down why',
   d:'A domain alias delivers to the same mailboxes — every user automatically gets user@alias, no extra license. A secondary domain has its own separate user accounts and its own licenses. This is hard to reverse: converting later means an export/import migration per mailbox.',
-  p:['Admin console → Account → Domains → Manage domains → Add a domain → choose alias or secondary'],tag:'decide'},
+  p:['Admin console → Account → Domains → Manage domains → Add a domain → choose alias or secondary'],tag:'decide',
+  s:['The call has effectively already been made and it went one way: ten secondary domains, one user alias domain (repsteps.net). Secondary means separate accounts and separate licences — so every Ability, RepSteps, PMG and Expert Wound user is consuming one of our 253 Business Standard seats.',
+     'This is the mechanism behind the seat squeeze. It also means moving Ability off is a real migration (export/import per mailbox), not a settings change — see sege-projects #27.']},
  {t:'Add and verify each domain with the TXT record at the registrar',
   d:'Verification is per domain. Until it is verified you cannot generate DKIM keys for it.',
-  p:['Admin console → Account → Domains → Manage domains → Add a domain → Verify','Registrar DNS → add the TXT record Google shows'],tag:'dns'},
+  p:['Admin console → Account → Domains → Manage domains → Add a domain → Verify','Registrar DNS → add the TXT record Google shows'],tag:'dns',
+  done:'2026-08-20',
+  s:['All twelve domains show Verified in the console as of 2026-08-20. Nothing is blocked on verification — which means nothing is blocking DKIM either.']},
  {t:'Generate and publish a DKIM key for every domain — not just the primary',
   d:'This is the most common multi-domain miss. The Authenticate email screen has a domain picker, and it silently defaults to the primary. Generate a 2048-bit key per domain, publish the google._domainkey TXT record, then come back and click Start authentication. Publishing without starting authentication does nothing.',
-  p:['Admin console → Apps → Google Workspace → Gmail → Authenticate email → select each domain → Generate new record','Registrar DNS → add TXT at google._domainkey','Back in the console → Start authentication'],u:AC+'/ac/apps/gmail',tag:'gotcha'},
+  p:['Admin console → Apps → Google Workspace → Gmail → Authenticate email → select each domain → Generate new record','Registrar DNS → add TXT at google._domainkey','Back in the console → Start authentication'],u:AC+'/ac/apps/gmail',tag:'gotcha',
+  s:['Checked by DNS lookup 2026-08-20. The predicted miss is exactly what happened: togohealth.com has a DKIM key published at google._domainkey and is the ONLY domain that does.',
+     'No DKIM record on abilityhhh.com, billingpmg.com, biogl3.com, expertwound.com, grabhc.com, grabmd.com, instamobilecare.com, repsteps.com, suhhc.com, vitalitytogo.com or repsteps.net — eleven domains unsigned. This matches the "Action needed" flag the console shows on all ten secondaries.'],
+  open:['Generate and publish a 2048-bit key per domain, then click Start authentication for each. Ten domains at roughly five minutes each. (Lookup used the default "google" selector; if any domain was set up with a custom selector it would not show here — the console flag says otherwise.)']},
  {t:'Publish one SPF record per sending domain, merged across all senders',
   d:'One TXT record per domain, no more: v=spf1 include:_spf.google.com ~all, plus an include for every third-party that sends as you (fax, EHR, invoicing, marketing). Two SPF records is a hard fail, and more than ten DNS lookups in the chain is also a fail.',
-  p:['Registrar DNS → TXT at the root of each sending domain'],tag:'dns'},
+  p:['Registrar DNS → TXT at the root of each sending domain'],tag:'dns',
+  s:['Checked by DNS lookup 2026-08-20. Five of twelve domains publish SPF: togohealth.com and abilityhhh.com use the clean v=spf1 include:_spf.google.com ~all. grabmd.com adds Paubox (include:_spf.google.com include:_spf.paubox.com -all) — worth knowing, since Paubox is a HIPAA email vendor sending as us. grabhc.com and suhhc.com both point at an _spfm.<domain> macro include, which looks like a third-party SPF-flattening service.',
+     'Seven domains publish NO SPF at all despite having live Google MX: billingpmg.com, biogl3.com, instamobilecare.com, repsteps.com, repsteps.net, vitalitytogo.com, and expertwound.com (which has no MX either).'],
+  open:['Publish SPF on the seven that lack it. While in there, confirm what the _spfm flattening service on grabhc.com and suhhc.com actually authorises — an include we do not control is an include that can change under us.']},
  {t:'Publish DMARC at p=none, read the reports, then ratchet to quarantine and reject',
   d:'Start with v=DMARC1; p=none; rua=mailto:dmarc@yourdomain and let two to four weeks of aggregate reports tell you which legitimate senders you forgot. Then p=quarantine, then p=reject. Non-sending domains skip straight to p=reject with a null SPF.',
-  p:['Registrar DNS → TXT at _dmarc.<each-domain>'],tag:'dns'}
+  p:['Registrar DNS → TXT at _dmarc.<each-domain>'],tag:'dns',
+  s:['Checked by DNS lookup 2026-08-20. Only three of twelve domains publish DMARC: togohealth.com at p=none with reports going to dmarc-reports@togohealth.com (fo=1); abilityhhh.com at p=none with no rua at all — so it collects nothing and tells nobody; vitalitytogo.com at p=quarantine, reporting to an external onsecur... address we should identify.',
+     'Nine domains have no DMARC record whatsoever: billingpmg.com, biogl3.com, expertwound.com, grabhc.com, grabmd.com, instamobilecare.com, repsteps.com, repsteps.net, suhhc.com. Every one of them is freely spoofable today.'],
+  open:['togohealth.com has been sitting at p=none — the reports are arriving, so the question is whether anyone reads them. Read a month, then ratchet to quarantine.',
+        'Add rua to abilityhhh.com or its p=none is pure decoration. Publish DMARC on the nine that have none, and take expertwound.com (no MX, non-sending) straight to p=reject with a null SPF.']}
 ]},
 {n:3,t:'Email architecture',min:60,fix:'Role addresses as Groups, Collaborative Inbox at 3+ handlers / delegation at 1–2, send-as per brand, repoint the outside world',steps:[
  {t:'List every business process that currently arrives at a person’s address',
@@ -177,7 +224,10 @@ const SESSIONS=[
   p:['Gmail → Settings → Accounts and Import → Send mail as → Add another email address','Gmail → Settings → Accounts and Import → When replying to a message'],u:'https://mail.google.com/mail/u/0/#settings/accounts'},
  {t:'Leave the catch-all off and confirm no default routing rule is acting as one',
   d:'A catch-all is a spam sink, and worse, a mistyped clinical address silently lands somewhere nobody is watching. Unmatched recipients should bounce so the sender learns immediately.',
-  p:['Admin console → Apps → Google Workspace → Gmail → Default routing → confirm no catch-all route','Admin console → Account → Domains → Manage domains → confirm no catch-all address'],tag:'decide'},
+  p:['Admin console → Apps → Google Workspace → Gmail → Default routing → confirm no catch-all route','Admin console → Account → Domains → Manage domains → confirm no catch-all address'],tag:'decide',
+  u:AC+'/ac/apps/gmail/defaultrouting',
+  done:'2026-08-20',
+  s:['Verified 2026-08-20: the Default routing table is empty — no rules of any kind, so nothing is acting as a catch-all, and unmatched recipients bounce as they should. This is the one check in this session that already passes. Re-check it after any mail-flow change.']},
  {t:'Repoint the outside world, then forward-and-notify the old address for 90 days',
   d:'Payers, vendors, facility contacts, the website, invoices, signatures, the Google Business Profile, every form. Then a temporary filter on the personal address that forwards process mail to the right group and replies with the new address. Ninety days later, turn the forward off.',
   p:['Gmail → Settings → Filters and Blocked Addresses → Create a new filter → Forward to','Gmail → Settings → Forwarding and POP/IMAP']}
@@ -231,7 +281,11 @@ SESSIONS.push(
   p:['drive.google.com → (shared drive) → Manage members → add the Group']},
  {t:'Set the external sharing policy per OU, strictest on the clinical entity',
   d:'For the clinical OU: no sharing outside the domain, or an allowlist of specific partner domains, warnings on, and link sharing defaulted to restricted rather than anyone-with-the-link. Loosen deliberately for the marketing OU if you need to.',
-  p:['Admin console → Apps → Google Workspace → Drive and Docs → Sharing settings → (select OU)'],u:AC+'/ac/apps/drive'},
+  p:['Admin console → Apps → Google Workspace → Drive and Docs → Sharing settings → (select OU)'],u:AC+'/ac/apps/drive',
+  s:['Checked 2026-08-20 on the root OU. Current posture is fully open: sharing outside TogoHealth ON; anyone-with-the-link publishing ON; Access Checker allows "public (no Google account required)"; distributing content outside the org set to Anyone; external users may access files in shared drives ON; non-members can be added to individual files ON; download/print/copy allowed for every role including viewers.',
+     'Two things are already right: the General access default for new items is "Private to the owner", and Highlight external files is ON.',
+     'Also on: shared-drive creation is unrestricted (any of the 253 users can make one), new shared drives land in the togohealth.com OU by default, and managers may override the drive-level settings.'],
+  open:['Nothing here can be tightened safely for the clinical entity until that OU exists (session 1). Tightening it at the root instead would hit all 253 users and all eleven businesses at once.']},
  {t:'Migrate by moving, not by copying',
   d:'Moving a file into a shared drive keeps its version history, comments, and share links, and transfers ownership to the drive. Copying makes a new file with today’s date, no history, no comments, and leaves the original behind to be edited by mistake. Move.',
   p:['drive.google.com → select files → right-click → Organize → Move → (shared drive)'],tag:'gotcha'},
@@ -262,13 +316,19 @@ SESSIONS.push(
 {n:7,t:'Chat',min:45,fix:'Spaces per business, history on, the four-channel routing table',steps:[
  {t:'Turn Chat on for the right OUs and decide external chat deliberately',
   d:'External chat is either off, or allowlisted to specific partner domains. Leaving it fully open means a stranger can DM your staff inside a tool they trust.',
-  p:['Admin console → Apps → Google Workspace → Google Chat → Service status','Admin console → Apps → Google Workspace → Google Chat → External chat settings'],u:AC+'/ac/appslist/core'},
+  p:['Admin console → Apps → Google Workspace → Google Chat → Service status','Admin console → Apps → Google Workspace → Google Chat → External chat settings'],u:AC+'/ac/appslist/core',
+  s:['Checked 2026-08-20: Chat is ON for everyone. External chat is ON and unrestricted — not allowlisted to partner domains — and users may create and join spaces and group DMs with people outside the organisation. Chat apps may be installed by users, and incoming webhooks are allowed.',
+     'Already sensible: new spaces default to Restricted access, and auto-accepting invitations between internal users is OFF.'],
+  open:['Decide external chat deliberately rather than by default: allowlist partner domains, or turn it off. As it stands any outside party can DM our staff inside a tool they trust.',
+        'User-installable Chat apps and incoming webhooks are the same BAA §2 boundary problem as the API controls finding in session 1, on a different surface.']},
  {t:'Create one space per business, plus a small number of function spaces',
   d:'Name them the way you named the shared drives, so the same words point at the same thing in both tools. Fewer spaces than you think you need.',
   p:['chat.google.com → + → Create a space'],u:'https://chat.google.com'},
  {t:'Turn history on for spaces and lock the setting',
   d:'History off means decisions evaporate and nothing is searchable next quarter. Lock it at the admin level so a well-meaning space manager cannot turn it off. Note that on Business Standard there is no Vault retention or legal hold behind this — history is convenience, not compliance.',
-  p:['Admin console → Apps → Google Workspace → Google Chat → History for spaces → History is ON, and lock it'],tag:'gotcha'},
+  p:['Admin console → Apps → Google Workspace → Google Chat → History for spaces → History is ON, and lock it'],tag:'gotcha',
+  s:['Checked 2026-08-20: history IS on — but the setting reads "History is ON, Turned on: Allow users to change their history setting". So it is on by default and any user can switch it off. It is not locked.'],
+  open:['Lock the history setting so it cannot be turned off per-space. Remember the session 1 finding behind this: on Business Standard there is no Vault, so history is convenience only — there is no retention or legal hold underneath it either way.']},
  {t:'Write the four-channel routing table and paste it into every space description',
   d:'Email for anything external or anything that needs a record. Chat for internal, low-stakes, fast. Tasks for commitments. Docs and Sheets for the artifact itself. The table stops the "should I chat this or email it" tax on every message.',
   p:['chat.google.com → (space) → Space details → Description']},
@@ -313,7 +373,7 @@ SESSIONS.push(
   d:'Suspend first, transfer Drive data ownership, remove from every group, reclaim the license, and only then delete — after a defined waiting period. Deleting first destroys the mailbox and orphans the My Drive files you had not migrated yet.',
   p:['Admin console → Directory → Users → (user) → Suspend','Admin console → Account → Data transfer','Admin console → Directory → Users → (user) → Delete'],u:AC+'/ac/appstransfer',tag:'gotcha'},
  {t:'Put the weekly, monthly, and quarterly reviews on the calendar as recurring events',
-  d:'Weekly: the Friday review from session 6. Monthly: admin roles, shared-drive membership, and the admin audit log. Quarterly: re-verify DKIM, SPF, and DMARC on every domain, refresh the SOP last-reviewed dates, and re-check that the edition still fits. A cadence that is not on the calendar is a cadence that happened once.',
+  d:'Weekly: the Friday review from session 6. Monthly: admin roles, shared-drive membership, and the admin audit log. Quarterly: re-verify DKIM, SPF, and DMARC on every domain, re-read the BAA covered-services list for additions and removals, refresh the SOP last-reviewed dates, and re-check that the edition still fits — including seat headroom against the 300-user cap. A cadence that is not on the calendar is a cadence that happened once.',
   p:['calendar.google.com → recurring events','Admin console → Reporting → Audit and investigation → Admin log events'],u:'https://calendar.google.com'},
  {t:'Name one person as the owner, and one other as break-glass custodian',
   d:'A named human, not "IT" and not "we". The owner runs the cadence; the second person holds the break-glass credentials and recovery codes in the password manager or the safe. Write both names on the house-rules page so the answer to "who owns this" is never a shrug.',
@@ -323,8 +383,9 @@ SESSIONS.push(
 
 /* ═════════ decisions worth making before you start ═════════ */
 const HEADS=[
- {t:'We are on Business Standard, 253 of 300 seats used',b:'Confirmed 2026-08-19. Shared drives are included, so most of session 5 is available today. Vault — retention, legal hold, eDiscovery — is not, and neither is DLP or context-aware access. Two consequences run through the rest of this playbook: anything below that leans on retention or legal hold has to be written as a house rule instead, and the 300-user cap is close enough that the growth path needs deciding before it bites.'},
+ {t:'We are on Business Standard, 253 of 300 seats used',b:'Confirmed 2026-08-20. Shared drives are included, so most of session 5 is available today. Vault — retention, legal hold, eDiscovery — is not, and neither is DLP or context-aware access. Two consequences run through the rest of this playbook: anything below that leans on retention or legal hold has to be written as a house rule instead, and the 300-user cap is close enough that the growth path needs deciding before it bites.'},
  {t:'The 300-seat ceiling is an edition limit, not an OU limit',b:'Business Starter, Standard and Plus all stop at 300 users. Licensing one OU up to Business Plus buys Vault for that OU but does not buy a single extra seat — only Enterprise raises the cap. So the Vault question and the headroom question are two separate decisions with two different answers.'},
+ {t:'The BAA covers services, not your tenant',b:'Our addendum applies only to the products named in its Attachment 1, and says so twice — §2 excludes anything outside the Covered Services, and §4 makes keeping PHI inside them our responsibility, not Google\'s. So "we have a BAA with Google" is never the whole answer. The answer is the covered list, plus blocking third-party apps that would carry PHI past its edge.'},
  {t:'Email overload is mostly architecture, not discipline',b:'Business processes arriving at your personal address is why triage never sticks. Do session 3 before session 4 — habits laid over person-addressed queues do not hold.'},
  {t:'Alias vs. secondary domain is hard to reverse',b:'An alias is the same mailbox; a secondary domain has its own accounts. Converting later means export/import migrations. Decide it in session 2 with your eyes open.'}
 ];
@@ -342,6 +403,9 @@ const SOURCES=[
  ['Group communication in Gmail','https://support.google.com/a/users/answer/9308384'],
  ['Spaces in Google Chat','https://support.google.com/chat/answer/7653428'],
  ['Google Workspace HIPAA implementation guide','https://support.google.com/a/answer/3407054'],
+ ['BAA Attachment 1 — HIPAA included functionality','https://workspace.google.com/terms/2015/1/hipaa_functionality.html'],
+ ['BAA Attachment 2 — HIPAA implementation guide (PDF)','https://services.google.com/fh/files/misc/gsuite_cloud_identity_hipaa_implementation_guide.pdf'],
+ ['API controls / third-party app access','https://support.google.com/a/answer/7281227'],
  ['NotebookLM help','https://support.google.com/notebooklm']
 ];
 /* ═════════ state ═════════ */
@@ -386,7 +450,7 @@ function pathHTML(st){
    checkbox is locked — localStorage is per-browser and would not reach anyone else. */
 function statusHTML(st){
   let h='';
-  if(st.s) h+='<div class="status"><span class="lbl">Status · '+esc(st.done||'')+'</span>'+
+  if(st.s) h+='<div class="status"><span class="lbl">Status'+(st.done?' · '+esc(st.done):'')+'</span>'+
               [].concat(st.s).map(x=>esc(x)).join('<br>')+'</div>';
   if(st.open) h+='<div class="status o"><span class="lbl">Still open</span>'+
                  [].concat(st.open).map(x=>esc(x)).join('<br>')+'</div>';
@@ -490,16 +554,17 @@ function nextOpen(){
       }
     }
   }
-  toast('Nothing left. All 62 done.');
+  toast('Nothing left. All '+TOTAL+' done.');
 }
 function resetAll(){
-  if(!confirm('Clear all 62 checkboxes in this browser? This cannot be undone.'))return;
+  if(!confirm('Clear your checkboxes in this browser? Steps recorded in the repo stay done. This cannot be undone.'))return;
   done={}; seedRecorded(); saveDone(); render(); toast('Reset — steps recorded in the repo stay done');
 }
 
 /* ═════════ boot (last thing in the module — nothing above may call a view fn) ═════════ */
 function boot(){
   loadState();
+  $('#subhead').textContent=TOTAL+' steps, in the order to do them · progress saved in this browser';
   $('#expandBtn').onclick=toggleAll;
   $('#nextBtn').onclick=nextOpen;
   $('#resetBtn').onclick=resetAll;

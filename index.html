@@ -348,7 +348,7 @@ function tileLocked(mark,label,note){const b=el('button','tile');b.onclick=openC
   b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">${esc(note||'token needed for staffing')}</div>`;return b;}
 /* Best practices: static guide pages. Progress comes from the guide's own
    localStorage key, so the tile reflects where you left off without a fetch. */
-const BP_GUIDES=[{key:'sege-bp-workspace-v1',steps:62,label:'Workspace optimization'}];
+const BP_GUIDES=[{key:'sege-bp-workspace-v1',steps:64,label:'Workspace optimization'}];
 function bpTile(){
   const g=BP_GUIDES[0];
   let n=0; try{ const o=JSON.parse(localStorage.getItem(g.key)||'{}')||{}; n=Object.keys(o).filter(k=>o[k]).length; }catch(e){}
