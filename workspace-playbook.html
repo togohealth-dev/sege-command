@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google Workspace Optimization — SEGE Best Practices</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:1000px;margin:0 auto;padding:18px 16px 80px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:16px;position:sticky;top:0;background:var(--ground);padding:10px 0 9px;z-index:20;border-bottom:1px solid var(--border)}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{margin-right:auto;min-width:170px}.title h1{font-size:19px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .totals{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:13px 16px;margin-bottom:16px}
+  .totals .big{font-size:26px;font-weight:780;letter-spacing:-.02em;font-variant-numeric:tabular-nums;flex:none}
+  .totals .sub{color:var(--muted);font-size:12px}
+  .bar{height:9px;border-radius:999px;background:var(--surface-2);overflow:hidden;flex:1;min-width:80px}
+  .bar span{display:block;height:100%;background:var(--accent);transition:width .2s}
+  .bar.done span{background:var(--ok)}
+  .sect{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin:22px 2px 9px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card>h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .card>h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px;font-variant-numeric:tabular-nums}
+  .note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:12px 15px;margin-bottom:11px;box-shadow:var(--shadow)}
+  .note h4{font-size:12.5px;font-weight:700;margin-bottom:3px}
+  .note p{color:var(--muted);font-size:12.5px}
+  .note.call{border-left-color:var(--warn)}
+  /* session block */
+  .sh{display:flex;align-items:center;gap:11px;padding:12px 15px;background:var(--surface-2);cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+  .sh:hover{background:var(--accent-soft)}
+  .sh .num{width:26px;height:26px;border-radius:8px;background:var(--accent);color:#fff;font-weight:750;font-size:12.5px;display:grid;place-items:center;flex:none}
+  .sh.allok .num{background:var(--ok)}
+  .sh .lb{flex:1;min-width:0}
+  .sh .lb b{font-size:13.5px;font-weight:700}
+  .sh .lb div{font-size:12px;color:var(--muted)}
+  .sh .cnt{font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--idle-bg);color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .sh.allok .cnt{background:var(--ok-bg);color:var(--ok)}
+  .sh .caret{color:var(--faint);font-weight:700;flex:none;transition:transform .15s}
+  .sh[aria-expanded=false] .caret{transform:rotate(-90deg)}
+  .steps{border-bottom:1px solid var(--border)}
+  .steps[hidden]{display:none}
+  /* step */
+  .st{display:flex;gap:11px;padding:12px 15px;border-bottom:1px solid var(--border);align-items:flex-start}
+  .st:last-child{border-bottom:0}
+  .st:hover{background:var(--surface-2)}
+  .st.on{background:var(--ok-bg)}
+  @media (prefers-color-scheme:dark){.st.on{background:#12291f}}
+  .st input[type=checkbox]{width:19px;height:19px;flex:none;margin-top:1px;accent-color:var(--accent);cursor:pointer}
+  .st .body{flex:1;min-width:0}
+  .st .hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .st .sn{font-size:11px;font-weight:750;color:var(--faint);font-variant-numeric:tabular-nums;flex:none}
+  .st .tt{font-weight:650;font-size:13.5px}
+  .st.on .tt{text-decoration:line-through;text-decoration-color:var(--faint);color:var(--muted)}
+  .st .dd{color:var(--muted);font-size:12.5px;margin-top:3px}
+  .st .paths{margin-top:6px;display:flex;flex-direction:column;gap:4px}
+  .pth{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;background:var(--surface-2);border:1px solid var(--border);border-radius:7px;padding:4px 9px;display:inline-block;overflow-wrap:anywhere;color:var(--accent-ink)}
+  a.pth{text-decoration:none}a.pth:hover{border-color:var(--accent)}
+  .tag{font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:999px;white-space:nowrap;flex:none}
+  .tag.decide{background:var(--warn-bg);color:var(--warn)}
+  .tag.gotcha{background:var(--bad-bg);color:var(--bad)}
+  .tag.dns{background:var(--accent-soft);color:var(--accent-ink)}
+  .foot{margin-top:26px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
+  .srcs{font-size:12px;color:var(--muted);line-height:1.9}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}#toast.show{opacity:1}
+  .msg{padding:40px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>Google Workspace Optimization</h1><p>62 steps, in the order to do them · progress saved in this browser</p></div>
+    <a class="btn" href="./best-practices.html">← Best practices</a>
+    <button class="btn" id="expandBtn">Collapse all</button>
+    <button class="btn" id="nextBtn">↓ Next open step</button>
+    <button class="btn" id="resetBtn">Reset</button>
+  </header>
+  <div id="view"><div class="msg">Loading…</div></div>
+  <div class="foot">Progress is stored in this browser only (<code>localStorage</code>) — it is not synced between devices or people.
+    Console paths were accurate at time of writing; Google renames admin menus from time to time, so trust the breadcrumb over the deep link.</div>
+</div>
+<div id="toast"></div>
+<script>
+window.onerror=function(m,s,l){var v=document.getElementById('view');
+  if(v)v.innerHTML='<div class="msg">Something broke rendering this page:<br><b>'+String(m)+'</b><br><span style="font-size:12px">line '+l+'</span></div>';};
+
+const KEY='sege-bp-workspace-v1';      // checkbox state
+const UIKEY='sege-bp-workspace-ui-v1'; // which sessions are open
+const AC='https://admin.google.com';
+
+/* ═════════ the playbook ═════════ */
+const SESSIONS=[
+{n:1,t:'Ground truth',min:45,fix:'Confirm edition, BAA + covered-services list, break-glass super admin, 2SV, OU per business — the step everything later leans on',steps:[
+ {t:'Write down exactly which edition and how many seats you have',
+  d:'Business Starter / Standard / Plus / Enterprise, seat count, renewal date, and whether any OU is already licensed differently. Every later session is gated by this answer.',
+  p:['Admin console → Billing → Subscriptions'],u:AC+'/ac/billing/subscriptions'},
+ {t:'Decide whether to license one OU higher than the rest',
+  d:'Shared drives start at Business Standard. Vault — retention, legal hold, eDiscovery — starts at Business Plus. DLP and context-aware access are Enterprise. You can license a single OU up, so price upgrading just the healthcare entity instead of the whole tenant.',
+  p:['Admin console → Billing → Get more services → assign licenses by organizational unit'],tag:'decide'},
+ {t:'Confirm the HIPAA Business Associate Amendment is accepted, and record who accepted it and when',
+  d:'The BAA is a self-serve amendment inside the admin console, not something Google sends you. If nobody has clicked accept, you do not have one.',
+  p:['Admin console → Account → Account settings → Legal and compliance → Security and privacy additional terms'],u:AC+'/ac/companyprofile/legal'},
+ {t:'Print the covered-services list and mark every service as covered or not',
+  d:'The BAA only covers the services Google names in its HIPAA Included Functionality list — not every service in the tenant. Anything outside it either gets turned off for the clinical OU or gets a written rule that PHI never goes there.',
+  p:['Google Workspace HIPAA Implementation Guide → Included Functionality','Admin console → Apps → Google Workspace → (per service) → service status by OU'],tag:'decide'},
+ {t:'Create a dedicated break-glass super admin that nobody uses day to day',
+  d:'A non-person account, its own long random password in the password manager, recovery codes printed and stored offline, no mail routing, no delegation. Your daily account gets a lower admin role. Two humans know the break-glass exists; one holds the credentials.',
+  p:['Admin console → Directory → Users → Add new user','Admin console → Account → Admin roles → assign Super Admin'],u:AC+'/ac/users'},
+ {t:'Turn on 2-step verification enforcement, with an enrollment window for new users',
+  d:'Enforce for everyone; allow any method except SMS/voice codes; require security keys for the accounts holding admin roles. Set a new-user enrollment period so a new hire is not locked out on day one.',
+  p:['Admin console → Security → Authentication → 2-step verification'],tag:'gotcha'},
+ {t:'Create one organizational unit per business and move every user into the right one',
+  d:'The OU is the lever for everything downstream — per-entity licensing, sharing policy, Chat history, Gemini availability, shared-drive rules. Getting the tree right now is what makes sessions 5 through 8 a settings change rather than a migration.',
+  p:['Admin console → Directory → Organizational units → Create organizational unit','Admin console → Directory → Users → select → More options → Change organizational unit'],u:AC+'/ac/orgunits'}
+]},
+{n:2,t:'Domains',min:40,fix:'Alias vs. secondary decision, DKIM per domain (the usual multi-domain miss), SPF, DMARC',steps:[
+ {t:'Inventory every domain you own, including the parked ones you are not using',
+  d:'List each domain, its registrar, where DNS is hosted, and whether it currently sends mail. Parked domains still need DMARC — an unprotected domain you own is a free spoofing target.',
+  p:['Admin console → Account → Domains → Manage domains'],u:AC+'/ac/domains/manage'},
+ {t:'Decide alias vs. secondary domain for each one, and write down why',
+  d:'A domain alias delivers to the same mailboxes — every user automatically gets user@alias, no extra license. A secondary domain has its own separate user accounts and its own licenses. This is hard to reverse: converting later means an export/import migration per mailbox.',
+  p:['Admin console → Account → Domains → Manage domains → Add a domain → choose alias or secondary'],tag:'decide'},
+ {t:'Add and verify each domain with the TXT record at the registrar',
+  d:'Verification is per domain. Until it is verified you cannot generate DKIM keys for it.',
+  p:['Admin console → Account → Domains → Manage domains → Add a domain → Verify','Registrar DNS → add the TXT record Google shows'],tag:'dns'},
+ {t:'Generate and publish a DKIM key for every domain — not just the primary',
+  d:'This is the most common multi-domain miss. The Authenticate email screen has a domain picker, and it silently defaults to the primary. Generate a 2048-bit key per domain, publish the google._domainkey TXT record, then come back and click Start authentication. Publishing without starting authentication does nothing.',
+  p:['Admin console → Apps → Google Workspace → Gmail → Authenticate email → select each domain → Generate new record','Registrar DNS → add TXT at google._domainkey','Back in the console → Start authentication'],u:AC+'/ac/apps/gmail',tag:'gotcha'},
+ {t:'Publish one SPF record per sending domain, merged across all senders',
+  d:'One TXT record per domain, no more: v=spf1 include:_spf.google.com ~all, plus an include for every third-party that sends as you (fax, EHR, invoicing, marketing). Two SPF records is a hard fail, and more than ten DNS lookups in the chain is also a fail.',
+  p:['Registrar DNS → TXT at the root of each sending domain'],tag:'dns'},
+ {t:'Publish DMARC at p=none, read the reports, then ratchet to quarantine and reject',
+  d:'Start with v=DMARC1; p=none; rua=mailto:dmarc@yourdomain and let two to four weeks of aggregate reports tell you which legitimate senders you forgot. Then p=quarantine, then p=reject. Non-sending domains skip straight to p=reject with a null SPF.',
+  p:['Registrar DNS → TXT at _dmarc.<each-domain>'],tag:'dns'}
+]},
+{n:3,t:'Email architecture',min:60,fix:'Role addresses as Groups, Collaborative Inbox at 3+ handlers / delegation at 1–2, send-as per brand, repoint the outside world',steps:[
+ {t:'List every business process that currently arrives at a person’s address',
+  d:'Billing, referrals, credentialing, scheduling, careers, general info — one line each, per brand. This list is the whole session; everything else is executing it. Email overload is mostly architecture, not discipline: habits laid over a person-addressed queue do not hold.',
+  p:['No console — a sheet or a doc, one row per process']},
+ {t:'Create every role address as a Group, never as a user mailbox',
+  d:'A Group costs no license, survives the person leaving, and changes hands by editing membership. A user mailbox for billing@ becomes a hostage the day that person leaves.',
+  p:['Admin console → Directory → Groups → Create group'],u:AC+'/ac/groups'},
+ {t:'Set posting and moderation on each group so outside senders can actually reach it',
+  d:'External-facing groups need "Who can post" set to anyone on the internet, with message moderation for non-members set to moderate rather than reject — otherwise a payer or a family emails billing@ and gets a bounce nobody sees.',
+  p:['Admin console → Directory → Groups → (group) → Access settings','groups.google.com → (group) → Group settings → Posting policies'],tag:'gotcha'},
+ {t:'Turn on Collaborative Inbox for any address with three or more handlers',
+  d:'Collaborative Inbox gives the group assignment and resolve states, so two people do not answer the same referral and nothing sits unclaimed. Below three handlers it is overhead.',
+  p:['groups.google.com → (group) → Group settings → Enable additional Google Groups features → Collaborative Inbox']},
+ {t:'Use mailbox delegation instead where one or two people handle the address',
+  d:'Delegation puts the shared queue inside the handler’s existing Gmail — no second tab, no second password, and send-as comes along with it. Confirm delegation is allowed at the domain level first.',
+  p:['Admin console → Apps → Google Workspace → Gmail → User settings → Mail delegation','Gmail → Settings → Accounts → Grant access to your account'],u:AC+'/ac/apps/gmail'},
+ {t:'Add send-as for every brand each person answers for, and set reply-from to match',
+  d:'Set "Reply from the same address the message was sent to" so a reply to the referrals@ brand does not go out from your personal address. Give each send-as its own signature.',
+  p:['Gmail → Settings → Accounts and Import → Send mail as → Add another email address','Gmail → Settings → Accounts and Import → When replying to a message'],u:'https://mail.google.com/mail/u/0/#settings/accounts'},
+ {t:'Leave the catch-all off and confirm no default routing rule is acting as one',
+  d:'A catch-all is a spam sink, and worse, a mistyped clinical address silently lands somewhere nobody is watching. Unmatched recipients should bounce so the sender learns immediately.',
+  p:['Admin console → Apps → Google Workspace → Gmail → Default routing → confirm no catch-all route','Admin console → Account → Domains → Manage domains → confirm no catch-all address'],tag:'decide'},
+ {t:'Repoint the outside world, then forward-and-notify the old address for 90 days',
+  d:'Payers, vendors, facility contacts, the website, invoices, signatures, the Google Business Profile, every form. Then a temporary filter on the personal address that forwards process mail to the right group and replies with the new address. Ninety days later, turn the forward off.',
+  p:['Gmail → Settings → Filters and Blocked Addresses → Create a new filter → Forward to','Gmail → Settings → Forwarding and POP/IMAP']}
+]},
+{n:4,t:'Your inbox',min:90,fix:'One cockpit account, 8-label taxonomy, filters do the labeling, Multiple Inboxes panes, the four-verdict triage rule',steps:[
+ {t:'Name one account as the cockpit and demote every other mailbox',
+  d:'One account you actually live in. Everything else is a group you are a member of or a mailbox you are delegated into — never a second inbox you have to remember to check.',
+  p:['No console — a decision, written down']},
+ {t:'Build the eight-label taxonomy and stop there',
+  d:'Roughly: Action, Waiting, Review, Clients, Vendors, Finance, Legal, Reference. Eight is the point — a taxonomy you can hold in your head is one you will actually use. Nest with a slash (Finance/Payer) rather than adding top-level labels.',
+  p:['Gmail → Settings → Labels → Create new label'],u:'https://mail.google.com/mail/u/0/#settings/labels'},
+ {t:'Write filters so labeling happens without you',
+  d:'Every recurring sender or subject pattern gets a filter that applies the label. Hand-filing is the habit that always collapses first; a filter never forgets.',
+  p:['Gmail → Settings → Filters and Blocked Addresses → Create a new filter'],u:'https://mail.google.com/mail/u/0/#settings/filters'},
+ {t:'Send the FYI streams straight past the inbox',
+  d:'Newsletters, system notifications, CC-only threads: label and skip the inbox. They are searchable and readable on your schedule, and they stop competing with real work for attention.',
+  p:['Gmail → Settings → Filters → Create a new filter → Skip the Inbox + Apply the label']},
+ {t:'Protect the senders you cannot afford to miss',
+  d:'A filter on your handful of critical senders — key facility contacts, the payer portals, your own leadership — that stars them or always marks them important, so they survive any triage mistake.',
+  p:['Gmail → Settings → Filters → Create a new filter → Always mark it as important / Star it']},
+ {t:'Switch the inbox to Multiple Inboxes with three to five panes',
+  d:'Panes worth having: is:starred, label:Action, label:Waiting, and is:sent newer_than:7d to catch your own unanswered threads. Position them to the right on a wide screen, below on a laptop.',
+  p:['Gmail → Settings → Inbox → Inbox type: Multiple inboxes → Multiple inbox sections'],u:'https://mail.google.com/mail/u/0/#settings/inbox'},
+ {t:'Adopt the four-verdict triage rule and allow no fifth option',
+  d:'Every message gets exactly one: Do it now if under two minutes; Delegate it and label Waiting; Defer it by making a task; or archive it. "Leave it in the inbox to think about" is the one move that breaks the system, because it is the move that scales.',
+  p:['No console — the rule is the deliverable. Put it on the house-rules page in session 9.']},
+ {t:'Turn on templates and write five of them',
+  d:'The five replies you type every week — records request, referral acknowledgment, credentialing follow-up, scheduling, the polite no. Written once, they turn a five-minute reply into a ten-second one.',
+  p:['Gmail → Settings → Advanced → Templates: Enable','Compose → ⋮ → Templates → Save draft as template']},
+ {t:'Turn on keyboard shortcuts, auto-advance, and Send & Archive',
+  d:'The three settings that make the four-verdict rule fast enough to keep doing. Learn exactly four keys: e to archive, # to delete, r to reply, j/k to move.',
+  p:['Gmail → Settings → General → Keyboard shortcuts on','Gmail → Settings → General → Send and Archive: Show','Gmail → Settings → Advanced → Auto-advance: Enable']}
+]}
+];
+SESSIONS.push(
+{n:5,t:'Drive',min:120,fix:'Shared drives named BIZ-FUNCTION, drives assigned to OUs, access by Group only, move-don’t-copy migration',steps:[
+ {t:'Find every operational file that is really sitting in somebody’s My Drive',
+  d:'My Drive files are owned by a person. When that person leaves, the files leave with them and you are filing a transfer ticket to get your own contracts back. Inventory first — you cannot fix what you have not listed.',
+  p:['Admin console → Reports → Apps reports → Drive','drive.google.com → Search → Location: My Drive, owner: (each person)'],tag:'gotcha'},
+ {t:'Fix the naming convention as BIZ-FUNCTION before you create anything',
+  d:'Entity token, then function: a short prefix per business and a short verb-free function name. Decide the token list once and write it down, because renaming forty shared drives later is a day you will not get back.',
+  p:['No console — the token list goes on the house-rules page'],tag:'decide'},
+ {t:'Create one shared drive per business-function pair',
+  d:'Not one giant drive with folders, and not one per project. Business-function is the granularity that matches how access actually differs.',
+  p:['drive.google.com → Shared drives → + New','Admin console → Apps → Google Workspace → Drive and Docs → Manage shared drives'],u:AC+'/ac/apps/drive'},
+ {t:'Assign each shared drive to the organizational unit that owns it',
+  d:'An unassigned shared drive inherits the top-level sharing policy. Assigning it to the OU is what makes the clinical entity’s stricter external-sharing rule actually apply to that drive’s contents.',
+  p:['Admin console → Apps → Google Workspace → Drive and Docs → Manage shared drives → (drive) → Organizational unit'],u:AC+'/ac/apps/drive',tag:'gotcha'},
+ {t:'Grant access to Groups only — never to individual people',
+  d:'Members are Groups; roles are Manager, Content manager, Contributor, Commenter, Viewer. Then onboarding and offboarding are a single membership edit instead of an archaeology project across forty drives.',
+  p:['drive.google.com → (shared drive) → Manage members → add the Group']},
+ {t:'Set the external sharing policy per OU, strictest on the clinical entity',
+  d:'For the clinical OU: no sharing outside the domain, or an allowlist of specific partner domains, warnings on, and link sharing defaulted to restricted rather than anyone-with-the-link. Loosen deliberately for the marketing OU if you need to.',
+  p:['Admin console → Apps → Google Workspace → Drive and Docs → Sharing settings → (select OU)'],u:AC+'/ac/apps/drive'},
+ {t:'Migrate by moving, not by copying',
+  d:'Moving a file into a shared drive keeps its version history, comments, and share links, and transfers ownership to the drive. Copying makes a new file with today’s date, no history, no comments, and leaves the original behind to be edited by mistake. Move.',
+  p:['drive.google.com → select files → right-click → Organize → Move → (shared drive)'],tag:'gotcha'},
+ {t:'Verify the end state: My Drive holds only drafts and personal scratch',
+  d:'Walk each person’s My Drive one more time. Anything the business would need on a Tuesday when that person is on a plane belongs in a shared drive.',
+  p:['Admin console → Reports → Apps reports → Drive','drive.google.com → Shared drives → spot-check members on each drive']}
+]},
+{n:6,t:'To-do system',min:60,fix:'Tasks as the single commitment store, Inbox/Next/Waiting/per-initiative lists, drag-email-to-task, daily + Friday review',steps:[
+ {t:'Declare Google Tasks the single commitment store and retire the competitors',
+  d:'One place where "I will do that" lives. Delete or archive the note apps, the sticky notes, and above all the habit of leaving mail in the inbox as a to-do. Two systems means neither is trusted, and an untrusted list is not consulted.',
+  p:['tasks.google.com','Gmail / Calendar → right side panel → Tasks'],tag:'decide'},
+ {t:'Create the four list types: Inbox, Next, Waiting, and one per initiative',
+  d:'Inbox is the landing pad, Next is what you have actually committed to, Waiting is what somebody owes you, and one list per live initiative. Resist a fifth type.',
+  p:['tasks.google.com → ⋮ → Create new list']},
+ {t:'Learn the capture move: drag the email onto the Tasks panel',
+  d:'The task keeps a link back to the thread, so you never re-hunt the email. This one gesture is what lets you archive aggressively during triage — the commitment survives without the message sitting in the inbox as a reminder.',
+  p:['Gmail → open the Tasks side panel → drag the message onto the list']},
+ {t:'Give every task a date — no undated tasks, ever',
+  d:'The date is when the task should surface, not a promise to the person who asked. Undated tasks fall to the bottom of the list and quietly become the things you did not do.',
+  p:['tasks.google.com → (task) → Add date/time']},
+ {t:'Book ten minutes a day, same time, to clear the Tasks Inbox',
+  d:'Everything in the Inbox list gets a real list and a date. Ten minutes, recurring on the calendar, at a time you are actually at a desk. This is the habit the whole system rests on.',
+  p:['calendar.google.com → create a recurring event → 10 min daily'],u:'https://calendar.google.com'},
+ {t:'Book thirty minutes on Friday for the review',
+  d:'Nudge everything on Waiting, date next week’s work, and take the Gmail inbox to zero. The Friday review is what makes it safe to archive on Tuesday.',
+  p:['calendar.google.com → create a recurring event → 30 min weekly, Friday']}
+]},
+{n:7,t:'Chat',min:45,fix:'Spaces per business, history on, the four-channel routing table',steps:[
+ {t:'Turn Chat on for the right OUs and decide external chat deliberately',
+  d:'External chat is either off, or allowlisted to specific partner domains. Leaving it fully open means a stranger can DM your staff inside a tool they trust.',
+  p:['Admin console → Apps → Google Workspace → Google Chat → Service status','Admin console → Apps → Google Workspace → Google Chat → External chat settings'],u:AC+'/ac/appslist/core'},
+ {t:'Create one space per business, plus a small number of function spaces',
+  d:'Name them the way you named the shared drives, so the same words point at the same thing in both tools. Fewer spaces than you think you need.',
+  p:['chat.google.com → + → Create a space'],u:'https://chat.google.com'},
+ {t:'Turn history on for spaces and lock the setting',
+  d:'History off means decisions evaporate and nothing is searchable next quarter. Lock it at the admin level so a well-meaning space manager cannot turn it off. Note that on Business Standard there is no Vault retention or legal hold behind this — history is convenience, not compliance.',
+  p:['Admin console → Apps → Google Workspace → Google Chat → History for spaces → History is ON, and lock it'],tag:'gotcha'},
+ {t:'Write the four-channel routing table and paste it into every space description',
+  d:'Email for anything external or anything that needs a record. Chat for internal, low-stakes, fast. Tasks for commitments. Docs and Sheets for the artifact itself. The table stops the "should I chat this or email it" tax on every message.',
+  p:['chat.google.com → (space) → Space details → Description']},
+ {t:'Make "no PHI in Chat" an explicit rule, even though Chat is BAA-covered',
+  d:'Covered does not mean appropriate. Notification previews put message text on lock screens, and on Standard the history has no retention or legal-hold backing. Clinical detail goes in the chart or a Drive doc, and Chat gets a link to it.',
+  p:['No console — house rule, and the reason goes next to it'],tag:'decide'}
+]},
+{n:8,t:'Intake & AI',min:90,fix:'Forms→Sheets for every free-text intake, Sites wiki, NotebookLM over your SOPs, Gems',steps:[
+ {t:'List every intake that currently arrives as free text',
+  d:'Referrals, new-hire paperwork, credentialing packets, vendor requests, time-off. Anything where someone types a paragraph and someone else has to extract fields from it is a form waiting to be built.',
+  p:['No console — one row per intake, with its current arrival channel']},
+ {t:'Build a Form for each intake, with the fields you actually need to act',
+  d:'Required fields, dropdowns instead of free text wherever a list exists, and validation on anything that will be sorted or matched later. A form is not bureaucracy; it is the difference between a queue you can sort and a pile you have to read.',
+  p:['forms.google.com → Blank form','Form → Settings → Responses → Collect email addresses'],u:'https://forms.google.com'},
+ {t:'Link every form to a Sheet and send notifications to the Group, not a person',
+  d:'The Sheet is the queue and the record. The notification goes to the role address from session 3, so coverage does not depend on one person’s inbox.',
+  p:['Form → Responses → Link to Sheets','Sheet → Tools → Notification settings']},
+ {t:'Decide per form whether it may carry clinical detail, and restrict it accordingly',
+  d:'For any form that can, restrict responses to your organization, keep the response Sheet in the clinical OU’s shared drive, and never enable a public link. For any form that must not, say so in the form description.',
+  p:['Form → Settings → Responses → Restrict to users in your organization'],tag:'decide'},
+ {t:'Stand up a Sites wiki as the one place people look first',
+  d:'One page per function, each linking out to the shared drives, the forms, and the SOPs. Publish to the domain only. The test of the wiki is whether a new hire can find the referral process without asking anyone.',
+  p:['sites.google.com → Blank site','Site → Publish → restrict to your organization'],u:'https://sites.google.com'},
+ {t:'Write the SOPs as Docs in a shared drive, each with an owner and a last-reviewed date',
+  d:'One doc per process, the owner’s name and the last-reviewed date in the first two lines. Undated SOPs get quietly disbelieved and then ignored.',
+  p:['drive.google.com → (shared drive) → New → Google Docs']},
+ {t:'Build a NotebookLM notebook per domain over those SOP docs',
+  d:'One notebook for billing, one for credentialing, one for ops, each sourced from the SOP Docs. Then the question "what is our process for X" gets answered with a citation instead of a rumor. Check the service against your session 1 covered-services list before adding anything sensitive as a source.',
+  p:['notebooklm.google.com → New notebook → Add sources → Google Drive'],u:'https://notebooklm.google.com',tag:'decide'},
+ {t:'Create a Gem for each recurring drafting job, and gate AI availability by OU',
+  d:'A Gem per repeated task — the appeal letter, the recruiting outreach, the meeting recap — with your house style and constraints baked into its instructions. Then set Gemini availability per OU in the admin console so it matches the covered-services decision rather than contradicting it.',
+  p:['gemini.google.com → Gems → New Gem','Admin console → Apps → Additional Google services / Google Workspace → Gemini → service status by OU'],u:'https://gemini.google.com'}
+]},
+{n:9,t:'Handover',min:60,fix:'Eight house rules, on/offboarding checklists, weekly/monthly/quarterly cadence, one named owner',steps:[
+ {t:'Write the eight house rules on one page, in plain language, with the reason for each',
+  d:'Email vs. Chat. No catch-all. No PHI in Chat. Access is by Group, never by person. Tasks is the only commitment store. Operational files live in shared drives. Filters label, humans do not. Every message gets one of four verdicts. Rules without reasons get overridden by whoever is in a hurry.',
+  p:['sites.google.com → (wiki) → House rules page']},
+ {t:'Write the onboarding checklist as a sequence somebody else can run',
+  d:'Create the user in the correct OU, add the group memberships (that is the access — no per-file grants), enroll 2SV, add the send-as addresses, create the Tasks lists, star the shared drives, and have them read the house-rules page on day one.',
+  p:['Admin console → Directory → Users → Add new user','Admin console → Directory → Groups → (each group) → Add members'],u:AC+'/ac/users'},
+ {t:'Write the offboarding checklist, and put suspend before delete',
+  d:'Suspend first, transfer Drive data ownership, remove from every group, reclaim the license, and only then delete — after a defined waiting period. Deleting first destroys the mailbox and orphans the My Drive files you had not migrated yet.',
+  p:['Admin console → Directory → Users → (user) → Suspend','Admin console → Account → Data transfer','Admin console → Directory → Users → (user) → Delete'],u:AC+'/ac/appstransfer',tag:'gotcha'},
+ {t:'Put the weekly, monthly, and quarterly reviews on the calendar as recurring events',
+  d:'Weekly: the Friday review from session 6. Monthly: admin roles, shared-drive membership, and the admin audit log. Quarterly: re-verify DKIM, SPF, and DMARC on every domain, refresh the SOP last-reviewed dates, and re-check that the edition still fits. A cadence that is not on the calendar is a cadence that happened once.',
+  p:['calendar.google.com → recurring events','Admin console → Reporting → Audit and investigation → Admin log events'],u:'https://calendar.google.com'},
+ {t:'Name one person as the owner, and one other as break-glass custodian',
+  d:'A named human, not "IT" and not "we". The owner runs the cadence; the second person holds the break-glass credentials and recovery codes in the password manager or the safe. Write both names on the house-rules page so the answer to "who owns this" is never a shrug.',
+  p:['sites.google.com → (wiki) → House rules page → Owner line']}
+]}
+);
+
+/* ═════════ decisions worth making before you start ═════════ */
+const HEADS=[
+ {t:'Your edition gates real things',b:'Business Standard gets you shared drives, which is most of session 5’s win. Vault — retention, legal hold, eDiscovery — starts at Business Plus. DLP and context-aware access are Enterprise. You can license one OU higher than the rest, so price upgrading just the healthcare entity rather than the whole tenant. Step 1 confirms what you actually have.'},
+ {t:'Email overload is mostly architecture, not discipline',b:'Business processes arriving at your personal address is why triage never sticks. Do session 3 before session 4 — habits laid over person-addressed queues do not hold.'},
+ {t:'Alias vs. secondary domain is hard to reverse',b:'An alias is the same mailbox; a secondary domain has its own accounts. Converting later means export/import migrations. Decide it in session 2 with your eyes open.'}
+];
+const CALLS=[
+ {t:'No catch-all address',b:'It is a spam sink, and a mistyped clinical address lands somewhere nobody is watching. Unmatched recipients should bounce so the sender finds out immediately.'},
+ {t:'No PHI in Chat, even though Chat is BAA-covered',b:'Notification previews put message text on lock screens, and history on Business Standard has no retention or legal hold behind it. Wrong surface, regardless of coverage.'}
+];
+const SOURCES=[
+ ['Google Workspace security checklist','https://support.google.com/a/answer/9184226'],
+ ['Admin account best practices','https://support.google.com/a/answer/9011373'],
+ ['Shared drive best practices','https://support.google.com/a/users/answer/9310249'],
+ ['Multiple domains: limitations','https://support.google.com/a/answer/7502379'],
+ ['Authenticate email with DKIM','https://support.google.com/a/answer/174124'],
+ ['Collaborative Inbox vs. delegation','https://support.google.com/a/users/answer/9308648'],
+ ['Group communication in Gmail','https://support.google.com/a/users/answer/9308384'],
+ ['Spaces in Google Chat','https://support.google.com/chat/answer/7653428'],
+ ['Google Workspace HIPAA implementation guide','https://support.google.com/a/answer/3407054'],
+ ['NotebookLM help','https://support.google.com/notebooklm']
+];
+/* ═════════ state ═════════ */
+let done={}, open={};
+function loadState(){
+  try{ done=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ done={}; }
+  try{ open=JSON.parse(localStorage.getItem(UIKEY)||'null')||null; }catch(e){ open=null; }
+  if(!open){ open={}; SESSIONS.forEach(s=>open[s.n]=true); }
+}
+const saveDone=()=>{ try{localStorage.setItem(KEY,JSON.stringify(done));}catch(e){} };
+const saveOpen=()=>{ try{localStorage.setItem(UIKEY,JSON.stringify(open));}catch(e){} };
+
+/* ═════════ helpers ═════════ */
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const sid=(s,i)=>'s'+s.n+'-'+i;
+const mins=m=>m>=60?(m%60?(m/60).toFixed(1).replace('.0','')+'h':(m/60)+'h'):m+'m';
+const sDone=s=>s.steps.filter((_,i)=>done[sid(s,i)]).length;
+const TOTAL=SESSIONS.reduce((n,s)=>n+s.steps.length,0);
+const allDone=()=>SESSIONS.reduce((n,s)=>n+sDone(s),0);
+let tt;function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),1800);}
+
+/* global step numbers 1..62, assigned in session order */
+const GNUM={};
+(function(){let n=0;SESSIONS.forEach(s=>s.steps.forEach((_,i)=>{GNUM[sid(s,i)]=++n;}));})();
+
+/* ═════════ render ═════════ */
+function pathHTML(st){
+  const paths=st.p||[];
+  return '<div class="paths">'+paths.map((p,i)=>{
+    const linked=(i===0&&st.u);
+    return linked
+      ? '<a class="pth" href="'+esc(st.u)+'" target="_blank" rel="noopener">'+esc(p)+' ↗</a>'
+      : '<span class="pth">'+esc(p)+'</span>';
+  }).join('')+'</div>';
+}
+function stepNode(s,i){
+  const st=s.steps[i], id=sid(s,i), on=!!done[id];
+  const row=el('label','st'+(on?' on':''));
+  row.id='step-'+GNUM[id];
+  const cb=el('input');cb.type='checkbox';cb.checked=on;
+  cb.onchange=()=>{ if(cb.checked)done[id]=true; else delete done[id]; saveDone();
+    row.classList.toggle('on',cb.checked); refreshCounts(); };
+  row.appendChild(cb);
+  const tag=st.tag?'<span class="tag '+st.tag+'">'+(st.tag==='decide'?'decide':st.tag==='gotcha'?'gotcha':'DNS')+'</span>':'';
+  row.appendChild(el('div','body',
+    '<div class="hd"><span class="sn">'+GNUM[id]+'</span><span class="tt">'+esc(st.t)+'</span>'+tag+'</div>'+
+    '<div class="dd">'+esc(st.d)+'</div>'+pathHTML(st)));
+  return row;
+}
+function sessionNode(s){
+  const c=el('div','card'), n=sDone(s), all=n===s.steps.length;
+  const h=el('div','sh'+(all?' allok':''));
+  h.setAttribute('role','button');h.setAttribute('aria-expanded',open[s.n]?'true':'false');h.tabIndex=0;
+  h.innerHTML='<div class="num">'+(all?'✓':s.n)+'</div>'+
+    '<div class="lb"><b>'+esc(s.t)+'</b> <span style="color:var(--faint);font-weight:600;font-size:12px">· '+mins(s.min)+'</span>'+
+    '<div>'+esc(s.fix)+'</div></div>'+
+    '<span class="cnt">'+n+'/'+s.steps.length+'</span><span class="caret">▾</span>';
+  h.id='sh-'+s.n;
+  c.appendChild(h);
+  const body=el('div','steps'); if(!open[s.n]) body.hidden=true;
+  s.steps.forEach((_,i)=>body.appendChild(stepNode(s,i)));
+  c.appendChild(body);
+  const toggle=()=>{ open[s.n]=!open[s.n]; saveOpen();
+    body.hidden=!open[s.n]; h.setAttribute('aria-expanded',open[s.n]?'true':'false'); syncExpandBtn(); };
+  h.onclick=toggle;
+  h.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); } };
+  return c;
+}
+function totalsHTML(){
+  const n=allDone(), pct=Math.round(n/TOTAL*100), sc=SESSIONS.filter(s=>sDone(s)===s.steps.length).length;
+  return '<div class="big">'+n+'<span style="color:var(--faint);font-size:15px;font-weight:650">/'+TOTAL+'</span></div>'+
+    '<div style="flex:1;min-width:120px"><div class="bar'+(n===TOTAL?' done':'')+'"><span style="width:'+pct+'%"></span></div>'+
+    '<div class="sub" style="margin-top:5px">'+(n===TOTAL?'All '+TOTAL+' steps done.':pct+'% · '+sc+' of '+SESSIONS.length+' sessions complete')+'</div></div>';
+}
+/* Counts only — never rebuilds the step list, so ticking a box near step 50
+   does not collapse the page and throw your scroll position away. */
+function refreshCounts(){
+  const t=$('#totals'); if(t) t.innerHTML=totalsHTML();
+  SESSIONS.forEach(s=>{
+    const h=document.getElementById('sh-'+s.n); if(!h) return;
+    const d=sDone(s), all=d===s.steps.length;
+    h.classList.toggle('allok',all);
+    h.querySelector('.cnt').textContent=d+'/'+s.steps.length;
+    h.querySelector('.num').textContent=all?'✓':s.n;
+  });
+}
+function syncExpandBtn(){ $('#expandBtn').textContent=SESSIONS.every(s=>open[s.n])?'Collapse all':'Expand all'; }
+function render(){
+  const v=$('#view'); v.innerHTML='';
+  const tot=el('div','totals'); tot.id='totals'; tot.innerHTML=totalsHTML();
+  v.appendChild(tot);
+
+  v.appendChild(el('div','sect','Decide these before session 1'));
+  HEADS.forEach(x=>v.appendChild(el('div','note','<h4>'+esc(x.t)+'</h4><p>'+esc(x.b)+'</p>')));
+  v.appendChild(el('div','sect','Two calls already made for you'));
+  CALLS.forEach(x=>v.appendChild(el('div','note call','<h4>'+esc(x.t)+'</h4><p>'+esc(x.b)+'</p>')));
+
+  v.appendChild(el('div','sect','The nine sessions — do them in this order'));
+  SESSIONS.forEach(s=>v.appendChild(sessionNode(s)));
+
+  v.appendChild(el('div','sect','Sources'));
+  v.appendChild(el('div','card','<div class="srcs" style="padding:13px 16px">'+
+    SOURCES.map(([t,u])=>'<a href="'+esc(u)+'" target="_blank" rel="noopener" style="color:var(--accent)">'+esc(t)+'</a>').join(' · ')+
+    '</div>'));
+
+  syncExpandBtn();
+}
+
+/* ═════════ controls ═════════ */
+function toggleAll(){
+  const anyClosed=SESSIONS.some(s=>!open[s.n]);
+  SESSIONS.forEach(s=>open[s.n]=anyClosed); saveOpen(); render();
+}
+function nextOpen(){
+  for(const s of SESSIONS){
+    for(let i=0;i<s.steps.length;i++){
+      const id=sid(s,i);
+      if(!done[id]){
+        if(!open[s.n]){
+          open[s.n]=true; saveOpen();
+          const h=document.getElementById('sh-'+s.n);
+          if(h){ h.nextSibling.hidden=false; h.setAttribute('aria-expanded','true'); syncExpandBtn(); }
+        }
+        const node=document.getElementById('step-'+GNUM[id]);
+        if(node){ node.scrollIntoView({behavior:'smooth',block:'center'});
+          node.style.transition='none'; node.style.boxShadow='inset 0 0 0 2px var(--accent)';
+          setTimeout(()=>{node.style.transition='box-shadow .6s';node.style.boxShadow='none';},700); }
+        return toast('Step '+GNUM[id]+' — session '+s.n);
+      }
+    }
+  }
+  toast('Nothing left. All 62 done.');
+}
+function resetAll(){
+  if(!confirm('Clear all 62 checkboxes in this browser? This cannot be undone.'))return;
+  done={}; saveDone(); render(); toast('Reset');
+}
+
+/* ═════════ boot (last thing in the module — nothing above may call a view fn) ═════════ */
+function boot(){
+  loadState();
+  $('#expandBtn').onclick=toggleAll;
+  $('#nextBtn').onclick=nextOpen;
+  $('#resetBtn').onclick=resetAll;
+  render();
+}
+boot();
+</script>
+</body>
+</html>

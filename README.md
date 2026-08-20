@@ -17,4 +17,9 @@ All specifics live in private repos, loaded at runtime with your token / login:
 
 Pages: `index.html` (Command Center, site root) · `targets.html` (JV targeting) ·
 `checklist.html` (onboarding checklists) · `bizworkspace.html` (business workspace, embedded) ·
-`404.html` (SPA route fallback).
+`best-practices.html` (efficiency guides shelf) · `workspace-playbook.html` (Google Workspace
+optimization, 62 steps) · `404.html` (SPA route fallback).
+
+Best-practices guides are static operating guidelines — no data, nothing staff- or client-specific,
+so no login gate. Progress is checkbox state in `localStorage` per browser, not shared state.
+Adding a guide = one new HTML file + one entry in the `GUIDES` array in `best-practices.html`.

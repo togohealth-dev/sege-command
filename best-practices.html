@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEGE Best Practices</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:1000px;margin:0 auto;padding:18px 16px 70px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{margin-right:auto;min-width:170px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn:hover{border-color:var(--accent)}
+  .sect{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin:6px 2px 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+  a.gtile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px 15px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:7px;text-decoration:none;color:inherit;transition:transform .12s,border-color .12s}
+  a.gtile:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .gtile .tl{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .gtile .tl .arrow{margin-left:auto;color:var(--faint)}
+  .gtile .ds{font-size:12.5px;color:var(--muted)}
+  .gtile .meta{font-size:11.5px;color:var(--faint);display:flex;gap:12px;flex-wrap:wrap;font-weight:600}
+  .bar{height:8px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+  .bar span{display:block;height:100%;background:var(--accent)}.bar.done span{background:var(--ok)}
+  .prog{font-size:12px;font-weight:700;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+  .soon{background:var(--surface);border:1px dashed var(--border);border-radius:14px;padding:16px 18px;color:var(--muted);font-size:12.5px}
+  .soon b{color:var(--ink);font-size:13.5px;font-weight:700;display:block;margin-bottom:4px}
+  .note{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:12px 15px;margin:18px 0 4px;box-shadow:var(--shadow);color:var(--muted);font-size:12.5px}
+  .foot{margin-top:26px;color:var(--faint);font-size:12px;text-align:center;line-height:1.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>Best Practices</h1><p>How we run the shop — efficiency guidelines you can work through step by step</p></div>
+    <a class="btn" href="./">← Command Center</a>
+  </header>
+  <div class="sect">Efficiency guides</div>
+  <div class="grid" id="grid"></div>
+  <div class="note">These guides are operating guidelines, not data — nothing here is staff-specific or client-specific.
+    Your progress on each guide is checkbox state saved in your own browser, so two people can work the same guide independently.</div>
+  <div class="foot">SEGE Command Center · Best Practices</div>
+</div>
+<script>
+/* One entry per guide. `key` is the localStorage key that guide writes its checkbox
+   state to, and `steps` its step count — that is all the hub needs to show progress. */
+const GUIDES=[
+  {icon:'📗',t:'Google Workspace Optimization',href:'./workspace-playbook.html',
+   d:'62 steps in the order to do them, with the exact console path on each one. Nine sessions from ground truth through handover — domains and DKIM, role addresses as Groups, the inbox cockpit, shared drives, Tasks, Chat, intake forms and AI, then the house rules that keep it standing.',
+   meta:['9 sessions','62 steps','~9 hours total'],key:'sege-bp-workspace-v1',steps:62}
+];
+const SOON=[
+  {t:'More guides land here',d:'This page is the shelf. Each new guide is one file plus one line in the GUIDES list — same checkbox-and-console-path shape as the Workspace playbook.'}
+];
+function count(key){ try{ const o=JSON.parse(localStorage.getItem(key)||'{}'); return Object.keys(o||{}).filter(k=>o[k]).length; }catch(e){ return 0; } }
+function render(){
+  const g=document.getElementById('grid'); g.innerHTML='';
+  GUIDES.forEach(x=>{
+    const n=count(x.key), pct=x.steps?Math.round(n/x.steps*100):0, all=n>=x.steps;
+    const a=document.createElement('a'); a.className='gtile'; a.href=x.href;
+    a.innerHTML='<div class="tl"><span>'+x.icon+'</span><span>'+x.t+'</span><span class="arrow">→</span></div>'+
+      '<div class="ds">'+x.d+'</div>'+
+      '<div class="meta">'+x.meta.map(m=>'<span>'+m+'</span>').join('')+'</div>'+
+      '<div class="bar'+(all?' done':'')+'"><span style="width:'+pct+'%"></span></div>'+
+      '<div class="prog">'+(n?n+' of '+x.steps+' done · '+pct+'%':'Not started')+'</div>';
+    g.appendChild(a);
+  });
+  SOON.forEach(x=>{
+    const d=document.createElement('div'); d.className='soon';
+    d.innerHTML='<b>'+x.t+'</b>'+x.d; g.appendChild(d);
+  });
+}
+render();
+</script>
+</body>
+</html>

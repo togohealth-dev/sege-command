@@ -44,11 +44,12 @@
   .me{display:flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:4px 13px 4px 4px;cursor:pointer;font:inherit;font-weight:650;font-size:12.5px;color:inherit}
   .me:hover{border-color:var(--accent)}
   .me .avatar{width:26px;height:26px;font-size:11px;border-radius:50%}
-  .hero{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:12px;margin-bottom:24px}
   @media(max-width:1000px){.hero{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:720px){.hero{grid-template-columns:1fr}}
   .tile{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 18px 15px;box-shadow:var(--shadow);cursor:pointer;text-align:left;font:inherit;color:inherit;display:flex;flex-direction:column;gap:5px;transition:transform .12s,border-color .12s}
   .tile:hover{border-color:var(--accent);transform:translateY(-2px)}
+  a.tile{text-decoration:none}
   .tile .tl{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
   .tile .arrow{margin-left:auto;color:var(--faint);font-weight:700}
   .tile .tn{font-size:34px;font-weight:780;letter-spacing:-.02em;line-height:1.1}
@@ -152,6 +153,7 @@
       <button class="btn pri" onclick="openAdd()">+ Add</button>
       <a class="btn pri" href="./targets.html">🎯 Targets</a>
       <a class="btn pri" href="./checklist.html">✓ Checklists</a>
+      <a class="btn pri" href="./best-practices.html">📘 Best practices</a>
       
       <span id="conn" class="conn off">● View only</span>
       <button class="btn" id="connectBtn" onclick="openConnect()">Connect to edit</button>
@@ -344,6 +346,19 @@ function issueRow(i){
 /* ═════════ HOME ═════════ */
 function tileLocked(mark,label,note){const b=el('button','tile');b.onclick=openConnect;
   b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">${esc(note||'token needed for staffing')}</div>`;return b;}
+/* Best practices: static guide pages. Progress comes from the guide's own
+   localStorage key, so the tile reflects where you left off without a fetch. */
+const BP_GUIDES=[{key:'sege-bp-workspace-v1',steps:62,label:'Workspace optimization'}];
+function bpTile(){
+  const g=BP_GUIDES[0];
+  let n=0; try{ const o=JSON.parse(localStorage.getItem(g.key)||'{}')||{}; n=Object.keys(o).filter(k=>o[k]).length; }catch(e){}
+  const pct=Math.round(n/g.steps*100);
+  const a=el('a','tile'); a.href='./best-practices.html';
+  a.innerHTML=`<div class="tl">📘 Best practices<span class="arrow">→</span></div>
+    <div class="tn tnum">${n?n+'<span style="font-size:17px;color:var(--faint)">/'+g.steps+'</span>':g.steps}</div>
+    <div class="ts"><span>${esc(g.label)}</span><span>${n?pct+'% done':'steps · not started'}</span></div>`;
+  return a;
+}
 function homeView(){
   const v=el('div'); const hero=el('div','hero');
   // Accounts (facilities / onboarding)
@@ -374,6 +389,8 @@ function homeView(){
       <div class="ts"><span>${banned} CPOM-banned</span>${risky?`<span style="color:var(--bad)">${risky} high malpractice risk</span>`:''}</div>`;
     hero.appendChild(cp);
   } else hero.appendChild(tileLocked('📋','Compliance','token needed for business data'));
+  // Best practices — operating guidelines (static pages, no data; progress is per-browser)
+  hero.appendChild(bpTile());
   v.appendChild(hero);
   if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
     v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
