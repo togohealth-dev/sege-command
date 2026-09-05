@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/sege-command/">
+<title>SEGE · Deal Model</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);--A:#7a5cc0;--A-bg:#f0ebfa;--B:#0e7c86;--B-bg:#e0f2f3;}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);--A:#a98ae0;--A-bg:#221b33;--B:#26b3bd;--B-bg:#0f2b2e;}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.55}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 16px 70px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:14px;position:sticky;top:0;background:var(--ground);padding:12px 0;z-index:30;border-bottom:1px solid var(--border)}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}.logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{margin-right:auto;min-width:180px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .disc{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:11px 14px;font-size:12.5px;margin-bottom:14px}
+  /* two-column compare */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  @media(max-width:960px){.vs{grid-template-columns:1fr}}
+  .col{border:2px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow)}
+  .col.a{border-color:var(--A)} .col.b{border-color:var(--B)}
+  .colhead{padding:13px 16px;font-weight:750;font-size:15px;display:flex;align-items:center;gap:9px}
+  .col.a .colhead{background:var(--A-bg);color:var(--A)} .col.b .colhead{background:var(--B-bg);color:var(--B)}
+  .colhead small{display:block;font-weight:600;font-size:11.5px;opacity:.85}
+  .blk{padding:13px 16px;border-top:1px solid var(--border)}
+  .blk h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin-bottom:7px}
+  .blk ul{margin-left:17px}.blk li{margin-bottom:7px;font-size:13px}
+  .good{color:var(--ok);font-weight:650}.bad{color:var(--bad);font-weight:650}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+  .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
+  .pad{padding:14px 16px}
+  .sect{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:20px 2px 8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px}
+  .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+  .stat b{font-size:20px;font-weight:780;display:block;font-variant-numeric:tabular-nums}.stat span{font-size:11px;color:var(--muted)}
+  label.fl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);display:block;margin-bottom:4px}
+  input[type=range]{width:100%}
+  input[type=number]{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:8px 10px;font:inherit}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--border)}
+  th:first-child,td:first-child{text-align:left}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:700}
+  td.tnum{font-variant-numeric:tabular-nums}
+  tr.win td{background:var(--ok-bg)}tr.lose td{background:var(--bad-bg)}
+  .key{background:var(--accent-soft);color:var(--accent-ink);border-radius:10px;padding:13px 15px;font-size:13px;margin-bottom:12px}
+  .key h4{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .bar{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden;display:flex;margin:6px 0 2px}
+  .bar i{display:block;height:100%}.bar .c{background:var(--accent)}.bar .s{background:var(--warn)}
+  .q{margin:0 0 8px 18px;font-size:13px}
+  .src{font-size:11.5px;color:var(--muted)}
+  .gate{position:fixed;inset:0;background:var(--ground);z-index:999;display:grid;place-items:center;padding:20px}
+  .gate .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center}
+  .gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;margin:8px 0}
+</style>
+</head>
+</head>
+<body>
+<div id="gate" class="gate" style="display:none"><div class="box">
+  <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+  <h1 style="font-size:19px;font-weight:750">SEGE · Deal model</h1>
+  <p style="color:var(--muted);font-size:13px">Confidential — staff sign-in required.</p>
+  <button class="btn" style="width:100%;justify-content:center;margin:10px 0 6px" onclick="ghLogin()">Sign in with GitHub</button>
+  <input id="em" type="email" placeholder="you@togohealth.com" autocomplete="username">
+  <input id="pw" type="password" placeholder="password" autocomplete="current-password">
+  <button class="btn pri" style="width:100%" onclick="pwLogin()">Sign in</button>
+  <p><a href="#" onclick="sendLink();return false" style="color:var(--accent);font-size:12px">Email me a link instead</a></p>
+  <p id="gm" style="color:var(--muted);font-size:12px"></p>
+</div></div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1 id="hTitle">Deal model</h1><p id="hSub"></p></div>
+    <a class="btn" id="hBack" href="./">← Back</a>
+    <a class="btn" href="./">🏠 Command Center</a>
+    <button class="btn" onclick="signOut()">Sign out</button>
+  </header>
+  <div id="view"><div class="disc">Loading model…</div></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+const $=s=>document.querySelector(s);
+function show(a){$('#gate').style.display=a?'none':'grid';$('#app').style.visibility=a?'visible':'hidden';}
+window.ghLogin=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.href.split('#')[0]}});if(error)$('#gm').textContent=error.message;};
+window.pwLogin=async()=>{const{error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(error)$('#gm').textContent='Error: '+error.message;};
+window.sendLink=async()=>{const{error}=await sb.auth.signInWithOtp({email:$('#em').value.trim(),options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});$('#gm').textContent=error?('Error: '+error.message):'Check your email.';};
+window.signOut=async()=>{await sb.auth.signOut();location.reload();};
+
+/* ── Every specific in this page is fetched at runtime from the PRIVATE repo.
+      No counterparty name, founder, valuation, entity or revenue figure lives
+      in this file. Same contract as snf-strategy.html. ── */
+const BIZ='togohealth-dev/sege-business';
+/* The deal slug is opaque on purpose: the counterparty must not be inferable
+   from this public file, its URL, or the payload path. Slug -> real deal is a
+   mapping that exists only inside the private repo. */
+const SLUG=(new URLSearchParams(location.search).get('d')||'d1');
+const PATH=`deals/${/^[a-z0-9-]{1,32}$/.test(SLUG)?SLUG:'d1'}.json`;
+const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>'$'+Math.round(n).toLocaleString();
+const fmtM=n=>n>=1e9?'$'+(n/1e9).toFixed(2)+'B':n>=1e6?'$'+(n/1e6).toFixed(1)+'M':fmt(n);
+
+let D=null;
+
+async function load(){
+  const t=pat();
+  if(!t) return gateMsg('token');
+  let r;
+  try{
+    r=await fetch(`https://api.github.com/repos/${BIZ}/contents/${PATH}`,
+      {headers:{Authorization:'Bearer '+t,Accept:'application/vnd.github.raw'}});
+  }catch(e){ return gateMsg('net', e.message); }
+  if(r.status===404) return gateMsg('missing');
+  if(!r.ok) return gateMsg('denied', r.status);
+  render(await r.json());
+}
+function gateMsg(kind,d){
+  const m={
+    token:'This page reads its data from the private <b>sege-business</b> repo.<br>Connect a GitHub token on the <a href="./" style="color:var(--accent)">Command Center home page</a> first — it needs Contents: read on that repo.',
+    missing:`Signed in, but <code>${esc(PATH)}</code> was not found in <b>sege-business</b>.`,
+    denied:`Your token cannot read <b>sege-business</b> (HTTP ${d}). Give it Contents: read on that repo.`,
+    net:`Could not reach GitHub: ${esc(d||'')}`
+  }[kind];
+  $('#view').innerHTML=`<div class="disc">${m}</div>`;
+}
+
+/* ── generic card block renderers ── */
+const BLK={
+  p:  b=>`<p style="margin-top:9px">${b.v}</p>`,
+  src:b=>`<p class="src" style="margin-top:9px">${b.v}</p>`,
+  key:b=>`<div class="key" style="margin-top:13px${b.bad?';background:var(--bad-bg);color:var(--bad)':''}">
+            <h4>${esc(b.h)}</h4>${b.v}</div>`,
+  keypair:b=>`<div class="grid2" style="margin-top:12px">
+    <div class="key" style="margin:0"><h4>${esc(b.a.h)}</h4>${b.a.v}</div>
+    <div class="key" style="margin:0;background:var(--bad-bg);color:var(--bad)"><h4>${esc(b.b.h)}</h4>${b.b.v}</div></div>`,
+  table:b=>`<table><thead><tr>${b.head.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead>
+    <tbody>${b.rows.map(r=>`<tr>${r.map((c,i)=>`<td${i?' style="text-align:left"':''}>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`
+};
+
+function render(d){
+  D=d;
+  document.title='SEGE · '+d.title;
+  $('#hTitle').textContent=d.title;
+  $('#hSub').textContent=d.sub;
+  $('#hBack').textContent=d.backLabel||'← Back';
+  $('#hBack').href=d.backHref||'./';
+
+  const A=d.modelA, B=d.modelB, S=[];
+  S.push(`<div class="disc">${d.disclaimer}</div>`);
+  S.push(`<div class="key"><h4>${esc(d.reframe.h)}</h4>${d.reframe.v}</div>`);
+
+  /* side-by-side columns */
+  S.push(`<div class="vs">${d.columns.map(c=>`<div class="col ${esc(c.tone)}">
+    <div class="colhead">${esc(c.head)} <small>${esc(c.sub)}</small></div>
+    ${c.blocks.map(bl=>`<div class="blk"><h4>${esc(bl.h)}</h4>
+      <ul>${bl.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}
+  </div>`).join('')}</div>`);
+
+  /* model A — sell */
+  S.push(`<div class="card" style="margin-top:14px"><h3>${esc(A.h)} <span class="count">${esc(A.count)}</span></h3>
+    <div class="pad"><div class="grid2"><div>
+      <label class="fl">${esc(A.stockLabel)} — <span id="pctLbl"></span></label>
+      <input id="pct" type="range" min="0" max="100" step="5" value="${A.defaults.pct}" oninput="calc()">
+      <div class="bar"><i class="c" id="barC"></i><i class="s" id="barS"></i></div>
+      <div class="src"><span style="color:var(--accent)">■</span> cash &nbsp; <span style="color:var(--warn)">■</span> stock</div>
+      <label class="fl" style="margin-top:12px" id="hcLbl"></label>
+      <input id="hc" type="range" min="20" max="100" step="5" value="${A.defaults.hc}" oninput="calc()">
+      <div class="src">${esc(A.haircutNote)}</div></div>
+      <div class="grid2" style="gap:10px">
+        <div><label class="fl">${esc(A.dealLabel)}</label><input id="deal" type="number" value="${A.defaults.deal}" oninput="calc()"></div>
+        <div><label class="fl">${esc(A.valLabel)}</label><input id="val" type="number" value="${A.defaults.val}" oninput="calc()"></div>
+        <div><label class="fl">${esc(A.dilLabel)} — <span id="dilLbl"></span></label><input id="dil" type="range" min="0" max="70" step="5" value="${A.defaults.dil}" oninput="calc()"></div>
+        <div><label class="fl">${esc(A.yrsLabel)} — <span id="yrLbl"></span></label><input id="yrs" type="range" min="1" max="10" step="1" value="${A.defaults.yrs}" oninput="calc()"></div>
+      </div></div>
+      <div class="stats" style="margin-top:14px">${A.stats.map(s=>`<div class="stat"><b id="${esc(s[0])}">—</b><span>${esc(s[1])}</span></div>`).join('')}</div>
+      <table style="margin-top:12px"><thead><tr>${A.tableHead.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody id="scen"></tbody></table>
+      <p class="src" style="margin-top:9px">${A.note}</p>
+    </div></div>`);
+
+  /* model B — roll up */
+  S.push(`<div class="card"><h3>${esc(B.h)} <span class="count">${esc(B.count)}</span></h3>
+    <div class="pad"><div class="grid2"><div class="grid2" style="gap:10px">
+      <div><label class="fl">${esc(B.capLabel)}</label><input id="cap" type="number" value="${B.defaults.cap}" oninput="calc()"></div>
+      <div><label class="fl">${esc(B.costLabel)}</label><input id="cost" type="number" value="${B.defaults.cost}" oninput="calc()"></div>
+      <div><label class="fl">${esc(B.profLabel)}</label><input id="prof" type="number" value="${B.defaults.prof}" oninput="calc()"></div>
+      <div><label class="fl">${esc(B.ryLabel)} — <span id="ryLbl"></span></label><input id="ry" type="range" min="1" max="10" value="${B.defaults.ry}" oninput="calc()"></div>
+      </div><div>
+      <label class="fl">${esc(B.riLabel)} — <span id="riLbl"></span></label>
+      <input id="ri" type="range" min="0" max="100" step="10" value="${B.defaults.ri}" oninput="calc()">
+      <div class="src">${esc(B.riNote)}</div>
+      <div class="stats" style="margin-top:12px">${B.stats.map(s=>`<div class="stat"><b id="${esc(s[0])}">—</b><span class="sl" data-tpl="${esc(s[1])}">${esc(s[1])}</span></div>`).join('')}</div>
+      <label class="fl" style="margin-top:10px">${esc(B.rmultLabel)} — <span id="rMult2"></span>×</label>
+      <input id="rmult" type="range" min="2" max="12" step="1" value="${B.defaults.rmult}" oninput="calc()">
+      </div></div>
+      <table style="margin-top:12px"><thead><tr>${B.tableHead.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody id="roll"></tbody></table>
+      <p class="src" style="margin-top:9px">${B.note}</p>
+    </div></div>`);
+
+  /* head to head */
+  S.push(`<div class="card"><h3>${esc(d.h2h.h)} <span class="count">${esc(d.h2h.count)}</span></h3>
+    <div class="pad"><div id="h2h" class="stats"></div>
+    <p class="src" style="margin-top:10px">${d.h2h.note}</p></div></div>`);
+
+  /* trailing cards */
+  S.push(d.cards.map(c=>`<div class="card"><h3>${esc(c.h)}${c.count?` <span class="count">${esc(c.count)}</span>`:''}</h3>
+    <div class="pad">${c.blocks.map(b=>(BLK[b.t]||(()=>''))(b)).join('')}</div></div>`).join(''));
+
+  $('#view').innerHTML=S.join('');
+  calc();
+}
+
+/* ── the arithmetic is generic; every label and default came from the payload ── */
+window.calc=function(){
+  if(!D) return;
+  const A=D.modelA, B=D.modelB;
+  /* A: sell */
+  const pct=+$('#pct').value, deal=+$('#deal').value||0, val=+$('#val').value||1;
+  const dil=+$('#dil').value/100, yrs=+$('#yrs').value, hc=+$('#hc').value/100;
+  const stock=deal*pct/100, cash=deal-stock, eq=stock/val, trueVal=val*hc, effEq=eq*(1-dil);
+  $('#pctLbl').textContent=pct+'%';
+  $('#hcLbl').innerHTML=A.haircutLabel.replace('{v}',$('#hc').value+'%');
+  $('#dilLbl').textContent=$('#dil').value+'%'; $('#yrLbl').textContent=yrs;
+  $('#barC').style.width=(100-pct)+'%'; $('#barS').style.width=pct+'%';
+  $('#oCash').textContent=fmt(cash); $('#oStock').textContent=fmt(stock);
+  $('#oReal').textContent=fmt(eq*trueVal); $('#oPct').textContent=(eq*100).toFixed(3)+'%';
+  $('#oBreak').textContent = pct===0?'n/a (all cash)':fmtM(stock/(effEq||1e-9));
+  let sellTotal5=cash;
+  $('#scen').innerHTML=A.scenarios.map(([lab,m])=>{
+    const exit=trueVal*m, sv=exit*effEq, tot=cash+sv;
+    if(m===1) sellTotal5=tot;
+    const ann=yrs>0&&tot>0?(Math.pow(tot/deal,1/yrs)-1)*100:null;
+    const cls=tot>deal*1.02?'win':tot<deal*0.98?'lose':'';
+    return `<tr class="${cls}"><td>${esc(lab)}</td><td class="tnum">${fmtM(exit)}</td>
+      <td class="tnum">${fmt(sv)}</td><td class="tnum">${fmt(tot)} (${tot>=deal?'+':''}${fmt(tot-deal)})</td>
+      <td class="tnum">${ann===null?'—':(ann>=0?'+':'')+ann.toFixed(1)+'%/yr'}</td></tr>`;}).join('');
+  /* B: roll up */
+  const cap=+$('#cap').value||0, cost=+$('#cost').value||1, prof=+$('#prof').value||0;
+  const ry=+$('#ry').value, ri=+$('#ri').value/100, rmult=+$('#rmult').value;
+  $('#ryLbl').textContent=ry; $('#riLbl').textContent=$('#ri').value+'%'; $('#rMult2').textContent=rmult;
+  document.querySelectorAll('#view .sl').forEach(el=>{
+    el.textContent=el.dataset.tpl.replace('{ry}',ry).replace('{rmult}',rmult);});
+  let n=Math.floor(cap/cost), bank=cap-n*cost, out=[];
+  $('#rBuy').textContent=n;
+  for(let y=1;y<=ry;y++){
+    const annual=n*prof; bank+=annual*ri;
+    const add=Math.floor(bank/cost); bank-=add*cost; n+=add;
+    out.push(`<tr><td>Year ${y}</td><td class="tnum">${n}</td><td class="tnum">${fmt(n*prof)}</td>
+      <td class="tnum">${fmt(annual*ri)}</td><td class="tnum">${fmtM(n*prof*rmult)}</td></tr>`);
+  }
+  $('#roll').innerHTML=out.join('');
+  const endProf=n*prof, endVal=endProf*rmult+bank;
+  $('#rEnd').textContent=n; $('#rProf').textContent=fmt(endProf); $('#rVal').textContent=fmtM(endVal);
+  /* head to head */
+  const L=D.h2h.labels, sub=s=>esc(s).replace('{ry}',ry);
+  $('#h2h').innerHTML=
+    `<div class="stat"><b>${fmt(sellTotal5)}</b><span>${sub(L.sellTotal)}</span></div>
+     <div class="stat"><b>${fmt(cash)}</b><span>${sub(L.cash)}</span></div>
+     <div class="stat"><b>${fmtM(endVal)}</b><span>${sub(L.endVal)}</span></div>
+     <div class="stat"><b>${fmt(endProf)}</b><span>${sub(L.endProf)}</span></div>
+     <div class="stat"><b>${endVal>sellTotal5?esc(L.build):esc(L.sell)}</b><span>${esc(L.verdict)}</span></div>`;
+};
+
+const {data:{session}}=await sb.auth.getSession();
+show(!!session); if(session) load();
+sb.auth.onAuthStateChange((_e,s)=>{ if(s){ show(true); if(!D) load(); }});
+</script>
+</body>
+</html>

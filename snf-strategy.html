@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="/sege-command/">
+<title>SEGE · Utah SNF Strategy</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+
+:root{
+  --ground:#f6f8f9; --surface:#fff; --sunk:#eef2f5; --border:#e0e6ec; --hair:#eef1f5;
+  --ink:#131c26; --body:#2c3a48; --muted:#5c6b7a; --faint:#8b98a6;
+  --accent:#0e7c86; --accent-soft:#dcf0f1; --accent-ink:#095a62;
+  --pa:#0e7c86; --pa-bg:#ddf0f1;
+  --pb:#9a6108; --pb-bg:#f8ecd6;
+  --both:#1c7a52; --both-bg:#dcf0e5;
+  --open:#66737f; --open-bg:#eaeef1;
+  --risk:#b23b2e; --risk-bg:#fae3e0;
+  --shadow:0 1px 2px rgba(19,28,38,.05),0 3px 12px rgba(19,28,38,.05);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0d1218; --surface:#151d26; --sunk:#1b242e; --border:#28323d; --hair:#212b35;
+  --ink:#e8eef4; --body:#c3ceda; --muted:#93a1af; --faint:#6d7b8a;
+  --accent:#2ab5bf; --accent-soft:#0f3339; --accent-ink:#7ed8de;
+  --pa:#2ab5bf; --pa-bg:#0f3339;
+  --pb:#d99b2c; --pb-bg:#3a2c11;
+  --both:#3ec489; --both-bg:#11301f;
+  --open:#8b98a6; --open-bg:#1e2831;
+  --risk:#e5776a; --risk-bg:#33191a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  --ground:#0d1218; --surface:#151d26; --sunk:#1b242e; --border:#28323d; --hair:#212b35;
+  --ink:#e8eef4; --body:#c3ceda; --muted:#93a1af; --faint:#6d7b8a;
+  --accent:#2ab5bf; --accent-soft:#0f3339; --accent-ink:#7ed8de;
+  --pa:#2ab5bf; --pa-bg:#0f3339;
+  --pb:#d99b2c; --pb-bg:#3a2c11;
+  --both:#3ec489; --both-bg:#11301f;
+  --open:#8b98a6; --open-bg:#1e2831;
+  --risk:#e5776a; --risk-bg:#33191a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--body);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:17px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 96px}
+.prose{max-width:68ch}
+h1,h2,h3,.mono,.eyebrow,th,.num,.pill,.tag{font-family:Archivo,"Helvetica Neue",Arial,sans-serif}
+.mono,.num,td.n,.eyebrow,.tag{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+h1{font-size:clamp(30px,4.4vw,50px);line-height:1.04;font-weight:700;letter-spacing:-.028em;
+   color:var(--ink);text-wrap:balance;margin:0}
+h2{font-size:clamp(21px,2.5vw,27px);line-height:1.18;font-weight:650;letter-spacing:-.016em;
+   color:var(--ink);text-wrap:balance;margin:0}
+h3{font-size:16px;font-weight:650;letter-spacing:-.008em;color:var(--ink);margin:0}
+p{margin:0}
+strong{font-weight:600;color:var(--ink)}
+a{color:var(--accent-ink)}
+.eyebrow{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.15em;
+  color:var(--faint);margin:0}
+section{display:flex;flex-direction:column;gap:18px;padding:52px 0;border-top:1px solid var(--hair)}
+section>.prose{display:flex;flex-direction:column;gap:16px}
+.sechead{display:flex;flex-direction:column;gap:7px}
+
+section>*,header.mast>*,.prose>*,.call>*{min-width:0}
+/* ---- masthead ---- */
+header.mast{padding:56px 0 40px;display:flex;flex-direction:column;gap:22px}
+.rule{height:3px;width:56px;background:var(--accent);border-radius:2px}
+.lede{font-size:clamp(18px,2vw,21px);line-height:1.5;color:var(--muted);max-width:60ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 20px;font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--faint)}
+
+/* ---- stat strip ---- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.stat{background:var(--surface);padding:18px 20px;display:flex;flex-direction:column;gap:5px}
+.stat b{font-family:Archivo,sans-serif;font-size:29px;font-weight:700;line-height:1;
+  letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;line-height:1.38;color:var(--muted);font-family:Archivo,sans-serif}
+
+/* ---- possession matrix ---- */
+.mx-scroll{overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;min-width:0;max-width:100%}
+@media(max-width:760px){.matrix{min-width:620px}.cell{min-height:98px}}
+.matrix{display:grid;grid-template-columns:auto repeat(3,1fr);gap:8px;align-items:stretch}
+.mx-corner{display:flex;align-items:flex-end;justify-content:flex-end;padding:0 10px 8px 0}
+.mx-corner span{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--faint);text-align:right;line-height:1.4}
+.mx-colhead,.mx-rowhead{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+.mx-colhead{justify-content:center;padding-bottom:4px;text-align:center}
+.mx-rowhead{padding-right:12px;justify-content:flex-end;text-align:right;max-width:118px}
+.cell{background:var(--surface);border:1px solid var(--border);border-radius:11px;
+  padding:15px 16px;display:flex;flex-direction:column;gap:5px;text-align:left;cursor:pointer;
+  font:inherit;color:inherit;transition:border-color .14s,transform .14s,box-shadow .14s;
+  min-height:112px;position:relative}
+.cell:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow)}
+.cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cell[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.cell .cnt{font-family:Archivo,sans-serif;font-size:31px;font-weight:700;line-height:1;
+  letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums}
+.cell .lbl{font-family:Archivo,sans-serif;font-size:12px;line-height:1.32;color:var(--muted)}
+.cell .amt{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--faint);margin-top:auto}
+.cell::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;border-radius:11px 0 0 11px;
+  background:var(--tone,transparent)}
+.c-both{--tone:var(--both)} .c-pa{--tone:var(--pa)} .c-pb{--tone:var(--pb)}
+.c-open{--tone:var(--open)}
+.cell.prize{background:var(--pb-bg);border-color:var(--pb)}
+.cell.prize .cnt{color:var(--pb)}
+.mx-note{font-size:13.5px;color:var(--muted);max-width:70ch;margin:0}
+
+/* ---- callout ---- */
+.call{border-left:3px solid var(--accent);background:var(--surface);border-radius:0 11px 11px 0;
+  padding:18px 22px;display:flex;flex-direction:column;gap:9px;box-shadow:var(--shadow)}
+.call.warn{border-left-color:var(--risk);background:var(--risk-bg)}
+.call.warn h3{color:var(--risk)}
+.call .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint)}
+blockquote{margin:0;padding:20px 24px;background:var(--accent-soft);border-radius:12px;
+  font-size:19.5px;line-height:1.42;color:var(--accent-ink);font-weight:600;text-wrap:balance}
+
+/* ---- marker lists: normal inline flow, marker positioned out of flow so
+        inline children (<strong>, <em>, <code>) wrap instead of becoming items ---- */
+ul.ev,ul.pl,ul.pt{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+ul.ev{gap:11px} ul.pl{gap:12px;counter-reset:s} ul.pt{gap:10px}
+ul.ev li,ul.pl li,ul.pt li{display:block;position:relative;font-size:16px;line-height:1.55;
+  min-width:0;overflow-wrap:break-word}
+ul.ev li{padding-left:18px}
+ul.ev li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;
+  border-radius:50%;background:var(--risk)}
+ul.pl li{padding-left:39px;counter-increment:s}
+ul.pl li::before{content:counter(s);position:absolute;left:0;top:.05em;width:25px;height:25px;
+  border-radius:50%;background:var(--accent-soft);color:var(--accent-ink);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;
+  display:grid;place-items:center}
+ul.pt li{padding-left:19px}
+ul.pt li::before{content:"";position:absolute;left:0;top:.78em;width:7px;height:1.5px;
+  background:var(--faint)}
+code{overflow-wrap:anywhere}
+
+/* ---- phases ---- */
+.phases{display:flex;flex-direction:column;gap:1px;background:var(--border);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.phase{background:var(--surface);padding:18px 22px;display:grid;
+  grid-template-columns:88px 1fr auto;gap:6px 20px;align-items:baseline}
+.phase .ph{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);font-weight:600}
+.phase .pn{font-family:Archivo,sans-serif;font-weight:650;font-size:16.5px;color:var(--ink)}
+.phase .pv{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink);
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.phase .pd{grid-column:2/4;font-size:15px;line-height:1.5;color:var(--body)}
+@media(max-width:640px){.phase{grid-template-columns:1fr}.phase .pd{grid-column:1}}
+
+/* ---- tables ---- */
+.tscroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface);min-width:0;max-width:100%}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+  text-align:left;padding:11px 13px;background:var(--sunk);white-space:nowrap;position:sticky;top:0;
+  border-bottom:1px solid var(--border)}
+th.r,td.n{text-align:right;font-variant-numeric:tabular-nums}
+td{padding:9px 13px;border-bottom:1px solid var(--hair);vertical-align:middle}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:var(--sunk)}
+td.nm{font-family:Archivo,sans-serif;font-weight:600;color:var(--ink);min-width:210px}
+td.sub{color:var(--muted);font-size:12.5px}
+.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.06em;padding:2px 7px;
+  border-radius:5px;white-space:nowrap;text-transform:uppercase}
+.t-both{background:var(--both-bg);color:var(--both)}
+.t-pa{background:var(--pa-bg);color:var(--pa)}
+.t-pb{background:var(--pb-bg);color:var(--pb)}
+.t-open{background:var(--open-bg);color:var(--open)}
+.t-risk{background:var(--risk-bg);color:var(--risk)}
+.sc{font-family:"IBM Plex Mono",monospace;font-weight:600;font-variant-numeric:tabular-nums;
+  display:inline-block;min-width:30px;text-align:center;padding:2px 5px;border-radius:5px;
+  background:var(--sunk);color:var(--muted)}
+.sc.hi{background:var(--accent);color:#fff}
+.sc.md{background:var(--accent-soft);color:var(--accent-ink)}
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctrls select,.ctrls input{font-family:Archivo,sans-serif;font-size:13px;font-weight:500;
+  padding:7px 11px;border:1px solid var(--border);border-radius:8px;background:var(--surface);
+  color:var(--ink)}
+.ctrls input{min-width:190px}
+.ctrls select:focus-visible,.ctrls input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.cnt-note{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--faint);margin-left:auto}
+.btn{font-family:Archivo,sans-serif;font-size:12.5px;font-weight:600;padding:7px 12px;
+  border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink);
+  cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* ---- metric table ---- */
+.mt{width:100%;border-collapse:collapse;font-size:15px}
+.mt th{background:transparent;position:static;border-bottom:1px solid var(--border)}
+.mt td{padding:10px 13px;border-bottom:1px solid var(--hair)}
+.mt td.n{font-family:"IBM Plex Mono",monospace}
+.mt td.goal{color:var(--accent);font-weight:600}
+
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12.5px;color:var(--muted);
+  font-family:Archivo,sans-serif}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;
+  vertical-align:baseline}
+footer{padding:40px 0 0;border-top:1px solid var(--hair);font-size:13.5px;color:var(--faint);
+  display:flex;flex-direction:column;gap:12px;max-width:78ch}
+footer b{color:var(--muted);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* --- shell chrome --- */
+header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:14px 0;
+  border-bottom:1px solid var(--hair);margin-bottom:8px}
+header.top .sp{margin-right:auto}
+.btn2{font-family:Archivo,sans-serif;font-size:12.5px;font-weight:600;padding:7px 12px;
+  border:1px solid var(--border);border-radius:8px;background:var(--surface);color:var(--ink);
+  cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.btn2:hover{border-color:var(--accent)}
+.btn2.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+.gate{position:fixed;inset:0;background:var(--ground);z-index:999;display:grid;place-items:center;padding:20px}
+.gate .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center;
+  font-family:Archivo,sans-serif}
+.gate h2{font-size:19px;margin-bottom:4px}
+.gate input{width:100%;border:1px solid var(--border);background:var(--ground);color:var(--ink);
+  border-radius:8px;padding:10px 12px;font:inherit;font-size:14px;margin:6px 0}
+.gate .btn2{width:100%;justify-content:center;margin:6px 0}
+.classif{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;
+  color:var(--risk);background:var(--risk-bg);border-radius:7px;padding:8px 12px;margin-bottom:4px}
+.msg{padding:56px 20px;text-align:center;color:var(--muted);font-family:Archivo,sans-serif;
+  font-size:14px;line-height:1.6}
+.msg b{color:var(--ink)}
+code{font-family:"IBM Plex Mono",monospace;font-size:.88em;background:var(--sunk);
+  padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate" style="display:none"><div class="box">
+  <h2>Utah SNF strategy</h2>
+  <p style="color:var(--muted);font-size:13px">Confidential — staff sign-in required.</p>
+  <button class="btn2" onclick="ghLogin()">Sign in with GitHub</button>
+  <input id="em" type="email" placeholder="you@togohealth.com" autocomplete="username">
+  <input id="pw" type="password" placeholder="password" autocomplete="current-password">
+  <button class="btn2 pri" onclick="pwLogin()">Sign in</button>
+  <p><a href="#" onclick="sendLink();return false" style="color:var(--accent);font-size:12px">Email me a link instead</a></p>
+  <p id="gm" style="color:var(--muted);font-size:12px"></p>
+</div></div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <header class="top">
+    <span class="sp"></span>
+    <a class="btn2" href="./targets.html">🎯 Targets</a>
+    <a class="btn2" href="./">🏠 Command Center</a>
+    <button class="btn2" onclick="signOut()">Sign out</button>
+  </header>
+  <div id="view"><div class="msg">Loading strategy…</div></div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb = createClient('https://sdbkvklthqvwbepyebnp.supabase.co',
+                        'sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+const $ = s => document.querySelector(s);
+function show(a){ $('#gate').style.display = a?'none':'grid';
+                  $('#app').style.visibility = a?'visible':'hidden'; }
+window.ghLogin=async()=>{const{error}=await sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.href.split('#')[0]}});if(error)$('#gm').textContent=error.message;};
+window.pwLogin=async()=>{const{error}=await sb.auth.signInWithPassword({email:$('#em').value.trim(),password:$('#pw').value});if(error)$('#gm').textContent='Error: '+error.message;};
+window.sendLink=async()=>{const{error}=await sb.auth.signInWithOtp({email:$('#em').value.trim(),options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});$('#gm').textContent=error?('Error: '+error.message):'Check your email.';};
+window.signOut=async()=>{await sb.auth.signOut();location.reload();};
+
+/* ── every specific in this page is fetched at runtime from the PRIVATE repo.
+      No partner name, account, competitor or revenue figure lives in this file. ── */
+const BIZ='togohealth-dev/sege-business', PATH='marketing/snf-strategy.json';
+const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt$=n=>'$'+Math.round(n).toLocaleString();
+const fmtM=n=>'$'+(n/1e6).toFixed(2)+'M';
+
+async function load(){
+  const t=pat();
+  if(!t) return gateMsg('token');
+  let r;
+  try{
+    r=await fetch(`https://api.github.com/repos/${BIZ}/contents/${PATH}`,
+      {headers:{Authorization:'Bearer '+t,Accept:'application/vnd.github.raw'}});
+  }catch(e){ return gateMsg('net', e.message); }
+  if(r.status===404) return gateMsg('missing');
+  if(!r.ok) return gateMsg('denied', r.status);
+  render(await r.json());
+}
+function gateMsg(kind, d){
+  const m={
+    token:'This page reads its data from the private <b>sege-business</b> repo.<br>Connect a GitHub token on the <a href="./" style="color:var(--accent)">Command Center home page</a> first — it needs Contents: read on that repo.',
+    missing:'Signed in, but <code>marketing/snf-strategy.json</code> was not found in <b>sege-business</b>.',
+    denied:`Your token cannot read <b>sege-business</b> (HTTP ${d}). Give it Contents: read on that repo.`,
+    net:`Could not reach GitHub: ${esc(d||'')}`
+  }[kind];
+  $('#view').innerHTML=`<div class="msg">${m}</div>`;
+}
+
+/* ── renderers ── */
+const B={
+  p:b=>`<p>${b.v}</p>`,
+  h3:b=>`<h3>${b.v}</h3>`,
+  quote:b=>`<blockquote>${esc(b.v)}</blockquote>`,
+  'ul-ev':b=>`<ul class="ev">${b.v.map(x=>`<li>${x}</li>`).join('')}</ul>`,
+  'ul-pl':b=>`<ul class="pl">${b.v.map(x=>`<li>${x}</li>`).join('')}</ul>`,
+  'ul-pt':b=>`<ul class="pt">${b.v.map(x=>`<li>${x}</li>`).join('')}</ul>`,
+  call:b=>`<div class="call"><span class="k">${esc(b.k)}</span>
+    <p style="font-size:15.5px;line-height:1.55">${b.v}</p></div>`,
+  'call-warn':b=>`<div class="call warn"><span class="k">${esc(b.k)}</span><h3>${esc(b.h)}</h3>
+    <p style="font-size:15.5px;line-height:1.55">${b.v}</p>
+    <ul class="pt" style="margin-top:2px">${b.list.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <p style="font-size:15.5px;line-height:1.55">${b.tail}</p></div>`,
+  phases:b=>`<div class="phases">${b.v.map(p=>`<div class="phase">
+    <span class="ph">${esc(p[0])}</span><span class="pn">${esc(p[1])}</span>
+    <span class="pv">${esc(p[2])}</span><p class="pd">${esc(p[3])}</p></div>`).join('')}</div>`,
+  metrics:b=>`<div class="tscroll"><table class="mt">
+    <thead><tr><th>Metric</th><th class="r">Today</th><th class="r">Target</th></tr></thead>
+    <tbody>${b.v.map(m=>`<tr><td>${esc(m[0])}</td><td class="n">${esc(m[1])}</td>
+      <td class="n goal">${esc(m[2])}</td></tr>`).join('')}</tbody></table></div>`
+};
+const PROSE=new Set(['p','h3']);
+
+let DOC=null;
+function render(d){
+  DOC=d;
+  const S=[];
+  S.push(`<header class="mast"><div class="rule"></div>
+    <p class="eyebrow">${esc(d.eyebrow)}</p><h1>${esc(d.title)}</h1>
+    <p class="lede">${esc(d.lede)}</p>
+    <div class="meta">${d.meta.map(m=>`<span>${esc(m)}</span>`).join('')}</div>
+    <div class="classif">${esc(d.classification)}</div></header>`);
+
+  S.push(`<section style="border-top:0;padding-top:0"><div class="stats">${
+    d.stats.map(s=>`<div class="stat"><b>${esc(s.v)}</b><span>${esc(s.l)}</span></div>`).join('')
+  }</div></section>`);
+
+  const m=d.matrix, TONE={both:'c-both',pa:'c-pa',pb:'c-pb',open:'c-open'};
+  let mx='<div class="mx-corner"><span>rows: our position<br>cols: theirs</span></div>';
+  m.colLabels.forEach(c=>mx+=`<div class="mx-colhead">${esc(c)}</div>`);
+  m.grid.forEach((row,i)=>{
+    mx+=`<div class="mx-rowhead">${m.rowLabels[i]}</div>`;
+    row.forEach(q=>{const c=m.cells[q];
+      mx+=`<button class="cell ${TONE[m.tone[q]]}${q===m.prize?' prize':''}" data-q="${q}"
+        aria-pressed="false" aria-label="${esc(c.label)}: ${c.n} buildings">
+        <span class="cnt">${c.n}</span><span class="lbl">${esc(c.label)}</span>
+        <span class="amt">${c.adc} census &middot; ${fmtM(c.yr)}/yr</span></button>`;});
+  });
+  S.push(`<section><div class="sechead"><p class="eyebrow">The board</p>
+    <h2>Who holds which building</h2></div>
+    <p class="mx-note">${esc(m.note)}</p><div class="mx-scroll"><div class="matrix" id="mx">${mx}</div></div>
+    <p class="mx-note">${m.kicker}</p></section>`);
+
+  d.sections.forEach(sec=>{
+    let out=`<section><div class="sechead"><p class="eyebrow">${esc(sec.eyebrow)}</p>
+      <h2>${esc(sec.h2)}</h2></div>`, buf=[];
+    const flush=()=>{ if(buf.length){ out+=`<div class="prose">${buf.join('')}</div>`; buf=[]; } };
+    sec.blocks.forEach(b=>{ const h=B[b.t](b);
+      if(PROSE.has(b.t)) buf.push(h); else { flush(); out+=h; } });
+    flush();
+    S.push(out+'</section>');
+  });
+
+  const T=d.table;
+  S.push(`<section><div class="sechead"><p class="eyebrow">${esc(T.eyebrow)}</p>
+    <h2>${esc(T.heading)}</h2></div>
+    <div class="ctrls">
+      <select id="fq"></select><select id="fc"></select>
+      <input id="fs" type="search" placeholder="${esc(T.searchPlaceholder)}" aria-label="Search facilities">
+      <button class="btn" id="fr" type="button">Reset</button>
+      <span class="cnt-note" id="cn"></span></div>
+    <div class="legend">${T.legend.map(l=>
+      `<span><i style="background:var(--${esc(l[0])})"></i>${esc(l[1])}</span>`).join('')}</div>
+    <div class="tscroll"><table><thead><tr>${T.columns.map((c,i)=>
+      `<th class="${[0,3,4,5,6,7,10].includes(i)?'r':''}">${esc(c)}</th>`).join('')}
+    </tr></thead><tbody id="tb"></tbody></table></div>
+    <p class="mx-note">${d.tableNote}</p></section>`);
+
+  S.push(`<footer>${d.footnotes.map(f=>`<p><b>${esc(f[0])}</b> ${esc(f[1])}</p>`).join('')}</footer>`);
+  $('#view').innerHTML=S.join('');
+  wireTable();
+}
+
+function wireTable(){
+  const D=DOC.facilities, RISK=DOC.table.riskTag, QN={};
+  Object.entries(DOC.matrix.cells).forEach(([k,v])=>QN[k]=v.label);
+  const tb=$('#tb'), cn=$('#cn'), fq=$('#fq'), fc=$('#fc'), fs=$('#fs');
+  fq.innerHTML='<option value="">All positions</option>'+Object.keys(QN).sort()
+    .map(k=>`<option value="${k}">${esc(QN[k])} (${D.filter(d=>d.q===k).length})</option>`).join('');
+  fc.innerHTML='<option value="">All operators</option>'+
+    [...new Set(D.map(d=>d.ch))].sort().map(c=>`<option>${esc(c)}</option>`).join('');
+  const scCls=s=>s>=70?'sc hi':s>=55?'sc md':'sc';
+  function draw(){
+    const q=fq.value, c=fc.value, s=fs.value.trim().toLowerCase();
+    const rows=D.filter(d=>(!q||d.q===q)&&(!c||d.ch===c)&&
+      (!s||d.n.toLowerCase().includes(s)||d.ct.toLowerCase().includes(s)));
+    tb.innerHTML=rows.map(d=>`<tr>
+      <td class="n"><span class="${scCls(d.sc)}">${d.sc}</span></td>
+      <td class="nm">${esc(d.n)}${d.gz?' <span class="tag t-risk">'+esc(RISK)+'</span>':''}
+        <div class="sub" style="font-weight:400">${esc(d.ct)}</div></td>
+      <td class="sub">${esc(d.ch)}</td><td class="n">${d.bd}</td><td class="n">${d.ad}</td>
+      <td class="n">${d.st??'&mdash;'}</td><td class="n">${d.sf??'&mdash;'}</td>
+      <td class="n">${d.tv!=null?d.tv+'%':'&mdash;'}</td>
+      <td>${d.b?'<span class="tag t-pb">'+esc(d.b)+'</span>':'<span class="sub">&mdash;</span>'}</td>
+      <td>${d.g?'<span class="tag t-pa">'+esc(d.g)+'</span>':'<span class="sub">&mdash;</span>'}</td>
+      <td class="n">${fmt$(d.gy)}</td></tr>`).join('')||
+      '<tr><td colspan="11" style="padding:28px;text-align:center;color:var(--faint)">No buildings match.</td></tr>';
+    cn.textContent=rows.length+' of '+D.length+' buildings · '+
+      fmt$(rows.reduce((a,b)=>a+b.gy,0))+'/yr';
+    document.querySelectorAll('.cell').forEach(el=>
+      el.setAttribute('aria-pressed',String(el.dataset.q===q)));
+  }
+  [fq,fc].forEach(el=>el.addEventListener('change',draw));
+  fs.addEventListener('input',draw);
+  $('#fr').addEventListener('click',()=>{fq.value='';fc.value='';fs.value='';draw();});
+  $('#mx').addEventListener('click',e=>{
+    const b=e.target.closest('.cell'); if(!b) return;
+    fq.value = fq.value===b.dataset.q ? '' : b.dataset.q;
+    draw();
+    tb.closest('section').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  draw();
+}
+
+window.onerror=(m,src,ln)=>{$('#view').innerHTML=
+  `<div class="msg"><b>Page error</b><br>${esc(m)}<br><span style="font-size:12px">${esc(src)}:${ln}</span></div>`;};
+
+const {data:{session}}=await sb.auth.getSession();
+show(!!session); if(session) load();
+sb.auth.onAuthStateChange((_e,s)=>{ if(s){ show(true); load(); } });
+</script>
+</body>
+</html>

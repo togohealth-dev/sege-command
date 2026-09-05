@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEGE Clinical &amp; Compliance</title>
+<link rel="icon" type="image/png" href="./favicon.png">
+<style>
+  :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--bad:#d1453b;--bad-bg:#fbe4e2;--idle:#8a97a6;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
+  @media (prefers-color-scheme:dark){:root{--ground:#0e1319;--surface:#161d27;--surface-2:#1e2833;--border:#28323f;--ink:#e8edf4;--muted:#93a2b3;--faint:#6b7888;--accent:#26b3bd;--accent-soft:#123037;--accent-ink:#7fd8de;--ok:#39c07d;--ok-bg:#12291f;--warn:#e0a13a;--warn-bg:#2c2413;--bad:#e5695f;--bad-bg:#2e1a19;--idle:#6b7888;--idle-bg:#1c242e;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.28);}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.5}
+  .wrap{max-width:1140px;margin:0 auto;padding:18px 16px 60px}
+  header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;margin-bottom:16px;position:sticky;top:0;background:var(--ground);padding:10px 0;z-index:20;border-bottom:1px solid var(--border)}
+  .logo{width:38px;height:38px;border-radius:9px;overflow:hidden;background:#fff;box-shadow:var(--shadow);flex:none}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{margin-right:auto;min-width:150px}.title h1{font-size:20px;font-weight:750;letter-spacing:-.02em}.title p{color:var(--muted);font-size:12px}
+  .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .btn{border:1px solid var(--border);background:var(--surface);color:var(--ink);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn:hover{border-color:var(--accent)}.btn.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.danger{color:var(--bad);border-color:var(--border)}.btn:disabled{opacity:.5;cursor:default}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;padding:5px;margin-bottom:16px;border-radius:11px;background:rgba(128,128,128,.12);border:1px solid rgba(128,128,128,.22)}
+  .tabs button{border:0;background:transparent;color:inherit;opacity:.65;font:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .tabs button:hover{opacity:1}.tabs button[aria-selected=true]{background:rgba(128,128,128,.28);opacity:1;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card h3{padding:12px 16px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+  .card h3 .count{margin-left:auto;color:var(--muted);font-weight:600;font-size:12px}
+  .row{display:flex;align-items:center;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border)}.row:last-child{border-bottom:0}
+  .row.clk{cursor:pointer}.row.clk:hover{background:var(--surface-2)}.row .main{flex:1;min-width:0}
+  .row .name{font-weight:600}.row .sub{color:var(--muted);font-size:12px;margin-top:1px}
+  .pill{font-size:11px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  .p-idle{background:var(--idle-bg);color:var(--faint)}.p-ok{background:var(--ok-bg);color:var(--ok)}
+  .p-warn{background:var(--warn-bg);color:var(--warn)}.p-bad{background:var(--bad-bg);color:var(--bad)}
+  .p-acc{background:var(--accent-soft);color:var(--accent-ink)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:14px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:13px 15px}
+  .stat b.num{display:block;font-size:27px;font-weight:780;letter-spacing:-.02em;line-height:1.15;font-variant-numeric:tabular-nums}
+  .stat span{font-size:11.5px;color:var(--muted)}
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-end}
+  .fg{display:flex;flex-direction:column;gap:3px}
+  .fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint)}
+  select,input,textarea{border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;font:inherit;font-size:12.5px;max-width:100%}
+  textarea{resize:vertical;min-height:56px;width:100%}
+  .fg select,.fg input{min-width:150px;font-weight:600}
+  .msg{padding:34px;text-align:center;color:var(--muted)}
+  /* ── form ── */
+  .sect{font-size:11px;font-weight:750;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin:18px 2px 8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px 16px;padding:14px 16px}
+  .f{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .f.wide{grid-column:1/-1}
+  .f label{font-size:11px;font-weight:700;color:var(--muted)}
+  .f label .req{color:var(--bad)}
+  .f .hint{font-size:11px;color:var(--faint)}
+  .f input,.f select{width:100%}
+  .f input.bad{border-color:var(--bad)}
+  .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;width:fit-content}
+  .seg button{border:0;background:var(--surface);color:var(--muted);font:inherit;font-size:12px;font-weight:700;padding:6px 14px;cursor:pointer;border-right:1px solid var(--border)}
+  .seg button:last-child{border-right:0}
+  .seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+  .seg.no button[aria-pressed=true]{background:var(--bad)}
+  .chks{display:flex;gap:8px;flex-wrap:wrap}
+  .chk{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:8px;padding:5px 11px;font-size:12px;font-weight:600;cursor:pointer;user-select:none}
+  .chk[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-ink)}
+  .phi{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(192,119,8,.3);border-radius:10px;padding:10px 14px;font-size:12.5px;font-weight:600;margin-bottom:14px}
+  .phi b{font-weight:800}
+  .gate2{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:12px 16px;margin:0 0 4px}
+  .doc{border-top:1px solid var(--border)}
+  .doc:first-of-type{border-top:0}
+  .dochead{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface-2);font-size:12.5px;font-weight:700}
+  .actbar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .actbar .sp{margin-left:auto;color:var(--muted);font-size:12px}
+  .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}
+  .crumb h2{font-size:18px;font-weight:750}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13px}
+  table.tbl th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 16px;border-bottom:1px solid var(--border)}
+  table.tbl td{padding:9px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+  table.tbl tr:last-child td{border-bottom:0}
+  table.tbl tr.clk{cursor:pointer}table.tbl tr.clk:hover td{background:var(--surface-2)}
+  .kv{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .kv:last-child{border-bottom:0}.kv b{font-variant-numeric:tabular-nums}
+  .bizframe{width:100%;min-height:620px;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);background:var(--surface);display:block}
+  .gate{position:fixed;inset:0;background:var(--ground);z-index:9999;display:grid;place-items:center;padding:20px}
+  .gate .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center}
+  .gate input{width:100%;margin:10px 0}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transition:.2s;pointer-events:none;z-index:99}#toast.show{opacity:1}
+  .launch{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:22px 24px}
+  .launch h2{font-size:17px;font-weight:750;margin-bottom:6px}
+  .launch p{color:var(--muted);font-size:13px;margin-bottom:12px;max-width:62ch}
+  .launch ul{color:var(--muted);font-size:12.5px;margin:0 0 14px 18px}
+  .launch li{margin-bottom:3px}
+</style>
+</head>
+<body>
+<div id="gate" class="gate" style="display:none"><div class="box">
+  <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+  <h1 style="font-size:19px;font-weight:750">Clinical &amp; Compliance</h1>
+  <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in required.</p>
+  <button class="btn" style="width:100%;margin:12px 0 8px;justify-content:center;font-weight:700" onclick="ghLogin()">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A7.995 7.995 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    Sign in with GitHub</button>
+  <div style="display:flex;align-items:center;gap:8px;margin:10px 0;color:var(--faint);font-size:11px"><span style="flex:1;height:1px;background:var(--border)"></span>OR<span style="flex:1;height:1px;background:var(--border)"></span></div>
+  <input id="em" type="email" placeholder="you@togohealth.com" autocomplete="username">
+  <input id="pw" type="password" placeholder="password" autocomplete="current-password">
+  <button class="btn pri" style="width:100%" onclick="pwLogin()">Sign in</button>
+  <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;font-size:12px">
+    <a href="#" onclick="sendLink();return false" style="color:var(--accent)">Email me a link instead</a></div>
+  <p id="gm" style="color:var(--muted);font-size:12px;margin-top:10px"></p>
+</div></div>
+
+<div class="wrap" id="app" style="visibility:hidden">
+  <header class="top">
+    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="title"><h1>Clinical &amp; Compliance</h1><p>Hospitalization review · state regulatory reference</p></div>
+    <div class="right">
+      <a class="btn" href="./">🏠 Command Center</a>
+      <span id="who" style="font-size:12px;color:var(--muted)"></span>
+      <button class="btn" onclick="signOut()">Sign out</button>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs">
+    <button aria-selected="true"  data-t="review">🏥 Hospitalization review</button>
+    <button aria-selected="false" data-t="compliance">📋 Compliance</button>
+  </nav>
+  <div id="view"><div class="msg">Loading…</div></div>
+</div>
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const sb=createClient('https://sdbkvklthqvwbepyebnp.supabase.co','sb_publishable_ikAih-gI_I4HBxhI4JNa1Q_cOAvrWAz');
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+let tab='review', me=null;
+
+window.ghLogin=async()=>{const {error}=await sb.auth.signInWithOAuth({provider:'github',options:{redirectTo:location.href.split('#')[0]}});
+  if(error)$('#gm').textContent='GitHub sign-in not enabled yet: '+error.message;};
+window.pwLogin=async()=>{const e=$('#em').value.trim(),p=$('#pw').value;
+  if(!e||!p){$('#gm').textContent='Enter email and password.';return;}
+  const {error}=await sb.auth.signInWithPassword({email:e,password:p});
+  if(error)$('#gm').textContent='Error: '+error.message;};
+window.sendLink=async()=>{const e=$('#em').value.trim();if(!e)return;
+  const {error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:location.href.split('#')[0],shouldCreateUser:false}});
+  $('#gm').textContent=error?('Error: '+error.message+' — ask an admin to invite you'):'Check your email for the sign-in link.';};
+window.signOut=async()=>{await sb.auth.signOut();location.reload();};
+function show(a){$('#gate').style.display=a?'none':'grid';$('#app').style.visibility=a?'visible':'hidden';}
+
+/* The hospitalization review holds PHI, so it does NOT live here. This site is a public repo on
+   GitHub Pages with no BAA; the review app runs on the HIPAA-protected project at qa.togohealth.com.
+   This tab is a door, not a form — do not add fields to it. */
+const QA_URL='https://qa.togohealth.com/';
+function tReview(){
+  const v=$('#view'); v.innerHTML='';
+  const c=el('div','launch');
+  c.innerHTML=`<h2>🏥 Hospitalization review</h2>
+    <p>Transfer-to-hospital review, root-cause deep dives, and QAPI program evidence run in the
+       HIPAA-protected peer review app — a separate project with its own BAA, its own access list,
+       and a full audit trail. It is not part of this site.</p>
+    <ul>
+      <li>Screening review of every transfer to hospital</li>
+      <li>Committee root-cause analysis, held in a protection container</li>
+      <li>Surveyor-ready program evidence with no deliberative content</li>
+    </ul>
+    <a class="btn pri" href="${QA_URL}" target="_blank" rel="noopener">Open peer review →</a>
+    <p class="tiny" style="margin-top:12px;color:var(--faint)">Access is a separate, named list.
+       Ask the committee chair if you need it.</p>`;
+  v.appendChild(c);
+}
+function tCompliance(){
+  const v=$('#view'); v.innerHTML='';
+  v.insertAdjacentHTML('beforeend','<div class="sect">State compliance — CPOM · required entity · IMLC · malpractice · NP/PA scope</div>');
+  const frame=el('iframe','bizframe'); frame.src='./bizworkspace.html#compliance'; frame.title='Business workspace — compliance';
+  frame.onload=()=>{try{const d=frame.contentDocument;const s=d.createElement('style');
+    s.textContent='header.top,.foot{display:none!important}html,body{background:transparent!important}.wrap{padding:2px 0 10px!important;max-width:100%!important}'
+      +'#nav{display:flex!important;gap:6px!important;flex-wrap:wrap!important;align-items:center!important;padding:5px!important;margin:0 0 16px!important;border-radius:11px!important;background:rgba(128,128,128,.12)!important;border:1px solid rgba(128,128,128,.22)!important}'
+      +'#nav button{border:0!important;background:transparent!important;color:inherit!important;opacity:.65;font:inherit!important;font-size:13px!important;font-weight:600!important;padding:8px 14px!important;border-radius:8px!important;cursor:pointer!important;white-space:nowrap!important;box-shadow:none!important}'
+      +'#nav button:hover{opacity:1}'
+      +'#nav button.on{background:rgba(128,128,128,.28)!important;opacity:1!important;box-shadow:0 1px 3px rgba(0,0,0,.18)!important}';
+    d.head.appendChild(s);
+    const fit=()=>{try{frame.style.height=Math.max(620,d.body.scrollHeight+30)+'px';}catch(e){}};
+    fit(); setInterval(fit,900);
+  }catch(e){}};
+  v.appendChild(frame);
+}
+
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-selected',String(x===b)));
+  tab=b.dataset.t; loadTab();});
+window.loadTab=()=>({review:tReview,compliance:tCompliance}[tab])();
+window.onerror=(m)=>{const v=document.getElementById('view');if(v&&/Loading/.test(v.textContent))v.innerHTML='<div class="msg">Script error: '+String(m)+'</div>';};
+
+async function boot(){
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){me=session.user.email;$('#who').textContent=me;show(true);loadTab();}else show(false);
+  sb.auth.onAuthStateChange((_e,s)=>{if(s&&!me){me=s.user.email;$('#who').textContent=me;show(true);loadTab();}});
+}
+boot();   // last: everything is defined by now
+</script>
+</body>
+</html>
