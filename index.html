@@ -81,6 +81,26 @@
   .row .name{font-weight:600} .row .sub{color:var(--muted);font-size:12px;margin-top:1px}
   a.name{color:inherit;text-decoration:none} a.name:hover{color:var(--accent)}
   .pill{font-size:11px;font-weight:650;padding:2px 9px;border-radius:999px;white-space:nowrap}
+  /* provider role / shift grouping */
+  .md-row{background:var(--accent-soft);border-left:4px solid var(--accent)}
+  .md-row .name{font-size:15px}
+  .p-md{background:var(--accent);color:#fff}
+  .p-day{background:var(--warn-bg);color:var(--warn)}
+  .p-night{background:#2b3350;color:#c8d2f5}
+  :root[data-theme="light"] .p-night{background:#e6e9f7;color:#41508c}
+  .p-both{background:var(--ok-bg);color:var(--ok)}
+  .p-open{background:var(--idle-bg);color:var(--faint)}
+  .shiftgrp{display:flex;align-items:center;gap:8px;padding:9px 14px 7px;margin-top:4px;
+    font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);
+    border-top:1px solid var(--border);background:var(--surface-2)}
+  .shiftgrp .n{margin-left:auto;font-weight:600;letter-spacing:0;text-transform:none}
+  .row.vacant{opacity:.62}
+  .row.vacant .name{font-style:italic}
+  .setshift{display:flex;gap:4px;margin-left:8px}
+  .setshift button{border:1px solid var(--border);background:var(--surface);color:var(--muted);
+    font:inherit;font-size:10.5px;font-weight:650;padding:3px 7px;border-radius:5px;cursor:pointer}
+  .setshift button:hover{border-color:var(--accent);color:var(--accent)}
+  .needsrev{border:1px dashed var(--warn);border-radius:4px}
   .p-ok{background:var(--ok-bg);color:var(--ok)} .p-warn{background:var(--warn-bg);color:var(--warn)}
   .p-bad{background:var(--bad-bg);color:var(--bad)} .p-idle{background:var(--idle-bg);color:var(--faint)}
   .p-prog{background:var(--accent-soft);color:var(--accent-ink)}
@@ -493,16 +513,84 @@ function facilityView(id){
     v.appendChild(bc);
   }
   const card=el('div','card');card.appendChild(el('h3',null,`Providers <span class="count">${fac.providers.length}</span>`));
-  fac.providers.slice().sort((a,b)=>provPct(b)-provPct(a)).forEach(pr=>card.insertAdjacentHTML('beforeend',provRow(pr)));
+  card.insertAdjacentHTML('beforeend',rosterHTML(fac.providers));
   bindProvRows(card);v.appendChild(card);
   return v;
 }
 
 /* ═════════ PROVIDERS (onboarding pipeline) ═════════ */
-function provRow(pr){const pct=provPct(pr);const na=nextAction(pr);
-  return `<div class="row clk" data-prov="${esc(pr.id)}"><div class="main"><div class="name">${esc(pr.name)} <span class="pill p-idle">${esc(pr.cred)}</span></div>
-    <div class="sub">${esc(pr.facLabel||pr.building||'')} · ${na?('Next: '+esc(na.item)+' — '+esc(na.phase)):'✅ fully onboarded'}</div></div>
-    <div class="barrow" style="width:210px">${bar(pct)}</div></div>`;}
+const ROLE_META={medical_director:{icon:'\u{1FA7A}',label:'Medical Director',pill:'p-md'},
+  physician:{icon:'\u{1FA7A}',label:'Physician',pill:'p-md'},
+  app:{icon:'',label:'APP',pill:'p-idle'},open:{icon:'\u25CB',label:'Open position',pill:'p-open'}};
+const SHIFT_META={day:{icon:'\u2600\uFE0F',label:'Daytime APPs',pill:'p-day',short:'Day'},
+  night:{icon:'\u{1F319}',label:'Nighttime APPs',pill:'p-night',short:'Night'},
+  both:{icon:'\u{1F313}',label:'Day + Night APPs',pill:'p-both',short:'Day+Night'},
+  unset:{icon:'\u26A0\uFE0F',label:'Shift not assigned',pill:'p-warn',short:'Set shift'}};
+
+/* Groups a facility roster the way the building actually works:
+   medical director pinned first, then APPs split day / night. */
+function groupRoster(provs){
+  const dir=provs.filter(p=>p.role==='medical_director'||p.role==='physician');
+  const open=provs.filter(p=>p.role==='open');
+  const apps=provs.filter(p=>p.role==='app');
+  const byShift=k=>apps.filter(p=>(p.shift||'unset')===k).sort((a,b)=>provPct(b)-provPct(a));
+  return {dir:dir.sort((a,b)=>provPct(b)-provPct(a)),
+          day:byShift('day'), night:byShift('night'), both:byShift('both'),
+          unset:byShift('unset'), open:open};
+}
+function rosterHTML(provs,opts){
+  const g=groupRoster(provs), o=opts||{}; let h='';
+  if(g.dir.length){
+    h+=`<div class="shiftgrp">\u{1FA7A} Medical Director<span class="n">${g.dir.length}</span></div>`;
+    h+=g.dir.map(pr=>provRow(pr,{hero:true})).join('');
+  } else {
+    h+=`<div class="shiftgrp">\u26A0\uFE0F Medical Director<span class="n">not assigned</span></div>`;
+  }
+  ['day','night','both','unset'].forEach(k=>{
+    if(!g[k].length)return;
+    const m=SHIFT_META[k];
+    h+=`<div class="shiftgrp">${m.icon} ${m.label}<span class="n">${g[k].length}</span></div>`;
+    h+=g[k].map(pr=>provRow(pr,{shiftKey:k})).join('');
+  });
+  if(g.open.length){
+    h+=`<div class="shiftgrp">\u25CB Open positions<span class="n">${g.open.length}</span></div>`;
+    h+=g.open.map(pr=>provRow(pr,{vacant:true})).join('');
+  }
+  return h;
+}
+function setShift(provId,val,ev){ if(ev){ev.stopPropagation();}
+  if(!requireAuth()||!Staff.doc)return;
+  const fp=findProv(provId); if(!fp)return;
+  fp.pr.shift=val; fp.pr.shift_source='confirmed';
+  if(fp.pr.role==='app'&&val==='n/a') fp.pr.shift='unset';
+  render(); queueSave('Set shift '+val+' — '+fp.pr.name); }
+function makeDirector(provId,ev){ if(ev){ev.stopPropagation();}
+  if(!requireAuth()||!Staff.doc)return;
+  const fp=findProv(provId); if(!fp)return;
+  fp.f.providers.forEach(p=>{ if(p.role==='medical_director'){p.role='physician';p.role_source='confirmed';} });
+  fp.pr.role='medical_director'; fp.pr.role_source='confirmed'; fp.pr.shift='n/a'; fp.pr.shift_source='n/a';
+  render(); queueSave('Set medical director — '+fp.pr.name); }
+function provRow(pr,o){o=o||{};const pct=provPct(pr);const na=nextAction(pr);
+  const isOpen=pr.role==='open', hero=o.hero;
+  const rm=ROLE_META[pr.role]||ROLE_META.app;
+  const sk=pr.shift||'unset';
+  const needsRev=(pr.shift_source==='needs_review'||pr.role_source==='needs_review');
+  let badge='';
+  if(pr.role==='medical_director') badge=`<span class="pill p-md">\u{1FA7A} Medical Director</span>`;
+  else if(pr.role==='physician')   badge=`<span class="pill p-md">Physician \u2014 confirm director</span>`;
+  else if(isOpen)                  badge=`<span class="pill p-open">Open position</span>`;
+  else if(SHIFT_META[sk])          badge=`<span class="pill ${SHIFT_META[sk].pill}">${SHIFT_META[sk].icon} ${SHIFT_META[sk].short}</span>`;
+  const sched=pr.employment?` \u00b7 ${esc(pr.employment)}`:'';
+  const revTag=needsRev?` <span class="pill p-warn needsrev">confirm</span>`:'';
+  const setter=(!isOpen&&pr.role==='app')?`<span class="setshift">
+      ${sk!=='day'?`<button onclick="setShift('${esc(pr.id)}','day',event)" title="Assign to daytime">\u2600\uFE0F Day</button>`:''}
+      ${sk!=='night'?`<button onclick="setShift('${esc(pr.id)}','night',event)" title="Assign to nights">\u{1F319} Night</button>`:''}
+      ${sk!=='both'?`<button onclick="setShift('${esc(pr.id)}','both',event)" title="Both day and night">\u{1F313} Both</button>`:''}
+    </span>`:(pr.role==='physician'?`<span class="setshift"><button onclick="makeDirector('${esc(pr.id)}',event)" title="Mark as this building's medical director">\u{1FA7A} Make director</button></span>`:'');
+  return `<div class="row clk${hero?' md-row':''}${isOpen?' vacant':''}" data-prov="${esc(pr.id)}">
+    <div class="main"><div class="name">${esc(pr.name)} <span class="pill p-idle">${esc(pr.cred)}</span> ${badge}${revTag}</div>
+    <div class="sub">${esc(pr.facLabel||pr.building||'')}${sched} \u00b7 ${isOpen?'unfilled \u2014 recruit':(na?('Next: '+esc(na.item)+' \u2014 '+esc(na.phase)):'\u2705 fully onboarded')}</div></div>
+    ${setter}<div class="barrow" style="width:180px">${bar(pct)}</div></div>`;}
 function bindProvRows(root){root.querySelectorAll('[data-prov]').forEach(r=>r.onclick=()=>go({v:'provider',id:r.dataset.prov}));}
 function distinctProv(dim){return [...new Set(allProv().map(p=>p[dim]).filter(Boolean))].sort();}
 function providersView(){
@@ -525,7 +613,14 @@ function provListHTML(f){
   let list=allProv().filter(p=>(!f.portfolio||p.portfolio===f.portfolio)&&(!f.facLabel||p.facLabel===f.facLabel)&&(!f.state||p.state===f.state)&&(!f.q||p.name.toLowerCase().includes(f.q.toLowerCase())));
   list.sort((a,b)=>provPct(a)-provPct(b));
   const h=`<h3>Providers <span class="count">${list.length}</span></h3>`;
-  return h+(list.length?list.map(provRow).join(''):'<div class="msg">No providers match.</div>');
+  if(!list.length) return h+'<div class="msg">No providers match.</div>';
+  // One building selected -> show it the way the building works: director first, then day/night.
+  if(f.facLabel) return h+rosterHTML(list);
+  // Across buildings -> group by facility, each grouped internally.
+  const byFac={}; list.forEach(p=>{(byFac[p.facLabel||'\u2014']=byFac[p.facLabel||'\u2014']||[]).push(p);});
+  return h+Object.keys(byFac).sort().map(k=>
+    `<div class="shiftgrp" style="background:var(--surface);color:var(--ink);font-size:12px">\u{1F3E5} ${esc(k)}<span class="n">${byFac[k].length}</span></div>`
+    +rosterHTML(byFac[k])).join('');
 }
 function providerView(id){
   const fp=findProv(id); if(!fp)return backCrumb('','Provider not found');
