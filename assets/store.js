@@ -9,7 +9,8 @@ const Store = (() => {
   const OWNER = 'togohealth-dev', REPO = 'sege-business', API = 'https://api.github.com';
   const shaCache = {};
 
-  const pat = () => localStorage.getItem('sege-command-pat') || '';
+  const PAT_KEY = 'sege-command-pat', PAT_KEY_LEGACY = 'sege-tracker-pat';
+  const pat = () => localStorage.getItem(PAT_KEY) || localStorage.getItem(PAT_KEY_LEGACY) || '';
   const enc = (s) => btoa(unescape(encodeURIComponent(s)));            // utf8-safe base64
   const dec = (b) => decodeURIComponent(escape(atob(b.replace(/\n/g, ''))));
   const headers = (extra = {}) => {

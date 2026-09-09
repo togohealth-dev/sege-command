@@ -495,7 +495,7 @@ function setConn(){
 function openConnect(){ $('#connect').classList.add('on'); $('#pat').focus(); }
 function closeConnect(){ $('#connect').classList.remove('on'); }
 async function saveConnect(){ const v=$('#pat').value.trim(); if(!v){toast('Paste a token');return;} localStorage.setItem('sege-command-pat',v); me=null; closeConnect(); toast('Connecting…'); loadAll(); }
-function disconnect(){ localStorage.removeItem('sege-command-pat'); me=null; renderLocked(); setConn(); toast('Disconnected'); }
+function disconnect(){ localStorage.removeItem('sege-command-pat'); localStorage.removeItem('sege-tracker-pat'); me=null; renderLocked(); setConn(); toast('Disconnected'); }
 function openModal(){ $('#modal').classList.add('on'); }
 function closeModal(){ $('#modal').classList.remove('on'); }
 let tt; function toast(m){ const e=$('#toast'); e.textContent=m; e.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>e.classList.remove('show'),2400); }
