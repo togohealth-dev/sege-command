@@ -322,7 +322,8 @@ function resetAll(){
 
 /* ═════════ boot (last thing in the module — nothing above may call a view fn) ═════════ */
 const PROJ='togohealth-dev/sege-projects', PBPATH='docs/workspace-playbook.json';
-const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
+const PAT_KEY='sege-command-pat', PAT_KEY_LEGACY='sege-tracker-pat';
+const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||'';
 
 function gateMsg(html){
   const v=$('#view'); if(v) v.innerHTML='<div class="msg">'+html+'</div>';

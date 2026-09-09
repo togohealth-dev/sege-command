@@ -270,7 +270,8 @@ window.signOut=async()=>{await sb.auth.signOut();location.reload();};
 /* ── every specific in this page is fetched at runtime from the PRIVATE repo.
       No partner name, account, competitor or revenue figure lives in this file. ── */
 const BIZ='togohealth-dev/sege-business', PATH='marketing/snf-strategy.json';
-const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
+const PAT_KEY='sege-command-pat', PAT_KEY_LEGACY='sege-tracker-pat';
+const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||'';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt$=n=>'$'+Math.round(n).toLocaleString();

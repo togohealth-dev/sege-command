@@ -102,7 +102,8 @@ const BIZ='togohealth-dev/sege-business';
    mapping that exists only inside the private repo. */
 const SLUG=(new URLSearchParams(location.search).get('d')||'d1');
 const PATH=`deals/${/^[a-z0-9-]{1,32}$/.test(SLUG)?SLUG:'d1'}.json`;
-const pat=()=>localStorage.getItem('sege-tracker-pat')||'';
+const PAT_KEY='sege-command-pat', PAT_KEY_LEGACY='sege-tracker-pat';
+const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||'';
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=n=>'$'+Math.round(n).toLocaleString();
 const fmtM=n=>n>=1e9?'$'+(n/1e9).toFixed(2)+'B':n>=1e6?'$'+(n/1e6).toFixed(1)+'M':fmt(n);

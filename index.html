@@ -237,7 +237,8 @@ const $=(s,r=document)=>r.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
-const pat=()=>localStorage.getItem('sege-command-pat')||'';
+const PAT_KEY='sege-command-pat', PAT_KEY_LEGACY='sege-tracker-pat';
+const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||'';
 
 async function gh(path,opts={}){
   const h={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})};
@@ -330,7 +331,19 @@ async function loadAll(){
     issues=[...seen.values()].map(normalize).sort((a,b)=>b.prio-a.prio||a.n-b.n);
     await loadStaff();
     loaded=true; setConn(); if(!window.__routed){window.__routed=1; applyPath();} else render();
-  }catch(e){ $('#view').innerHTML='<div class="msg">Couldn\'t load ('+e.message+'). If rate-limited, connect a token.</div>'; }
+  }catch(e){
+    const denied=/GitHub (401|403|404)/.test(e.message);
+    if(denied&&!pat())
+      $('#view').innerHTML='<div class="msg">This board loads from private repos, so it needs a GitHub token as well as your sign-in.'
+        +'<br><br><button class="btn pri" onclick="openConnect()">Connect a token</button></div>';
+    else if(denied)
+      $('#view').innerHTML='<div class="msg">Your token can\'t read the private data ('+esc(e.message)+').'
+        +'<br>It needs <b>Contents: read</b> on '+PROJ_REPO.split('/')[1]+', '+BIZ_REPO.split('/')[1]+' and '+STAFF_REPO.split('/')[1]
+        +' — plus <b>Issues: read &amp; write</b> to change cards.'
+        +'<br><br><button class="btn" onclick="openConnect()">Update token</button></div>';
+    else
+      $('#view').innerHTML='<div class="msg">Couldn\'t load ('+esc(e.message)+'). If rate-limited, connect a token.</div>';
+  }
 }
 function normalize(i){
   const labels=(i.labels||[]).map(l=>l.name);
@@ -351,7 +364,7 @@ function setConn(){
     } else chip.innerHTML='';
   } else { c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; chip.innerHTML=''; }
 }
-function disconnect(){ localStorage.removeItem('sege-command-pat'); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
+function disconnect(){ localStorage.removeItem(PAT_KEY); localStorage.removeItem(PAT_KEY_LEGACY); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
 
 const active=()=>issues.filter(i=>!i.done);
 const statusPill=s=>({'not-started':['p-idle','Not started'],'in-progress':['p-prog','● In progress'],'blocked':['p-bad','⚠ Blocked'],'done':['p-ok','✓ Done']}[s]);
@@ -962,7 +975,7 @@ function reopen(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${
 /* ── modals ── */
 function openConnect(){$('#connect').classList.add('on');$('#pat').focus();}
 function closeConnect(){$('#connect').classList.remove('on');}
-async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem('sege-command-pat',v);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
+async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem(PAT_KEY,v); localStorage.removeItem(PAT_KEY_LEGACY);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
 function openAdd(){if(!requireAuth())return;const s=$('#a_who');s.innerHTML='<option value="">— Unassigned —</option>'+Object.keys(TEAM).map(l=>`<option value="${l}">${TEAM[l].name}</option>`).join('');$('#add').classList.add('on');$('#a_title').focus();}
 function closeAdd(){$('#add').classList.remove('on');}
 async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast('Title required');return;}
