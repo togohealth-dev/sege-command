@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<base href="/sege-command/">
+<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/sege-command/")===0?"/sege-command/":"/";document.head.appendChild(b);})();</script>
 <title>SEGE Command Center</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
@@ -887,7 +887,7 @@ async function renderSportsVenture(){
 }
 
 /* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
-const BASE='/sege-command/';
+const BASE=location.pathname.indexOf('/sege-command/')===0?'/sege-command/':'/';
 // Command Center is the site root; views are root-level paths (/sege-command/accounts …).
 // business.html was moved to bizworkspace.html so /business is a real app route (no pretty-URL clash).
 function pathFor(r){
