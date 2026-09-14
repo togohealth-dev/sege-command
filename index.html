@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/sege-command/")===0?"/sege-command/":"/";document.head.appendChild(b);})();</script>
-<title>SEGE Command Center</title>
+<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/command-center/")===0?"/command-center/":"/";document.head.appendChild(b);})();</script>
+<title>Command Center</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <style>
@@ -147,8 +147,8 @@
 <body>
 <div id="authgate" style="display:none;position:fixed;inset:0;background:var(--ground);z-index:9999;display:grid;place-items:center;padding:20px">
   <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:26px;max-width:400px;width:100%;text-align:center">
-    <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
-    <h1 style="font-size:19px;font-weight:750">SEGE Command Center</h1>
+    <div class="logo" style="margin:0 auto 12px"><img src="./command-mark.png" alt="Command"></div>
+    <h1 style="font-size:19px;font-weight:750">Command Center</h1>
     <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in.</p>
     <button class="btn" style="width:100%;margin-bottom:8px;justify-content:center;font-weight:700" onclick="ghLogin()">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" style="margin-right:7px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A7.995 7.995 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -166,8 +166,8 @@
 </div>
 <div class="wrap" id="appwrap" style="visibility:hidden">
   <header class="top">
-    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
-    <div class="title"><h1>SEGE Command Center</h1><p>Who's doing what — live over your GitHub project tracker</p></div>
+    <div class="logo"><img src="./command-mark.png" alt="Command"></div>
+    <div class="title"><h1>Command Center</h1><p>Who's doing what — live over your GitHub project tracker</p></div>
     <div class="right">
       <button class="btn" onclick="loadAll()">↻ Refresh</button>
       <button class="btn pri" onclick="openAdd()">+ Add</button>
@@ -186,14 +186,14 @@
 
   <div id="view"><div class="msg">Loading live data…</div></div>
 
-  <div class="foot">Projects from <b>togohealth-dev/sege-command</b> (public) · staffing from <b>sege-staffing</b> (private, token required) ·
+  <div class="foot">Projects from <b>togohealth-dev/command-center</b> (public) · staffing from <b>command-staffing</b> (private, token required) ·
     percentages computed live from onboarding items.</div>
 </div>
 
 <!-- Connect modal -->
 <div class="modal" id="connect"><div class="box">
   <h2>Connect to edit</h2>
-  <p>Paste a GitHub personal access token. To also see staffing/onboarding, the token needs access to the private <b>sege-staffing</b> repo (Issues + Contents: read &amp; write). Fine-grained recommended. Stored only in this browser.</p>
+  <p>Paste a GitHub personal access token. To also see staffing/onboarding, the token needs access to the private <b>command-staffing</b> repo (Issues + Contents: read &amp; write). Fine-grained recommended. Stored only in this browser.</p>
   <input id="pat" type="password" placeholder="github_pat_… or ghp_…">
   <div class="acts" style="justify-content:flex-end">
     <button class="btn" onclick="closeConnect()">Cancel</button>
@@ -218,10 +218,10 @@
 <div id="toast"></div>
 
 <script>
-const REPO='togohealth-dev/sege-projects', API='https://api.github.com';   // issues live in the PRIVATE repo
-const PROJ_REPO='togohealth-dev/sege-projects';
-const STAFF_REPO='togohealth-dev/sege-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json', FACONB_PATH='facility_onboarding.json';
-const BIZ_REPO='togohealth-dev/sege-business';  // read-only mirror (Business lane owns this)
+const REPO='togohealth-dev/command-projects', API='https://api.github.com';   // issues live in the PRIVATE repo
+const PROJ_REPO='togohealth-dev/command-projects';
+const STAFF_REPO='togohealth-dev/command-staffing', STAFF_PATH='onboarding.json', SNAP_PATH='snapshots.json', FACONB_PATH='facility_onboarding.json';
+const BIZ_REPO='togohealth-dev/command-business';  // read-only mirror (Business lane owns this)
 let TEAM={};   // loaded at runtime from the PRIVATE repo (no staff names in this public shell)
 async function loadTeam(){ try{ const r=await gh(`/repos/${PROJ_REPO}/contents/team.json`);
     const d=JSON.parse(b64d(r.content)); TEAM={}; for(const [k,v] of Object.entries(d.team||{})) TEAM[k]={name:v.name,role:v.role,c:v.color};
@@ -237,8 +237,8 @@ const $=(s,r=document)=>r.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
 const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
-const PAT_KEY='sege-command-pat', PAT_KEY_LEGACY='sege-tracker-pat';
-const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||'';
+const PAT_KEY='command-center-pat', PAT_KEY_LEGACY='sege-command-pat', PAT_KEY_LEGACY2='sege-tracker-pat';
+const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||localStorage.getItem(PAT_KEY_LEGACY2)||'';
 
 async function gh(path,opts={}){
   const h={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opts.headers||{})};
@@ -291,7 +291,7 @@ const Biz={ entities:null, states:null, deals:null,
     try{const r=await gh(`/repos/${BIZ_REPO}/contents/mso/entities.json`);this.entities=JSON.parse(b64d(r.content)).entities;}catch(e){this.entities=null;}
     try{const r=await gh(`/repos/${BIZ_REPO}/contents/reference/state-compliance.json`);this.states=JSON.parse(b64d(r.content)).states;}catch(e){this.states=null;}
     /* Corp-dev index. Counterparty names and deal values are facts, so they live
-       here and never in this public file — see deals/index.json in sege-business. */
+       here and never in this public file — see deals/index.json in command-business. */
     try{const r=await gh(`/repos/${BIZ_REPO}/contents/deals/index.json`);this.deals=JSON.parse(b64d(r.content)).deals;}catch(e){this.deals=null;}
   }
 };
@@ -364,7 +364,7 @@ function setConn(){
     } else chip.innerHTML='';
   } else { c.className='conn off'; c.textContent='● View only'; b.textContent='Connect to edit'; b.onclick=openConnect; chip.innerHTML=''; }
 }
-function disconnect(){ localStorage.removeItem(PAT_KEY); localStorage.removeItem(PAT_KEY_LEGACY); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
+function disconnect(){ localStorage.removeItem(PAT_KEY); localStorage.removeItem(PAT_KEY_LEGACY); localStorage.removeItem(PAT_KEY_LEGACY2); me=null; Staff.doc=null; setConn(); toast('Disconnected'); }
 
 const active=()=>issues.filter(i=>!i.done);
 const statusPill=s=>({'not-started':['p-idle','Not started'],'in-progress':['p-prog','● In progress'],'blocked':['p-bad','⚠ Blocked'],'done':['p-ok','✓ Done']}[s]);
@@ -387,7 +387,8 @@ function tileLocked(mark,label,note){const b=el('button','tile');b.onclick=openC
   b.innerHTML=`<div class="tl">${mark} ${label}<span class="arrow">🔒</span></div><div class="tn" style="font-size:19px;color:var(--muted)">Connect</div><div class="ts">${esc(note||'token needed for staffing')}</div>`;return b;}
 /* Best practices: static guide pages. Progress comes from the guide's own
    localStorage key, so the tile reflects where you left off without a fetch. */
-const BP_GUIDES=[{key:'sege-bp-workspace-v1',steps:64,label:'Workspace optimization'}];
+try{["bp-workspace-v1","bp-workspace-ui-v1","bp-workspace-open-done-v1"].forEach(function(k){var o=localStorage.getItem("sege-"+k);if(o!==null&&localStorage.getItem("command-"+k)===null)localStorage.setItem("command-"+k,o);});}catch(e){} /* one-time carry-over of pre-debrand progress keys */
+const BP_GUIDES=[{key:'command-bp-workspace-v1',steps:64,label:'Workspace optimization'}];
 function bpTile(){
   const g=BP_GUIDES[0];
   let n=0; try{ const o=JSON.parse(localStorage.getItem(g.key)||'{}')||{}; n=Object.keys(o).filter(k=>o[k]).length; }catch(e){}
@@ -437,7 +438,7 @@ function homeView(){
   hero.appendChild(bpTile());
   v.appendChild(hero);
   if(!Staff.doc && pat() && Staff.err && Staff.err!=='no-token')
-    v.appendChild(el('div','note','Connected, but this token can\'t read the private sege-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
+    v.appendChild(el('div','note','Connected, but this token can\'t read the private command-staffing repo. Give it access (Contents: read & write) to see Accounts & Providers.'));
   // People (issues)
   // secondary nav — keeps Follow-ups / Done / Bottlenecks reachable (no orphaned views)
   const sn=el('div','acts');sn.style.cssText='margin:-8px 0 4px;flex-wrap:wrap';
@@ -695,7 +696,7 @@ function snapDelta(portId){
 
 /* ═════════ EMAIL REPORT ═════════ */
 function buildReport(){
-  let lines=['SEGE Staffing / Onboarding — '+new Date().toLocaleDateString(),''];
+  let lines=['Command Staffing / Onboarding — '+new Date().toLocaleDateString(),''];
   Staff.doc.portfolios.forEach(p=>{lines.push(`◆ ${p.label} — ${portPct(p)}% onboarded`);
     p.facilities.forEach(f=>{lines.push(`   • ${f.label} [${FSTATUS[f.status][1].replace(/[^\x20-\x7e]/g,'').trim()}] ${f.staffing.filled}/${f.staffing.target} — ${facPct(f)}%`);});
     lines.push('');});
@@ -705,7 +706,7 @@ function openEmail(){
   if(!Staff.doc){toast('Connect first');return;}
   const rep=buildReport();
   navigator.clipboard&&navigator.clipboard.writeText(rep).then(()=>toast('Report copied to clipboard')).catch(()=>{});
-  location.href='mailto:?subject='+encodeURIComponent('SEGE Onboarding Report')+'&body='+encodeURIComponent(rep.slice(0,1800));
+  location.href='mailto:?subject='+encodeURIComponent('Command Onboarding Report')+'&body='+encodeURIComponent(rep.slice(0,1800));
 }
 
 /* ═════════ issue views (Business / People / Done) ═════════ */
@@ -757,7 +758,7 @@ function bizView(){const v=el('div');v.appendChild(backCrumb('','🔵 Business w
 
   // Marketing & growth. Two different things live here: targeting for the existing
   // organizations (scoped by state), and market research for ventures that are not a
-  // Togo/SEGE org at all. Same section because both are growth; separate cards because
+  // Togo org at all. Same section because both are growth; separate cards because
   // a new company does not belong under "by organization".
   v.appendChild(el('div','sect','Marketing & growth'));
   const st=el('div','card');
@@ -823,7 +824,7 @@ async function renderOrgMarketing(){
   });
 }
 
-/* Youth sports physicals — a new company idea, not a Togo/SEGE org, so it sits beside
+/* Youth sports physicals — a new company idea, not a Togo org, so it sits beside
    the org targeting rather than inside it. Every figure is read from Supabase at runtime:
    no school names, staff or counts belong in this public shell.
    $/exam is a modelling assumption, not data — the dedicated section lets you change it. */
@@ -887,15 +888,15 @@ async function renderSportsVenture(){
 }
 
 /* ═════════ router — real slash URLs (History API + 404.html fallback on GitHub Pages) ═════════ */
-const BASE=location.pathname.indexOf('/sege-command/')===0?'/sege-command/':'/';
-// Command Center is the site root; views are root-level paths (/sege-command/accounts …).
+const BASE=location.pathname.indexOf('/command-center/')===0?'/command-center/':'/';
+// Command Center is the site root; views are root-level paths (/command-center/accounts …).
 // business.html was moved to bizworkspace.html so /business is a real app route (no pretty-URL clash).
 function pathFor(r){
   if(!r||r.v==='home') return BASE;
   if(r.v==='facility') return BASE+'facility/'+encodeURIComponent(r.id);
   if(r.v==='provider') return BASE+'provider/'+encodeURIComponent(r.id);
   if(r.v==='person')   return BASE+'person/'+encodeURIComponent(r.login||'unassigned');
-  return BASE+r.v;                         // /sege-command/accounts | providers | business | compliance | bottleneck
+  return BASE+r.v;                         // /command-center/accounts | providers | business | compliance | bottleneck
 }
 function routeFromPath(p){
   let sub=String(p||'').replace(BASE,'').replace(/^\/+|\/+$/g,'');
@@ -919,7 +920,7 @@ function render(){
   const view=$('#view'); view.innerHTML=''; let node;
   const needStaff=['accounts','providers','facility','provider','bottleneck'].includes(route.v);
   if(needStaff&&!Staff.doc){ node=el('div');node.appendChild(backCrumb('','Staffing'));
-    node.appendChild(el('div','msg',pat()?'This token can\'t read the private sege-staffing repo. Give it Contents access.':'🔒 Connect a token with sege-staffing access to view staffing & onboarding.'));
+    node.appendChild(el('div','msg',pat()?'This token can\'t read the private command-staffing repo. Give it Contents access.':'🔒 Connect a token with command-staffing access to view staffing & onboarding.'));
     view.appendChild(node);return; }
   if(route.v==='accounts')node=accountsView();
   else if(route.v==='facility')node=facilityView(route.id);
@@ -975,7 +976,7 @@ function reopen(n){if(!requireAuth())return;busy(n,async()=>{await gh(`/repos/${
 /* ── modals ── */
 function openConnect(){$('#connect').classList.add('on');$('#pat').focus();}
 function closeConnect(){$('#connect').classList.remove('on');}
-async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem(PAT_KEY,v); localStorage.removeItem(PAT_KEY_LEGACY);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
+async function saveConnect(){const v=$('#pat').value.trim();if(!v){toast('Paste a token');return;}localStorage.setItem(PAT_KEY,v); localStorage.removeItem(PAT_KEY_LEGACY); localStorage.removeItem(PAT_KEY_LEGACY2);me=null;closeConnect();try{me=await gh('/user');}catch(e){}setConn();toast('Connected');loadAll();}
 function openAdd(){if(!requireAuth())return;const s=$('#a_who');s.innerHTML='<option value="">— Unassigned —</option>'+Object.keys(TEAM).map(l=>`<option value="${l}">${TEAM[l].name}</option>`).join('');$('#add').classList.add('on');$('#a_title').focus();}
 function closeAdd(){$('#add').classList.remove('on');}
 async function saveAdd(){const title=$('#a_title').value.trim();if(!title){toast('Title required');return;}

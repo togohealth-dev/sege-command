@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SEGE Best Practices</title>
+<title>Command Best Practices</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <style>
   :root{--ground:#f6f8fa;--surface:#fff;--surface-2:#eef2f7;--border:#e2e7ee;--ink:#17212f;--muted:#5c6875;--faint:#8a97a6;--accent:#0e7c86;--accent-soft:#d9eef0;--accent-ink:#0a5a62;--ok:#1f9d5b;--ok-bg:#e4f5ec;--warn:#c07708;--warn-bg:#faefdc;--idle-bg:#eceff3;--shadow:0 1px 2px rgba(20,30,45,.06),0 4px 14px rgba(20,30,45,.05);}
@@ -36,7 +36,7 @@
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="logo"><img src="./command-mark.png" alt="Command"></div>
     <div class="title"><h1>Best Practices</h1><p>How we run the shop — efficiency guidelines you can work through step by step</p></div>
     <a class="btn" href="./">← Command Center</a>
   </header>
@@ -44,15 +44,16 @@
   <div class="grid" id="grid"></div>
   <div class="note">These guides are operating guidelines, not data — nothing here is staff-specific or client-specific.
     Your progress on each guide is checkbox state saved in your own browser, so two people can work the same guide independently.</div>
-  <div class="foot">SEGE Command Center · Best Practices</div>
+  <div class="foot">Command Center · Best Practices</div>
 </div>
 <script>
+try{["bp-workspace-v1","bp-workspace-ui-v1","bp-workspace-open-done-v1"].forEach(function(k){var o=localStorage.getItem("sege-"+k);if(o!==null&&localStorage.getItem("command-"+k)===null)localStorage.setItem("command-"+k,o);});}catch(e){} /* one-time carry-over of pre-debrand progress keys */
 /* One entry per guide. `key` is the localStorage key that guide writes its checkbox
    state to, and `steps` its step count — that is all the hub needs to show progress. */
 const GUIDES=[
   {icon:'📗',t:'Google Workspace Optimization',href:'./workspace-playbook.html',
    d:'64 steps in the order to do them, with the exact console path on each one. Nine sessions from ground truth through handover — domains and DKIM, role addresses as Groups, the inbox cockpit, shared drives, Tasks, Chat, intake forms and AI, then the house rules that keep it standing.',
-   meta:['9 sessions','64 steps','~9 hours total'],key:'sege-bp-workspace-v1',steps:64}
+   meta:['9 sessions','64 steps','~9 hours total'],key:'command-bp-workspace-v1',steps:64}
 ];
 const SOON=[
   {t:'More guides land here',d:'This page is the shelf. Each new guide is one file plus one line in the GUIDES list — same checkbox-and-console-path shape as the Workspace playbook.'}

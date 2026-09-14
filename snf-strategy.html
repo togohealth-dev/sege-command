@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/sege-command/")===0?"/sege-command/":"/";document.head.appendChild(b);})();</script>
-<title>SEGE · Utah SNF Strategy</title>
+<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/command-center/")===0?"/command-center/":"/";document.head.appendChild(b);})();</script>
+<title>Command · Utah SNF Strategy</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -269,9 +269,9 @@ window.signOut=async()=>{await sb.auth.signOut();location.reload();};
 
 /* ── every specific in this page is fetched at runtime from the PRIVATE repo.
       No partner name, account, competitor or revenue figure lives in this file. ── */
-const BIZ='togohealth-dev/sege-business', PATH='marketing/snf-strategy.json';
-const PAT_KEY='sege-command-pat', PAT_KEY_LEGACY='sege-tracker-pat';
-const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||'';
+const BIZ='togohealth-dev/command-business', PATH='marketing/snf-strategy.json';
+const PAT_KEY='command-center-pat', PAT_KEY_LEGACY='sege-command-pat', PAT_KEY_LEGACY2='sege-tracker-pat';
+const pat=()=>localStorage.getItem(PAT_KEY)||localStorage.getItem(PAT_KEY_LEGACY)||localStorage.getItem(PAT_KEY_LEGACY2)||'';
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt$=n=>'$'+Math.round(n).toLocaleString();
@@ -291,9 +291,9 @@ async function load(){
 }
 function gateMsg(kind, d){
   const m={
-    token:'This page reads its data from the private <b>sege-business</b> repo.<br>Connect a GitHub token on the <a href="./" style="color:var(--accent)">Command Center home page</a> first — it needs Contents: read on that repo.',
-    missing:'Signed in, but <code>marketing/snf-strategy.json</code> was not found in <b>sege-business</b>.',
-    denied:`Your token cannot read <b>sege-business</b> (HTTP ${d}). Give it Contents: read on that repo.`,
+    token:'This page reads its data from the private <b>command-business</b> repo.<br>Connect a GitHub token on the <a href="./" style="color:var(--accent)">Command Center home page</a> first — it needs Contents: read on that repo.',
+    missing:'Signed in, but <code>marketing/snf-strategy.json</code> was not found in <b>command-business</b>.',
+    denied:`Your token cannot read <b>command-business</b> (HTTP ${d}). Give it Contents: read on that repo.`,
     net:`Could not reach GitHub: ${esc(d||'')}`
   }[kind];
   $('#view').innerHTML=`<div class="msg">${m}</div>`;

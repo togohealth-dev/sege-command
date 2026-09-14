@@ -1,4 +1,4 @@
--- SEGE Command Center — Salesforce-style Accounts + Checklists + Tasks
+-- Command Center — Salesforce-style Accounts + Checklists + Tasks
 -- Unified model: every business / facility / provider is an "account" that runs a role-owned
 -- checklist; each checklist item becomes a task with state + assignee, so staff always see the
 -- next needed step. Seeded from the "Business Protocols" sheet. Idempotent (safe to re-run).
@@ -134,7 +134,7 @@ insert into checklist_item (applies_to, phase, label, role, ord) values
  ('facility','Marketing & Launch','Marketing TVs','CFO',130),
  ('facility','Marketing & Launch','Meet regional team','CCO',140),
  ('facility','Marketing & Launch','Meet facility management team','CCO',150),
- -- PROVIDER · Onboarding (high-level; detailed 8-phase pipeline lives in sege-staffing)
+ -- PROVIDER · Onboarding (high-level; detailed 8-phase pipeline lives in command-staffing)
  ('provider','Provider Onboarding','Generic offer letter','CEO',10),
  ('provider','Provider Onboarding','Provider onboarding','Ops',20),
  ('provider','Provider Onboarding','Licensing','Ops',30),

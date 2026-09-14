@@ -1,16 +1,16 @@
-/* SEGE Business — Store adapter.
+/* Command Business — Store adapter.
  * The ONLY module that knows where data lives. Today: GitHub Contents API on
- * the private repo togohealth-dev/sege-business. To port to Axum/Postgres,
+ * the private repo togohealth-dev/command-business. To port to Axum/Postgres,
  * replace the get/put bodies with fetch() to REST endpoints — nothing else in
  * the app changes. Whole-file read-modify-write keyed on the blob SHA; a
  * concurrent writer gets a 409 and we refetch + retry once (no silent clobber).
  */
 const Store = (() => {
-  const OWNER = 'togohealth-dev', REPO = 'sege-business', API = 'https://api.github.com';
+  const OWNER = 'togohealth-dev', REPO = 'command-business', API = 'https://api.github.com';
   const shaCache = {};
 
-  const PAT_KEY = 'sege-command-pat', PAT_KEY_LEGACY = 'sege-tracker-pat';
-  const pat = () => localStorage.getItem(PAT_KEY) || localStorage.getItem(PAT_KEY_LEGACY) || '';
+  const PAT_KEY = 'command-center-pat', PAT_KEY_LEGACY = 'sege-command-pat', PAT_KEY_LEGACY2 = 'sege-tracker-pat';
+  const pat = () => localStorage.getItem(PAT_KEY) || localStorage.getItem(PAT_KEY_LEGACY) || localStorage.getItem(PAT_KEY_LEGACY2) || '';
   const enc = (s) => btoa(unescape(encodeURIComponent(s)));            // utf8-safe base64
   const dec = (b) => decodeURIComponent(escape(atob(b.replace(/\n/g, ''))));
   const headers = (extra = {}) => {

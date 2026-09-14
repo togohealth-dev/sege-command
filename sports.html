@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/sege-command/")===0?"/sege-command/":"/";document.head.appendChild(b);})();</script>
+<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/command-center/")===0?"/command-center/":"/";document.head.appendChild(b);})();</script>
 <title>Sports Physicals</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <style>
@@ -65,7 +65,7 @@
 </head>
 <body>
 <div id="gate" class="gate" style="display:none"><div class="box">
-  <div class="logo" style="margin:0 auto 12px"><img src="./sege-mark.png" alt="SEGE"></div>
+  <div class="logo" style="margin:0 auto 12px"><img src="./command-mark.png" alt="Command"></div>
   <h1 style="font-size:19px;font-weight:750">Sports Physicals</h1>
   <p style="color:var(--muted);font-size:13px;margin-top:4px">Private — staff sign-in required.</p>
     <button class="btn" style="width:100%;margin-bottom:8px;justify-content:center;font-weight:700" onclick="ghLogin()">
@@ -79,7 +79,7 @@
 
 <div class="wrap" id="app" style="visibility:hidden">
   <header class="top">
-    <div class="logo"><img src="./sege-mark.png" alt="SEGE"></div>
+    <div class="logo"><img src="./command-mark.png" alt="Command"></div>
     <div class="title"><h1>Sports Physicals</h1><p>Venture research — market sizing and target list</p></div>
     <div class="right">
       <a class="btn" href="./">🏠 Command Center</a>
@@ -333,7 +333,7 @@ async function tMarket(){
       <div class="kv"><span>Exams per clinician-evening at ~4/hour over 4 hours</span><b class="num">16</b></div>
       <div class="kv"><span>School-evenings to clear ${Math.round(attach*100)}% of them</span><b class="num">${n(Math.ceil(uhsaaAth*attach/16))}</b></div>
       <div class="kv"><span>Concentrated into the Mar-Jul window, that is per week</span><b class="num">${n(Math.ceil(uhsaaAth*attach/16/20))}</b></div>
-      <div class="sub" style="margin-top:8px">The last line is the whole operating problem: demand is seasonal and the exam is cheap, so the business is a staffing-and-scheduling exercise, not a clinical one. That is the same muscle SEGE already has.</div>
+      <div class="sub" style="margin-top:8px">The last line is the whole operating problem: demand is seasonal and the exam is cheap, so the business is a staffing-and-scheduling exercise, not a clinical one. That is the same muscle the ops team already has.</div>
     </div>`;
   v.appendChild(g);
 }

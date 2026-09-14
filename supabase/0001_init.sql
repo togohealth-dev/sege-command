@@ -1,4 +1,4 @@
--- SEGE Marketing + Recruiting — initial schema
+-- Command Marketing + Recruiting — initial schema
 -- Postgres (Supabase). Non-PHI business/marketing data only.
 -- Percentages/derived metrics are computed at query time, never stored.
 -- Apply from the mini:  psql "$SUPABASE_DB_URL" -f 0001_init.sql

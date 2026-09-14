@@ -1,4 +1,4 @@
-/* SEGE Business — UI module. Pure render-from-data + emit-change.
+/* Command Business — UI module. Pure render-from-data + emit-change.
  * Knows nothing about storage (that's Store, in store.js). Drops into a
  * Next.js component later by swapping innerHTML rendering for JSX. */
 
@@ -76,13 +76,13 @@ async function loadAll(){
     const keys = Object.keys(FILES);
     const got = await Promise.all(keys.map(k => Store.get(FILES[k])));
     keys.forEach((k,i) => { DATA[k] = got[i].json; });
-    if (!DATA.entities) throw new Error('entities.json missing — is the token scoped to sege-business?');
+    if (!DATA.entities) throw new Error('entities.json missing — is the token scoped to command-business?');
     me = await Store.githubUser().catch(()=>null);
     setConn();
     render();
   } catch (e) {
     if (String(e.message).startsWith('auth')) { renderLocked(true); }
-    else $('#view').innerHTML = `<div class="msg">Couldn't load business data (${esc(e.message)}).<br>Your token needs <b>Contents: read &amp; write</b> on <b>togohealth-dev/sege-business</b>.</div>`;
+    else $('#view').innerHTML = `<div class="msg">Couldn't load business data (${esc(e.message)}).<br>Your token needs <b>Contents: read &amp; write</b> on <b>togohealth-dev/command-business</b>.</div>`;
     setConn();
   }
 }
@@ -104,8 +104,8 @@ function renderLocked(expired){
   $('#view').innerHTML = `<div class="lock">
     <h2>🔒 Business data is private</h2>
     <p>${expired ? 'Your token was rejected or lacks access. ' : ''}This section reads the private
-    <b>togohealth-dev/sege-business</b> repo. Connect a GitHub token with
-    <b>Contents: read &amp; write</b> on that repo (plus <b>sege-command</b> Issues for the rest of the Command Center).</p>
+    <b>togohealth-dev/command-business</b> repo. Connect a GitHub token with
+    <b>Contents: read &amp; write</b> on that repo (plus <b>command-center</b> Issues for the rest of the Command Center).</p>
     <button class="btn pri" onclick="openConnect()">Connect a token</button>
   </div>`;
 }
@@ -482,7 +482,7 @@ function save(key){
 }
 function copyEntityReport(){
   const lines = DATA.entities.entities.map(e=>`${e.state}\t${e.legal_name}\t${ROLE[e.role]||e.role}\tsetup ${setupPct(e)}%\tcontracts ${contractPct(e)}%\t${e.lifecycle_status}`);
-  const txt = 'SEGE Entities — setup & contract status\n\nState\tEntity\tUse\tSetup\tContracts\tLifecycle\n'+lines.join('\n');
+  const txt = 'Entities — setup & contract status\n\nState\tEntity\tUse\tSetup\tContracts\tLifecycle\n'+lines.join('\n');
   navigator.clipboard.writeText(txt).then(()=>toast('Report copied'),()=>toast('Copy failed'));
 }
 /* connect + chrome */
@@ -494,8 +494,8 @@ function setConn(){
 }
 function openConnect(){ $('#connect').classList.add('on'); $('#pat').focus(); }
 function closeConnect(){ $('#connect').classList.remove('on'); }
-async function saveConnect(){ const v=$('#pat').value.trim(); if(!v){toast('Paste a token');return;} localStorage.setItem('sege-command-pat',v); me=null; closeConnect(); toast('Connecting…'); loadAll(); }
-function disconnect(){ localStorage.removeItem('sege-command-pat'); localStorage.removeItem('sege-tracker-pat'); me=null; renderLocked(); setConn(); toast('Disconnected'); }
+async function saveConnect(){ const v=$('#pat').value.trim(); if(!v){toast('Paste a token');return;} localStorage.setItem('command-center-pat',v); me=null; closeConnect(); toast('Connecting…'); loadAll(); }
+function disconnect(){ localStorage.removeItem('command-center-pat'); localStorage.removeItem('sege-command-pat'); localStorage.removeItem('sege-tracker-pat'); me=null; renderLocked(); setConn(); toast('Disconnected'); }
 function openModal(){ $('#modal').classList.add('on'); }
 function closeModal(){ $('#modal').classList.remove('on'); }
 let tt; function toast(m){ const e=$('#toast'); e.textContent=m; e.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>e.classList.remove('show'),2400); }
