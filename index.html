@@ -58,7 +58,7 @@
   .ptile{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;font:inherit;color:inherit;text-align:left;transition:border-color .12s}
   .ptile:hover{border-color:var(--accent)}
   .avatar{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
-  .who{font-weight:700} .role{font-size:11.5px;color:var(--muted)}
+  .who{font-weight:700} .role{font-size:11.5px;color:var(--muted)} .org{font-size:9.5px;color:var(--muted);opacity:.75}
   .pstat{margin-left:auto;text-align:right} .pstat b{font-size:19px;font-weight:750;display:block} .pstat span{font-size:10px;color:var(--muted)}
   .crumb{display:flex;align-items:center;gap:11px;margin-bottom:14px;flex-wrap:wrap}
   .crumb h2{font-size:18px;font-weight:750;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
@@ -447,12 +447,18 @@ function homeView(){
   v.appendChild(sn);
   v.appendChild(el('div','sect','People — tap for their project list'));
   const grid=el('div','ppl');
+/* Roster labels: the employing entity stays in team.json (code keeps it) but is not
+   shown on the tile — the person's name already disambiguates the title. It remains
+   available on hover, and orgLabel() renders it as a subscript where one must appear. */
+const roleBase=r=>String(r||'').split(' \u00b7 ')[0];
+const roleOrg =r=>String(r||'').split(' \u00b7 ').slice(1).join(' \u00b7 ');
+const orgLabel=r=>roleOrg(r)?`<sub class="org">${esc(roleOrg(r))}</sub>`:'';
   const people=Object.keys(TEAM).map(l=>({l,items:active().filter(i=>i.who.includes(l))}));
   people.push({l:null,items:active().filter(i=>!i.who.length)});
   people.forEach(p=>{const t=p.l?TEAM[p.l]:{name:'Unassigned',role:'Needs an owner',c:'#8a97a6'};
     const bt=el('button','ptile');bt.onclick=()=>go({v:'person',login:p.l});
     bt.innerHTML=`<div class="avatar" style="background:${t.c}">${initials(t.name)}</div>
-      <div style="min-width:0"><div class="who">${esc(t.name)}</div><div class="role">${esc(t.role)}</div></div>
+      <div style="min-width:0"><div class="who">${esc(t.name)}</div><div class="role" title="${esc(t.role)}">${esc(roleBase(t.role))}</div></div>
       <div class="pstat"><b class="tnum">${p.items.length}</b><span>active</span></div>`;
     grid.appendChild(bt);});
   v.appendChild(grid);
