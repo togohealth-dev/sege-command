@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<script>/* host-agnostic base: site root, or the project subpath when served from one */(function(){var b=document.createElement("base");b.href=location.pathname.indexOf("/command-center/")===0?"/command-center/":"/";document.head.appendChild(b);})();</script>
+<script>/* host-agnostic base: on <owner>.github.io the first path segment IS the repo, so the subpath is derived rather than hardcoded — one build serves any repo name and a custom-domain root alike */(function(){var s=location.hostname.slice(-10)===".github.io"&&location.pathname.split("/")[1];var b=document.createElement("base");b.href=s?"/"+s+"/":"/";document.head.appendChild(b);})();</script>
 <title>Command · Deal Model</title>
 <link rel="icon" type="image/png" href="./favicon.png">
 <style>
