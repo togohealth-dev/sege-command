@@ -33,10 +33,10 @@ TOKEN_FILE = os.path.join(BASE_DIR, "token.json")               # created on fir
 
 # Sender and signature are staff details, so they are configuration, not source:
 # this file is in a PUBLIC repo. Set them in the environment before running.
-SENDER    = os.environ.get("COMMAND_SENDER_EMAIL", os.environ.get("SEGE_SENDER_EMAIL", "ops@togohealth.com"))
-SIGN_NAME = os.environ.get("COMMAND_SENDER_NAME", os.environ.get("SEGE_SENDER_NAME", "The TogoHealth team"))
-SIGN_ROLE = os.environ.get("COMMAND_SENDER_ROLE", os.environ.get("SEGE_SENDER_ROLE", "Operations"))
-SIGN_PHONE= os.environ.get("COMMAND_SENDER_PHONE", os.environ.get("SEGE_SENDER_PHONE", ""))
+SENDER    = os.environ.get("COMMAND_SENDER_EMAIL", "ops@togohealth.com")
+SIGN_NAME = os.environ.get("COMMAND_SENDER_NAME", "The TogoHealth team")
+SIGN_ROLE = os.environ.get("COMMAND_SENDER_ROLE", "Operations")
+SIGN_PHONE= os.environ.get("COMMAND_SENDER_PHONE", "")
 SUBJECT = "Welcome to TogoHealth"
 
 BODY_TEMPLATE = """{facility} Team,
